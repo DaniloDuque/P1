@@ -1,0 +1,17 @@
+import java_cup.runtime.*;
+
+terminal Integer NUMERO;
+terminal String MAS, MENOS, POR, ENTRE, PARENIZQ, PARENDER;
+non terminal Expresion;
+
+precedence left MAS, MENOS;
+precedence left POR, ENTRE;
+
+start with Expresion;
+
+Expresion ::= Expresion MAS Expresion
+           | Expresion MENOS Expresion
+           | Expresion POR Expresion
+           | Expresion ENTRE Expresion
+           | PARENIZQ Expresion PARENDER
+           | NUMERO;
