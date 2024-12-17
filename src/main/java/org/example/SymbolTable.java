@@ -26,8 +26,8 @@ public class SymbolTable {
         return table.containsKey(name);
     }
 
-    public Set<String> getSymbols() {
-        return table.keySet();
+    public Map<String, SymbolInfo> getSymbols() {
+        return table;
     }
 
     public void addSymbol(String yytext, String literalFlotante, Object aFloat) {

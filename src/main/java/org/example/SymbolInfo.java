@@ -25,4 +25,8 @@ public class SymbolInfo {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        return "type=" + type + ", value=" + value;
+    }
 }
