@@ -1,6 +1,8 @@
 import java_cup.runtime.Symbol;
 
 parser code {:
+    // Inicializar la tabla de símbolos
+    SymbolTable symbolTable = new SymbolTable();
 :};
 
 terminal String IDENTIFICADOR, LITERAL_STRING;
@@ -35,10 +37,56 @@ lista_sentencias ::= sentencia
                    | lista_sentencias sentencia;
 
 sentencia ::= IDENTIFICADOR ASIGNACION LITERAL_ENTERO FIN_EXPRESION
+            {:
+                // Asignar el valor entero a la tabla de símbolos
+                String varName = ((String) $1);
+                if (symbolTable.exists(varName)) {
+                    symbolTable.update(varName, $3);
+                } else {
+                    System.err.println("Error: Variable no definida: " + varName);
+                }
+            :}
             | IDENTIFICADOR ASIGNACION LITERAL_FLOTANTE FIN_EXPRESION
+            {:
+                // Asignar el valor flotante a la tabla de símbolos
+                String varName = ((String) $1);
+                if (symbolTable.exists(varName)) {
+                    symbolTable.update(varName, $3);
+                } else {
+                    System.err.println("Error: Variable no definida: " + varName);
+                }
+            :}
             | IDENTIFICADOR ASIGNACION LITERAL_STRING FIN_EXPRESION
+            {:
+                // Asignar el valor string a la tabla de símbolos
+                String varName = ((String) $1);
+                if (symbolTable.exists(varName)) {
+                    symbolTable.update(varName, $3);
+                } else {
+                    System.err.println("Error: Variable no definida: " + varName);
+                }
+            :}
             | IDENTIFICADOR ASIGNACION LITERAL_CHAR FIN_EXPRESION
+            {:
+                // Asignar el valor char a la tabla de símbolos
+                String varName = ((String) $1);
+                if (symbolTable.exists(varName)) {
+                    symbolTable.update(varName, $3);
+                } else {
+                    System.err.println("Error: Variable no definida: " + varName);
+                }
+            :}
             | PRINT PARENTESIS_ABRE IDENTIFICADOR PARENTESIS_CIERRA FIN_EXPRESION
+            {:
+                // Imprimir el valor de la variable desde la tabla de símbolos
+                String varName = ((String) $3);
+                if (symbolTable.exists(varName)) {
+                    SymbolInfo info = symbolTable.lookup(varName);
+                    System.out.println("Valor de " + varName + ": " + info.value);
+                } else {
+                    System.err.println("Error: Variable no definida: " + varName);
+                }
+            :}
             | IF PARENTESIS_ABRE IDENTIFICADOR PARENTESIS_CIERRA LLAVE_ABRE lista_sentencias LLAVE_CIERRA
             | WHILE PARENTESIS_ABRE IDENTIFICADOR PARENTESIS_CIERRA LLAVE_ABRE lista_sentencias LLAVE_CIERRA
             | FOR PARENTESIS_ABRE IDENTIFICADOR PARENTESIS_CIERRA LLAVE_ABRE lista_sentencias LLAVE_CIERRA
@@ -47,17 +95,15 @@ sentencia ::= IDENTIFICADOR ASIGNACION LITERAL_ENTERO FIN_EXPRESION
             | RETURN IDENTIFICADOR FIN_EXPRESION
             | ERROR;
 
+// Declaración de variables
+declaration ::= type IDENTIFICADOR {:
+    String varName = ((String) $2);
+    String varType = ((String) $1);
 
-declaration ::= type IDENTIFIER {: 
-    String varName = ((Token) $2).getValue();  // $2 es el identificador
-    String varType = ((Token) $1).getValue();  // $1 es el tipo
-    
-    // Agregar el identificador a la tabla de símbolos
+    // Insertar la variable en la tabla de símbolos
     if (!symbolTable.exists(varName)) {
         symbolTable.insert(varName, new SymbolInfo(varType, null));
     } else {
-        // Manejar error: símbolo ya existe
         System.err.println("Error: Variable " + varName + " ya está definida.");
     }
 :};
-

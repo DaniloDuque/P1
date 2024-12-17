@@ -1,6 +1,9 @@
-int x = 10;
-if (x > 5) {
-    print("x is greater than 5");
-} else {
-    print("x is not greater than 5");
-}
+rodolfo _x_ entrega 10 finregalo
+elfo abreregalo _x_ minstix 5 cierraregalo
+abrecuento
+narra abreregalo "x is greater than 5" cierraregalo
+cierracuento
+hada
+abrecuento
+narra abreregalo "x is not greater than 5" cierraregalo
+cierracuento

@@ -1,11 +1,22 @@
 import java_cup.runtime.*;
+import java.util.HashMap;
 
 %%
-%class Scanner
+%class Lexer
 %cup
 %line
 %column
 %unicode
+
+%{
+    // Tabla de símbolos
+    SymbolTable symbolTable = new SymbolTable();
+
+    // Método para obtener la tabla de símbolos
+    public SymbolTable getSymbolTable() {
+        return symbolTable;
+    }
+%}
 
 // Definiciones regulares
 espacio     = [ \t\r\n\f]
@@ -113,36 +124,28 @@ cadena      = \"[^\"]*\"
 {gaspar}                 { return new Symbol(sym.OR, yyline, yycolumn); }
 {baltazar}               { return new Symbol(sym.NOT, yyline, yycolumn); }
 
-/* Operadores unarios */
-{quien}                  { return new Symbol(sym.INCREMENTO, yyline, yycolumn); }
-{grinch}                 { return new Symbol(sym.DECREMENTO, yyline, yycolumn); }
-
 /* Otros tokens especiales */
-{corta}                  { return new Symbol(sym.BREAK, yyline, yycolumn); }
-{envia}                  { return new Symbol(sym.RETURN, yyline, yycolumn); }
-{sigue}                  { return new Symbol(sym.DOS_PUNTOS, yyline, yycolumn); }
-{narra}                  { return new Symbol(sym.PRINT, yyline, yycolumn); }
-{escucha}                { return new Symbol(sym.READ, yyline, yycolumn); }
+{identificador}          {
+    symbolTable.addSymbol(yytext(), "IDENTIFICADOR", null);
+    return new Symbol(sym.IDENTIFICADOR, yyline, yycolumn, yytext());
+}
 
-/* Literales y identificadores */
-{identificador}          { return new Symbol(sym.IDENTIFICADOR, yyline, yycolumn, yytext()); }
-{entero}                 { return new Symbol(sym.LITERAL_ENTERO, yyline, yycolumn, new Integer(yytext())); }
-{flotante}               { return new Symbol(sym.LITERAL_FLOTANTE, yyline, yycolumn, new Float(yytext())); }
-{caracter}               { return new Symbol(sym.LITERAL_CHAR, yyline, yycolumn, yytext().charAt(1)); }
-{cadena}                 { return new Symbol(sym.LITERAL_STRING, yyline, yycolumn, yytext()); }
+{entero}                 {
+    symbolTable.addSymbol(yytext(), "LITERAL_ENTERO", new Integer(yytext()));
+    return new Symbol(sym.LITERAL_ENTERO, yyline, yycolumn, new Integer(yytext()));
+}
+
+{flotante}               {
+    symbolTable.addSymbol(yytext(), "LITERAL_FLOTANTE", new Float(yytext()));
+    return new Symbol(sym.LITERAL_FLOTANTE, yyline, yycolumn, new Float(yytext()));
+}
 
 /* Símbolos especiales */
 "abreregalo"             { return new Symbol(sym.PARENTESIS_ABRE, yyline, yycolumn); }
 "cierraregalo"           { return new Symbol(sym.PARENTESIS_CIERRA, yyline, yycolumn); }
-"abreempaque"            { return new Symbol(sym.CORCHETE_ABRE, yyline, yycolumn); }
-"cierraempaque"          { return new Symbol(sym.CORCHETE_CIERRA, yyline, yycolumn); }
-"abrecuento"             { return new Symbol(sym.LLAVE_ABRE, yyline, yycolumn); }
-"cierracuento"           { return new Symbol(sym.LLAVE_CIERRA, yyline, yycolumn); }
-"entrega"                { return new Symbol(sym.ASIGNACION, yyline, yycolumn); }
-"finregalo"              { return new Symbol(sym.FIN_EXPRESION, yyline, yycolumn); }
 
 /* Manejo de errores */
-[^]         {
+[^]                      {
     System.err.println("Error léxico: Carácter no reconocido '" + yytext() +
                        "' en línea " + (yyline+1) + ", columna " + (yycolumn+1));
     return new Symbol(sym.ERROR, yyline, yycolumn, yytext());

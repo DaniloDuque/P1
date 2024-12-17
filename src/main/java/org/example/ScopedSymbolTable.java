@@ -15,7 +15,6 @@ public class ScopedSymbolTable {
         scopes.push(new SymbolTable());
     }
 
-
     public void exitScope() {
         if(!scopes.isEmpty()) {
             scopes.pop();
