@@ -46,3 +46,18 @@ sentencia ::= IDENTIFICADOR ASIGNACION LITERAL_ENTERO FIN_EXPRESION
             | BREAK FIN_EXPRESION
             | RETURN IDENTIFICADOR FIN_EXPRESION
             | ERROR;
+
+
+declaration ::= type IDENTIFIER {: 
+    String varName = ((Token) $2).getValue();  // $2 es el identificador
+    String varType = ((Token) $1).getValue();  // $1 es el tipo
+    
+    // Agregar el identificador a la tabla de símbolos
+    if (!symbolTable.exists(varName)) {
+        symbolTable.insert(varName, new SymbolInfo(varType, null));
+    } else {
+        // Manejar error: símbolo ya existe
+        System.err.println("Error: Variable " + varName + " ya está definida.");
+    }
+:};
+
