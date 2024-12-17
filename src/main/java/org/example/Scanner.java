@@ -3,8 +3,7 @@
 // source: lexer.flex
 
 import java_cup.runtime.*;
-import java_cup.sym;
-
+import org.example.sym;
 
 @SuppressWarnings("fallthrough")
 class Scanner implements java_cup.runtime.Scanner {
