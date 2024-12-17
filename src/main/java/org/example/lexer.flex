@@ -11,7 +11,7 @@ import java_cup.runtime.*;
 espacio     = [ \t\r\n\f]
 saltoLinea  = \r|\n|\r\n
 comentarioLinea = #.*
-comentarioMultilinea = \\_[^_]*_\\/
+comentarioMultilinea = _[^_]*_
 
 // Tipos de datos
 rodolfo     = rodolfo

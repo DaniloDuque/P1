@@ -1,17 +1,48 @@
-import java_cup.runtime.*;
+import java_cup.runtime.Symbol;
 
-terminal Integer NUMERO;
-terminal String MAS, MENOS, POR, ENTRE, PARENIZQ, PARENDER;
-non terminal Expresion;
+parser code {:
+:};
 
-precedence left MAS, MENOS;
-precedence left POR, ENTRE;
+terminal String IDENTIFICADOR, LITERAL_STRING;
+terminal Integer LITERAL_ENTERO;
+terminal Float LITERAL_FLOTANTE;
+terminal Character LITERAL_CHAR;
 
-start with Expresion;
+terminal TIPO_ENTERO, TIPO_FLOTANTE, TIPO_BOOLEANO, TIPO_CHAR, TIPO_STRING;
+terminal IF, ELSE, WHILE, FOR, SWITCH, CASE, DEFAULT;
+terminal SUMA, RESTA, DIVISION, MULTIPLICACION, MODULO, POTENCIA;
+terminal MENOR, MENOR_IGUAL, MAYOR, MAYOR_IGUAL, IGUAL, DIFERENTE;
+terminal AND, OR, NOT;
+terminal INCREMENTO, DECREMENTO;
+terminal BREAK, RETURN, DOS_PUNTOS, PRINT, READ;
 
-Expresion ::= Expresion MAS Expresion
-           | Expresion MENOS Expresion
-           | Expresion POR Expresion
-           | Expresion ENTRE Expresion
-           | PARENIZQ Expresion PARENDER
-           | NUMERO;
+terminal PARENTESIS_ABRE, PARENTESIS_CIERRA;
+terminal CORCHETE_ABRE, CORCHETE_CIERRA;
+terminal LLAVE_ABRE, LLAVE_CIERRA;
+terminal ASIGNACION, FIN_EXPRESION;
+
+terminal ERROR;
+
+non terminal programa;
+non terminal lista_sentencias;
+non terminal sentencia;
+
+start with programa;
+
+programa ::= lista_sentencias;
+
+lista_sentencias ::= sentencia
+                   | lista_sentencias sentencia;
+
+sentencia ::= IDENTIFICADOR ASIGNACION LITERAL_ENTERO FIN_EXPRESION
+            | IDENTIFICADOR ASIGNACION LITERAL_FLOTANTE FIN_EXPRESION
+            | IDENTIFICADOR ASIGNACION LITERAL_STRING FIN_EXPRESION
+            | IDENTIFICADOR ASIGNACION LITERAL_CHAR FIN_EXPRESION
+            | PRINT PARENTESIS_ABRE IDENTIFICADOR PARENTESIS_CIERRA FIN_EXPRESION
+            | IF PARENTESIS_ABRE IDENTIFICADOR PARENTESIS_CIERRA LLAVE_ABRE lista_sentencias LLAVE_CIERRA
+            | WHILE PARENTESIS_ABRE IDENTIFICADOR PARENTESIS_CIERRA LLAVE_ABRE lista_sentencias LLAVE_CIERRA
+            | FOR PARENTESIS_ABRE IDENTIFICADOR PARENTESIS_CIERRA LLAVE_ABRE lista_sentencias LLAVE_CIERRA
+            | SWITCH PARENTESIS_ABRE IDENTIFICADOR PARENTESIS_CIERRA LLAVE_ABRE lista_sentencias LLAVE_CIERRA
+            | BREAK FIN_EXPRESION
+            | RETURN IDENTIFICADOR FIN_EXPRESION
+            | ERROR;

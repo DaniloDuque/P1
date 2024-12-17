@@ -8,6 +8,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         Lexer lexer = new Lexer(System.in);
         Symbol token;
+        System.out.println(lexer);
 
         while ((token = lexer.next_token()).sym != sym.EOF) {
             System.out.println("Token: " + token.toString());
