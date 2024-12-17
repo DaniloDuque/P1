@@ -30,7 +30,7 @@ public class SymbolTable {
         return table.keySet();
     }
 
-    public void addSymbol(String yytext, String literalFlotante, Float aFloat) {
+    public void addSymbol(String yytext, String literalFlotante, Object aFloat) {
         table.put(yytext, new SymbolInfo(literalFlotante, aFloat));
     }
 }

@@ -1,5 +1,6 @@
 import java_cup.runtime.*;
 import java.util.HashMap;
+import org.example.SymbolTable;
 
 %%
 %class Lexer
@@ -19,65 +20,65 @@ import java.util.HashMap;
 %}
 
 // Definiciones regulares
-espacio     = [ \t\r\n\f]
-saltoLinea  = \r|\n|\r\n
-comentarioLinea = #.*
-comentarioMultilinea = _[^_]*_
+espacio         = [ \t\r\n\f]
+saltoLinea      = \r|\n|\r\n
+comentarioLinea = \#.*
+comentarioMultilinea = \_([^_]|[\r\n])*_
 
 // Tipos de datos
-rodolfo     = rodolfo
-bromista    = bromista
-trueno      = trueno
-cupido      = cupido
-cometa      = cometa
+rodolfo         = \brodolfo\b
+bromista        = \bbromista\b
+trueno          = \btrueno\b
+cupido          = \bcupido\b
+cometa          = \bcometa\b
 
 // Tipos de control
-elfo        = elfo
-hada        = hada
-envuelve    = envuelve
-duende      = duende
-varios      = varios
-historia    = historia
-ultimo      = ultimo
+elfo            = \belfo\b
+hada            = \bhada\b
+envuelve        = \benvuelve\b
+duende          = \bduende\b
+varios          = \bvarios\b
+historia        = \bhistoria\b
+ultimo          = \bultimo\b
 
 // Operadores y símbolos especiales
-navidad     = navidad
-intercambio = intercambio
-reyes       = reyes
-nochebuena  = nochebuena
-magos       = magos
-adviento    = adviento
+navidad         = \bnavidad\b
+intercambio     = \bintercambio\b
+reyes           = \breyes\b
+nochebuena      = \bnochebuena\b
+magos           = \bmagos\b
+adviento        = \badviento\b
 
 // Operadores relacionales
-snowball    = snowball
-evergreen   = evergreen
-minstix     = minstix
-upatree     = upatree
-mary        = mary
-openslae    = openslae
+snowball        = \bsnowball\b
+evergreen       = \bevergreen\b
+minstix         = \bminstix\b
+upatree         = \bupatree\b
+mary            = \bmary\b
+openslae        = \bopenslae\b
 
 // Operadores lógicos
-melchor     = melchor
-gaspar      = gaspar
-baltazar    = baltazar
+melchor         = \bmelchor\b
+gaspar          = \bgaspar\b
+baltazar        = \bbaltazar\b
 
 // Otros tokens especiales
-quien       = quien
-grinch      = grinch
-corta       = corta
-envia       = envia
-sigue       = sigue
-narra       = narra
-escucha     = escucha
+quien           = \bquien\b
+grinch          = \bgrinch\b
+corta           = \bcorta\b
+envia           = \benvia\b
+sigue           = \bsigue\b
+narra           = \bnarra\b
+escucha         = \bescucha\b
 
 // Definiciones para literales y otros elementos
-letra       = [a-zA-Z]
-digito      = [0-9]
-identificador = _[a-zA-Z0-9]+_
-entero      = [0-9]+
-flotante    = [0-9]+\.[0-9]+
-caracter    = '.'
-cadena      = \"[^\"]*\"
+letra           = [a-zA-Z]
+digito          = [0-9]
+identificador   = {letra}({letra}|{digito})*
+entero          = {digito}+
+flotante        = {digito}+\.{digito}+
+caracter        = \'[^\']\'
+cadena          = \"[^\"]*\"
 
 %%
 /* Reglas léxicas */
@@ -124,20 +125,25 @@ cadena      = \"[^\"]*\"
 {gaspar}                 { return new Symbol(sym.OR, yyline, yycolumn); }
 {baltazar}               { return new Symbol(sym.NOT, yyline, yycolumn); }
 
-/* Otros tokens especiales */
-{identificador}          {
-    symbolTable.addSymbol(yytext(), "IDENTIFICADOR", null);
-    return new Symbol(sym.IDENTIFICADOR, yyline, yycolumn, yytext());
-}
-
+/* Literales y valores */
 {entero}                 {
-    symbolTable.addSymbol(yytext(), "LITERAL_ENTERO", new Integer(yytext()));
-    return new Symbol(sym.LITERAL_ENTERO, yyline, yycolumn, new Integer(yytext()));
+    symbolTable.addSymbol(yytext(), "LITERAL_ENTERO", Integer.valueOf(yytext()));
+    return new Symbol(sym.LITERAL_ENTERO, yyline, yycolumn, Integer.valueOf(yytext()));
 }
 
 {flotante}               {
-    symbolTable.addSymbol(yytext(), "LITERAL_FLOTANTE", new Float(yytext()));
-    return new Symbol(sym.LITERAL_FLOTANTE, yyline, yycolumn, new Float(yytext()));
+    symbolTable.addSymbol(yytext(), "LITERAL_FLOTANTE", Float.valueOf(yytext()));
+    return new Symbol(sym.LITERAL_FLOTANTE, yyline, yycolumn, Float.valueOf(yytext()));
+}
+
+{cadena}                 {
+    symbolTable.addSymbol(yytext(), "LITERAL_CADENA", yytext());
+    return new Symbol(sym.LITERAL_CADENA, yyline, yycolumn, yytext());
+}
+
+{identificador}          {
+    symbolTable.addSymbol(yytext(), "IDENTIFICADOR", null);
+    return new Symbol(sym.IDENTIFICADOR, yyline, yycolumn, yytext());
 }
 
 /* Símbolos especiales */
