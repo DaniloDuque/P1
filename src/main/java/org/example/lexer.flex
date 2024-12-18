@@ -91,7 +91,7 @@ digito          = [0-9]
 identificador   = _[a-zA-Z]([a-zA-Z0-9_])*_
 entero          = {digito}+
 flotante        = {digito}+\.{digito}+
-caracter        = \'[^\'\\\n\r]*\'
+caracter        = \'[^\n\r\'\\]*\'
 cadena          = \"[^\"]*\"
 coma            = ,
 booleano        = (true|false)
@@ -293,6 +293,11 @@ booleano        = (true|false)
 {cadena}                 {
     symbolTable.addSymbol(yytext(), "LITERAL_STRING", yyline, yycolumn, yytext());
     return new Symbol(sym.LITERAL_STRING, yyline, yycolumn, yytext());
+}
+
+{caracter}               {
+   symbolTable.addSymbol(yytext(), "LITERAL_CHAR", yyline, yycolumn, null);
+   return new Symbol(sym.LITERAL_CHAR, yyline, yycolumn);
 }
 
 {booleano}               {

@@ -23,7 +23,7 @@ terminal AND, OR, NOT, PARENTESIS_ABRE, PARENTESIS_CIERRA;
 terminal PRINT, CORCHETE_ABRE, CORCHETE_CIERRA, MAIN;
 terminal LITERAL_ENTERO, LITERAL_FLOTANTE, LITERAL_STRING, IDENTIFICADOR, LITERAL_BOOLEANO;
 terminal COMA, LLAVE_ABRE, LLAVE_CIERRA;
-terminal ERROR, FIN_EXPRESION, READ, DOS_PUNTOS;  // Terminal para manejar errores léxicos o sintácticos
+terminal ERROR, FIN_EXPRESION, READ, DOS_PUNTOS, LITERAL_CHAR;  // Terminal para manejar errores léxicos o sintácticos
 
 /* No terminales que se usarán en las reglas de producción */
 non terminal program;

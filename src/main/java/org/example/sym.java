@@ -36,6 +36,7 @@ public class sym {
   public static final int error = 1;
   public static final int COMA = 46;
   public static final int TIPO_CHAR = 5;
+  public static final int LITERAL_CHAR = 53;
   public static final int MODULO = 20;
   public static final int MENOR = 26;
   public static final int BREAK = 14;
@@ -114,7 +115,8 @@ public class sym {
   "ERROR",
   "FIN_EXPRESION",
   "READ",
-  "DOS_PUNTOS"
+  "DOS_PUNTOS",
+  "LITERAL_CHAR"
   };
 }
 
