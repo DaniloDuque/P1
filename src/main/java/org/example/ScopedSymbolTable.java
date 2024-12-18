@@ -30,7 +30,7 @@ public class ScopedSymbolTable {
 
     public SymbolInfo lookup(String name) {
         for(int i = scopes.size() - 1; i >= 0; i--) {
-            SymbolInfo info = scopes.get(i).lookup(name);
+            SymbolInfo info = scopes.get(i).lookup(name).get(0);
             if(info != null) {
                 return info;
             }

@@ -6,6 +6,7 @@ import org.example.SymbolTable;
 import org.example.sym;
 
 %%
+
 %class Lexer
 %public
 %cup
@@ -24,112 +25,238 @@ import org.example.sym;
 %}
 
 // Definiciones regulares
+_verano_ = _verano_
 espacio         = [ \t\r\n\f]
 saltoLinea      = \r|\n|\r\n
-comentarioLinea = \#.*
-comentarioMultilinea = \_([^_]|[\r\n])*_
+comentario = @[^\n]*
+comentarioMultilinea = \\_[^_]*_\/
 
 // Tipos de datos
-rodolfo         = \brodolfo\b
-bromista        = \bbromista\b
-trueno          = \btrueno\b
-cupido          = \bcupido\b
-cometa          = \bcometa\b
+rodolfo         = rodolfo
+bromista        = bromista
+trueno          = trueno
+cupido          = cupido
+cometa          = cometa
 
 // Tipos de control
-elfo            = \belfo\b
-hada            = \bhada\b
-envuelve        = \benvuelve\b
-duende          = \bduende\b
-varios          = \bvarios\b
-historia        = \bhistoria\b
-ultimo          = \bultimo\b
+elfo            = elfo
+hada            = hada
+envuelve        = envuelve
+duende          = duende
+varios          = varios
+historia        = historia
+ultimo          = ultimo
 
 // Operadores y símbolos especiales
-navidad         = \bnavidad\b
-intercambio     = \bintercambio\b
-reyes           = \breyes\b
-nochebuena      = \bnochebuena\b
-magos           = \bmagos\b
-adviento        = \badviento\b
+navidad         = navidad
+intercambio     = intercambio
+reyes           = reyes
+nochebuena      = nochebuena
+magos           = magos
+adviento        = adviento
+entrega         = entrega
 
 // Operadores relacionales
-snowball        = \bsnowball\b
-evergreen       = \bevergreen\b
-minstix         = \bminstix\b
-upatree         = \bupatree\b
-mary            = \bmary\b
-openslae        = \bopenslae\b
+snowball        = snowball
+evergreen       = evergreen
+minstix         = minstix
+upatree         = upatree
+mary            = mary
+openslae        = openslae
 
 // Operadores lógicos
-melchor         = \bmelchor\b
-gaspar          = \bgaspar\b
-baltazar        = \bbaltazar\b
+melchor         = melchor
+gaspar          = gaspar
+baltazar        = baltazar
 
 // Otros tokens especiales
-quien           = \bquien\b
-grinch          = \bgrinch\b
-corta           = \bcorta\b
-envia           = \benvia\b
-sigue           = \bsigue\b
-narra           = \bnarra\b
-escucha         = \bescucha\b
+quien           = quien
+grinch          = grinch
+corta           = corta
+envia           = envia
+sigue           = sigue
+narra           = narra
+escucha         = escucha
+abreregalo      = abreregalo
+cierraregalo    = cierraregalo
+abreempaque     = abreempaque
+cierraempaque   = cierraempaque
+abrecuento      = abrecuento
+cierracuento    = cierracuento
+finregalo       = finregalo
 
 // Definiciones para literales y otros elementos
 letra           = [a-zA-Z]
 digito          = [0-9]
-identificador   = {letra}({letra}|{digito})*
+identificador   = _[a-zA-Z]([a-zA-Z0-9_])*_
 entero          = {digito}+
 flotante        = {digito}+\.{digito}+
-caracter        = \'[^\']\'
+caracter        = \'[^\'\\\n\r]\'
 cadena          = \"[^\"]*\"
 
 %%
-/* Reglas léxicas */
 
-/* Ignorar espacios en blanco y comentarios */
-{espacio}+               { /* Ignorar */ }
-{comentarioLinea}        { /* Ignorar comentarios de línea */ }
-{comentarioMultilinea}   { /* Ignorar comentarios multilínea */ }
+{rodolfo}                {
+    symbolTable.addSymbol(yytext(), "TIPO_ENTERO", yyline, yycolumn, null);
+    return new Symbol(sym.TIPO_ENTERO, yyline, yycolumn);
+}
+{bromista}               {
+    symbolTable.addSymbol(yytext(), "TIPO_FLOTANTE", yyline, yycolumn, null);
+    return new Symbol(sym.TIPO_FLOTANTE, yyline, yycolumn);
+}
+{trueno}                 {
+    symbolTable.addSymbol(yytext(), "TIPO_BOOLEANO", yyline, yycolumn, null);
+    return new Symbol(sym.TIPO_BOOLEANO, yyline, yycolumn);
+}
+{cupido}                 {
+    symbolTable.addSymbol(yytext(), "TIPO_CHAR", yyline, yycolumn, null);
+    return new Symbol(sym.TIPO_CHAR, yyline, yycolumn);
+}
+{cometa}                 {
+    symbolTable.addSymbol(yytext(), "TIPO_STRING", yyline, yycolumn, null);
+    return new Symbol(sym.TIPO_STRING, yyline, yycolumn);
+}
 
-/* Palabras reservadas de tipos de datos */
-{rodolfo}                { return new Symbol(sym.TIPO_ENTERO, yyline, yycolumn); }
-{bromista}               { return new Symbol(sym.TIPO_FLOTANTE, yyline, yycolumn); }
-{trueno}                 { return new Symbol(sym.TIPO_BOOLEANO, yyline, yycolumn); }
-{cupido}                 { return new Symbol(sym.TIPO_CHAR, yyline, yycolumn); }
-{cometa}                 { return new Symbol(sym.TIPO_STRING, yyline, yycolumn); }
+/* --- Sección de palabras reservadas de control --- */
+{elfo}                   {
+    symbolTable.addSymbol(yytext(), "IF", yyline, yycolumn, null);
+    return new Symbol(sym.IF, yyline, yycolumn);
+}
+{hada}                   {
+    symbolTable.addSymbol(yytext(), "ELSE", yyline, yycolumn, null);
+    return new Symbol(sym.ELSE, yyline, yycolumn);
+}
+{envuelve}               {
+    symbolTable.addSymbol(yytext(), "WHILE", yyline, yycolumn, null);
+    return new Symbol(sym.WHILE, yyline, yycolumn);
+}
+{duende}                 {
+    symbolTable.addSymbol(yytext(), "FOR", yyline, yycolumn, null);
+    return new Symbol(sym.FOR, yyline, yycolumn);
+}
+{varios}                 {
+    symbolTable.addSymbol(yytext(), "SWITCH", yyline, yycolumn, null);
+    return new Symbol(sym.SWITCH, yyline, yycolumn);
+}
+{historia}               {
+    symbolTable.addSymbol(yytext(), "CASE", yyline, yycolumn, null);
+    return new Symbol(sym.CASE, yyline, yycolumn);
+}
+{ultimo}                 {
+    symbolTable.addSymbol(yytext(), "DEFAULT", yyline, yycolumn, null);
+    return new Symbol(sym.DEFAULT, yyline, yycolumn);
+}
+{corta}                  {
+    symbolTable.addSymbol(yytext(), "BREAK", yyline, yycolumn, null);
+    return new Symbol(sym.BREAK, yyline, yycolumn);
+}
+{envia}                  {
+    symbolTable.addSymbol(yytext(), "RETURN", yyline, yycolumn, null);
+    return new Symbol(sym.RETURN, yyline, yycolumn);
+}
 
-/* Palabras reservadas de control */
-{elfo}                   { return new Symbol(sym.IF, yyline, yycolumn); }
-{hada}                   { return new Symbol(sym.ELSE, yyline, yycolumn); }
-{envuelve}               { return new Symbol(sym.WHILE, yyline, yycolumn); }
-{duende}                 { return new Symbol(sym.FOR, yyline, yycolumn); }
-{varios}                 { return new Symbol(sym.SWITCH, yyline, yycolumn); }
-{historia}               { return new Symbol(sym.CASE, yyline, yycolumn); }
-{ultimo}                 { return new Symbol(sym.DEFAULT, yyline, yycolumn); }
+/* --- Sección de operadores aritméticos --- */
+{navidad}                {
+    symbolTable.addSymbol(yytext(), "SUMA", yyline, yycolumn, null);
+    return new Symbol(sym.SUMA, yyline, yycolumn);
+}
+{intercambio}            {
+    symbolTable.addSymbol(yytext(), "RESTA", yyline, yycolumn, null);
+    return new Symbol(sym.RESTA, yyline, yycolumn);
+}
+{reyes}                  {
+    symbolTable.addSymbol(yytext(), "DIVISION", yyline, yycolumn, null);
+    return new Symbol(sym.DIVISION, yyline, yycolumn);
+}
+{nochebuena}             {
+    symbolTable.addSymbol(yytext(), "MULTIPLICACION", yyline, yycolumn, null);
+    return new Symbol(sym.MULTIPLICACION, yyline, yycolumn);
+}
+{magos}                  {
+    symbolTable.addSymbol(yytext(), "MODULO", yyline, yycolumn, null);
+    return new Symbol(sym.MODULO, yyline, yycolumn);
+}
+{adviento}               {
+    symbolTable.addSymbol(yytext(), "POTENCIA", yyline, yycolumn, null);
+    return new Symbol(sym.POTENCIA, yyline, yycolumn);
+}
+{entrega}                {
+    symbolTable.addSymbol(yytext(), "ASIGNACION", yyline, yycolumn, null);
+    return new Symbol(sym.ASIGNACION, yyline, yycolumn);
+}
+{quien}                  {
+    symbolTable.addSymbol(yytext(), "INCREMENTO", yyline, yycolumn, null);
+    return new Symbol(sym.INCREMENTO, yyline, yycolumn);
+}
+{grinch}                 {
+    symbolTable.addSymbol(yytext(), "DECREMENTO", yyline, yycolumn, null);
+    return new Symbol(sym.DECREMENTO, yyline, yycolumn);
+}
 
-/* Operadores aritméticos */
-{navidad}                { return new Symbol(sym.SUMA, yyline, yycolumn); }
-{intercambio}            { return new Symbol(sym.RESTA, yyline, yycolumn); }
-{reyes}                  { return new Symbol(sym.DIVISION, yyline, yycolumn); }
-{nochebuena}             { return new Symbol(sym.MULTIPLICACION, yyline, yycolumn); }
-{magos}                  { return new Symbol(sym.MODULO, yyline, yycolumn); }
-{adviento}               { return new Symbol(sym.POTENCIA, yyline, yycolumn); }
+/* --- Sección de operadores relacionales --- */
+{snowball}               {
+    symbolTable.addSymbol(yytext(), "MENOR", yyline, yycolumn, null);
+    return new Symbol(sym.MENOR, yyline, yycolumn);
+}
+{evergreen}              {
+    symbolTable.addSymbol(yytext(), "MENOR_IGUAL", yyline, yycolumn, null);
+    return new Symbol(sym.MENOR_IGUAL, yyline, yycolumn);
+}
+{minstix}                {
+    symbolTable.addSymbol(yytext(), "MAYOR", yyline, yycolumn, null);
+    return new Symbol(sym.MAYOR, yyline, yycolumn);
+}
+{upatree}                {
+    symbolTable.addSymbol(yytext(), "MAYOR_IGUAL", yyline, yycolumn, null);
+    return new Symbol(sym.MAYOR_IGUAL, yyline, yycolumn);
+}
+{mary}                   {
+    symbolTable.addSymbol(yytext(), "IGUAL", yyline, yycolumn, null);
+    return new Symbol(sym.IGUAL, yyline, yycolumn);
+}
+{openslae}               {
+    symbolTable.addSymbol(yytext(), "DIFERENTE", yyline, yycolumn, null);
+    return new Symbol(sym.DIFERENTE, yyline, yycolumn);
+}
 
-/* Operadores relacionales */
-{snowball}               { return new Symbol(sym.MENOR, yyline, yycolumn); }
-{evergreen}              { return new Symbol(sym.MENOR_IGUAL, yyline, yycolumn); }
-{minstix}                { return new Symbol(sym.MAYOR, yyline, yycolumn); }
-{upatree}                { return new Symbol(sym.MAYOR_IGUAL, yyline, yycolumn); }
-{mary}                   { return new Symbol(sym.IGUAL, yyline, yycolumn); }
-{openslae}               { return new Symbol(sym.DIFERENTE, yyline, yycolumn); }
+/* --- Sección de operadores lógicos --- */
+{melchor}                {
+    symbolTable.addSymbol(yytext(), "AND", yyline, yycolumn, null);
+    return new Symbol(sym.AND, yyline, yycolumn);
+}
 
-/* Operadores lógicos */
-{melchor}                { return new Symbol(sym.AND, yyline, yycolumn); }
-{gaspar}                 { return new Symbol(sym.OR, yyline, yycolumn); }
-{baltazar}               { return new Symbol(sym.NOT, yyline, yycolumn); }
+{gaspar}                 {
+    symbolTable.addSymbol(yytext(), "OR", yyline, yycolumn, null);
+    return new Symbol(sym.OR, yyline, yycolumn);
+}
 
-/* Literales y valores */
+{baltazar}               {
+    symbolTable.addSymbol(yytext(), "NOT", yyline, yycolumn, null);
+    return new Symbol(sym.NOT, yyline, yycolumn);
+}
+
+/* --- Sección de otros tokens especiales --- */
+{narra}                  {
+    symbolTable.addSymbol(yytext(), "PRINT", yyline, yycolumn, null);
+    return new Symbol(sym.PRINT, yyline, yycolumn);
+}
+
+{abreempaque}            {
+    symbolTable.addSymbol(yytext(), "CORCHETE_ABRE", yyline, yycolumn, null);
+    return new Symbol(sym.CORCHETE_ABRE, yyline, yycolumn);
+}
+
+{cierraempaque}          {
+    symbolTable.addSymbol(yytext(), "CORCHETE_CIERRA", yyline, yycolumn, null);
+    return new Symbol(sym.CORCHETE_CIERRA, yyline, yycolumn);
+}
+
+{_verano_}               {
+    symbolTable.addSymbol(yytext(), "MAIN", yyline, yycolumn, null);
+    return new Symbol(-1, yyline, yycolumn);
+}
+
+/* --- Sección de literales y valores --- */
 {entero}                 {
     symbolTable.addSymbol(yytext(), "LITERAL_ENTERO", yyline, yycolumn, Integer.valueOf(yytext()));
     return new Symbol(sym.LITERAL_ENTERO, yyline, yycolumn, Integer.valueOf(yytext()));
@@ -145,14 +272,36 @@ cadena          = \"[^\"]*\"
     return new Symbol(sym.LITERAL_STRING, yyline, yycolumn, yytext());
 }
 
+{abrecuento}             {
+    symbolTable.addSymbol(yytext(), "LLAVE_ABRE", yyline, yycolumn, null);
+    return new Symbol(sym.LLAVE_ABRE, yyline, yycolumn, yytext());
+}
+
+{cierracuento}             {
+    symbolTable.addSymbol(yytext(), "LLAVE_CIERRA", yyline, yycolumn, null);
+    return new Symbol(sym.LLAVE_CIERRA, yyline, yycolumn, yytext());
+}
+
+{abreregalo}             {
+    symbolTable.addSymbol(yytext(), "PARENTESIS_ABRE", yyline, yycolumn, null);
+    return new Symbol(sym.PARENTESIS_ABRE, yyline, yycolumn, yytext());
+}
+
+{cierraregalo}             {
+    symbolTable.addSymbol(yytext(), "PARENTESIS_CIERRA", yyline, yycolumn, null);
+    return new Symbol(sym.PARENTESIS_CIERRA, yyline, yycolumn, yytext());
+}
+
+{finregalo}                {
+    symbolTable.addSymbol(yytext(), "FIN_EXPRESION", yyline, yycolumn, null);
+    return new Symbol(sym.FIN_EXPRESION, yyline, yycolumn, yytext());
+}
+
+/* --- Sección de identificadores --- */
 {identificador}          {
     symbolTable.addSymbol(yytext(), "IDENTIFICADOR", yyline, yycolumn, null);
     return new Symbol(sym.IDENTIFICADOR, yyline, yycolumn, yytext());
 }
-
-/* Símbolos especiales */
-"abreregalo"             { return new Symbol(sym.PARENTESIS_ABRE, yyline, yycolumn); }
-"cierraregalo"           { return new Symbol(sym.PARENTESIS_CIERRA, yyline, yycolumn); }
 
 /* Manejo de errores */
 [^]                      {

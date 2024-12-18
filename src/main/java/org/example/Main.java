@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
@@ -15,7 +16,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             Scanner sc = new Scanner(System.in);
-            String filename = sc.nextLine();
+            String filename = "test.txt";
             String path = Paths.get(Objects.requireNonNull(Main.class.getClassLoader().getResource(filename)).toURI()).toString();
             FileReader reader = new FileReader(path);
 
@@ -30,11 +31,11 @@ public class Main {
             // Imprime el contenido de la tabla de símbolos
             FileWriter writer = new FileWriter("output.txt");
             writer.write("Tabla de símbolos\n");
-            for (Map.Entry<String, SymbolInfo> entry : lexer.getSymbolTable().getSymbols().entrySet()) {
-                String key = entry.getKey(); // Clave
-                SymbolInfo value = entry.getValue(); // Valor
-                // Aquí puedes trabajar con key y value
-                writer.write("Lexema: " + key + " "+ value + "\n");
+            for (Map.Entry<String, List<SymbolInfo>> entry : lexer.getSymbolTable().getSymbols().entrySet()) {
+                for (SymbolInfo symbolInfo : entry.getValue()) {
+                    System.out.println(entry.getKey() + " " + symbolInfo + "\n");
+                    writer.write(entry.getKey() + " " + symbolInfo + "\n");
+                }
             }
 
         } catch (Exception e) {
