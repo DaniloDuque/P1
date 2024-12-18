@@ -3,10 +3,10 @@
 // source: lexer.flex
 
 package org.example;
+
 import java_cup.runtime.*;
 import java.util.HashMap;
 import org.example.SymbolTable;
-import org.example.sym;
 
 
 @SuppressWarnings("fallthrough")
@@ -372,11 +372,6 @@ public class Lexer implements java_cup.runtime.Scanner {
     // Método para obtener la tabla de símbolos
     public SymbolTable getSymbolTable() {
         return symbolTable;
-    }
-
-    // Función auxiliar para verificar si una palabra es reservada
-    private boolean isReservedWord(String lexeme) {
-        return lexeme.matches("(rodolfo|bromista|trueno|cupido|cometa|elfo|hada|envuelve|duende|varios|historia|ultimo|navidad|intercambio|reyes|nochebuena|magos|adviento|snowball|evergreen|minstix|upatree|mary|openslae|melchor|gaspar|baltazar|quien|grinch|corta|envia|sigue|narra|escucha)");
     }
 
 
@@ -827,15 +822,8 @@ public class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 39: break;
           case 5:
-            { String lexeme = yytext();
-    if (!isReservedWord(lexeme)) {
-        symbolTable.addSymbol(lexeme, "IDENTIFICADOR", yyline, yycolumn, null);
-        return new Symbol(sym.IDENTIFICADOR, yyline, yycolumn, lexeme);
-    } else {
-        System.err.println("Error léxico: Identificador no válido '" + lexeme +
-                           "' en línea " + (yyline+1) + ", columna " + (yycolumn+1));
-        return new Symbol(sym.ERROR, yyline, yycolumn, lexeme);
-    }
+            { symbolTable.addSymbol(yytext(), "IDENTIFICADOR", yyline, yycolumn, null);
+    return new Symbol(sym.IDENTIFICADOR, yyline, yycolumn, yytext());
             }
           // fall through
           case 40: break;
