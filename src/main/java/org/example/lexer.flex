@@ -17,6 +17,11 @@ import org.example.SymbolTable;
     public SymbolTable getSymbolTable() {
         return symbolTable;
     }
+
+    // Función auxiliar para verificar si una palabra es reservada
+    private boolean isReservedWord(String lexeme) {
+        return lexeme.matches("(rodolfo|bromista|trueno|cupido|cometa|elfo|hada|envuelve|duende|varios|historia|ultimo|navidad|intercambio|reyes|nochebuena|magos|adviento|snowball|evergreen|minstix|upatree|mary|openslae|melchor|gaspar|baltazar|quien|grinch|corta|envia|sigue|narra|escucha)");
+    }
 %}
 
 // Definiciones regulares
@@ -127,23 +132,31 @@ cadena          = \"[^\"]*\"
 
 /* Literales y valores */
 {entero}                 {
-    symbolTable.addSymbol(yytext(), "LITERAL_ENTERO", Integer.valueOf(yytext()));
+    symbolTable.addSymbol(yytext(), "LITERAL_ENTERO", yyline, yycolumn, Integer.valueOf(yytext()));
     return new Symbol(sym.LITERAL_ENTERO, yyline, yycolumn, Integer.valueOf(yytext()));
 }
 
 {flotante}               {
-    symbolTable.addSymbol(yytext(), "LITERAL_FLOTANTE", Float.valueOf(yytext()));
+    symbolTable.addSymbol(yytext(), "LITERAL_FLOTANTE", yyline, yycolumn, Float.valueOf(yytext()));
     return new Symbol(sym.LITERAL_FLOTANTE, yyline, yycolumn, Float.valueOf(yytext()));
 }
 
 {cadena}                 {
-    symbolTable.addSymbol(yytext(), "LITERAL_CADENA", yytext());
-    return new Symbol(sym.LITERAL_CADENA, yyline, yycolumn, yytext());
+    symbolTable.addSymbol(yytext(), "LITERAL_STRING", yyline, yycolumn, yytext());
+    return new Symbol(sym.LITERAL_STRING, yyline, yycolumn, yytext());
 }
 
+/* Manejo de identificadores y verificación de palabras reservadas */
 {identificador}          {
-    symbolTable.addSymbol(yytext(), "IDENTIFICADOR", null);
-    return new Symbol(sym.IDENTIFICADOR, yyline, yycolumn, yytext());
+    String lexeme = yytext();
+    if (!isReservedWord(lexeme)) {
+        symbolTable.addSymbol(lexeme, "IDENTIFICADOR", yyline, yycolumn, null);
+        return new Symbol(sym.IDENTIFICADOR, yyline, yycolumn, lexeme);
+    } else {
+        System.err.println("Error léxico: Identificador no válido '" + lexeme +
+                           "' en línea " + (yyline+1) + ", columna " + (yycolumn+1));
+        return new Symbol(sym.ERROR, yyline, yycolumn, lexeme);
+    }
 }
 
 /* Símbolos especiales */

@@ -30,8 +30,8 @@ public class SymbolTable {
         return table;
     }
 
-    public void addSymbol(String yytext, String literalFlotante, Object aFloat) {
-        table.put(yytext, new SymbolInfo(literalFlotante, aFloat));
+    public void addSymbol(String yytext, String literal, int line, int column, Object value) {
+        table.put(yytext, new SymbolInfo(literal, line, column, value));
     }
 }
 

@@ -1,32 +1,22 @@
 package org.example;
 
 public class SymbolInfo {
-    private String type;
+    private final String type;
+    private final int line;
+    private final int column;
     private Object value;
 
-    public SymbolInfo(String type, Object value) {
+    public SymbolInfo(String type, int line, int column, Object value) {
         this.type = type;
-        this.value = value;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Object getValue() {
-        return value;
-    }
-
-    public void setValue(Object value) {
+        this.line = line;
+        this.column = column;
         this.value = value;
     }
 
     @Override
     public String toString() {
-        return "type=" + type + ", value=" + value;
+        String str = "Tipo: " + type + ", Línea: " + line + ", Columna: " + column;
+        if(value != null) {str += ", Valor: " + value;}
+        return str;
     }
 }
