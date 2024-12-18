@@ -25,7 +25,7 @@ import org.example.sym;
 %}
 
 // Definiciones regulares
-_verano_ = _verano_
+_verano_             = _verano_
 saltoLinea           = \r|\n|\r\n
 comentario           = @.*\n
 comentarioMultilinea = "\\_"([^\\_]|\\n|\\r)*"_/"
@@ -89,8 +89,8 @@ finregalo       = finregalo
 letra           = [a-zA-Z]
 digito          = [0-9]
 identificador   = _{letra}({letra}|{digito})*_
-entero          = {digito}+
-flotante        = {digito}+\.{digito}+
+entero          = -?([1-9]{digito}*|0)
+flotante        = {entero}\.{digito}+
 caracter        = \'[^\n\r\'\\]*\'
 cadena          = \"[^\"]*\"
 coma            = ,

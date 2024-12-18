@@ -6,7 +6,7 @@ cupido _miChar_ entrega '!' finregalo
 
 cometa _str1_ entrega "Hola $%&/gaspar$& cierraregalo mundo" finregalo
 
-bromista _fl1_ entrega 56.6 finregalo
+bromista _fl1_ entrega -56.6 finregalo
 
 cupido _arr_ abreempaque _lit_ cierraempaque entrega abrecuento 'c','d'
 cierracuento finregalo
