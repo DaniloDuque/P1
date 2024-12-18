@@ -1,197 +1,49 @@
-import java_cup.runtime.Symbol;
+package org.example;
 
-parser code {:
-    // Inicializar la tabla de símbolos
-    SymbolTable symbolTable = new SymbolTable();
+// Importaciones necesarias
+import java_cup.runtime.*;
+import org.example.sym;
+import org.example.SymbolInfo;
 
-    // Método para manejar errores de manera más descriptiva
-    public void report_error(String message, Object info) {
-        StringBuilder m = new StringBuilder("Error");
-        if (info instanceof java_cup.runtime.Symbol) {
-            java_cup.runtime.Symbol s = (java_cup.runtime.Symbol) info;
-            if (s.left != -1) {
-                m.append(" en línea ").append(s.left + 1);
-                if (s.right != -1)
-                    m.append(", columna ").append(s.right + 1);
-            }
-        }
-        m.append(" : ").append(message);
-        System.err.println(m);
-    }
-
-    // Método para obtener la tabla de símbolos
-    public SymbolTable getSymbolTable() {
-        return symbolTable;
-    }
+parser code {: 
+    /* Código del parser, si lo deseas, puedes definir métodos auxiliares aquí */
 :};
 
-// Terminales (tokens del lexer)
-terminal String IDENTIFICADOR, LITERAL_STRING;
-terminal Integer LITERAL_ENTERO;
-terminal Float LITERAL_FLOTANTE;
-terminal Character LITERAL_CHAR;
-terminal Boolean LITERAL_BOOLEANO;
+action code {: 
+    /* Código de acción, si lo deseas, puedes definir acciones especiales aquí */
+:};
 
-// Palabras reservadas de tipos
+/* Terminales (tokens) que vienen del lexer */
 terminal TIPO_ENTERO, TIPO_FLOTANTE, TIPO_BOOLEANO, TIPO_CHAR, TIPO_STRING;
-
-// Palabras reservadas de control
-terminal IF, ELSE, WHILE, FOR, SWITCH, CASE, DEFAULT;
-
-// Palabras reservadas de programa
-terminal MAIN;
-
-// Funciones
-terminal PRINT, READ;
-
-// Operadores aritméticos
-terminal SUMA, RESTA, DIVISION, MULTIPLICACION, MODULO, POTENCIA;
-terminal INC, DEC; // Incremento y decremento
-
-// Operadores relacionales
+terminal IF, ELSE, WHILE, FOR, SWITCH, CASE, DEFAULT, BREAK, RETURN;
+terminal SUMA, RESTA, MULTIPLICACION, DIVISION, MODULO, POTENCIA;
+terminal ASIGNACION, INCREMENTO, DECREMENTO, CONTINUE;
 terminal MENOR, MENOR_IGUAL, MAYOR, MAYOR_IGUAL, IGUAL, DIFERENTE;
+terminal AND, OR, NOT, PARENTESIS_ABRE, PARENTESIS_CIERRA;
+terminal PRINT, CORCHETE_ABRE, CORCHETE_CIERRA, MAIN;
+terminal LITERAL_ENTERO, LITERAL_FLOTANTE, LITERAL_STRING, IDENTIFICADOR, LITERAL_BOOLEANO;
+terminal COMA, LLAVE_ABRE, LLAVE_CIERRA;
+terminal ERROR, FIN_EXPRESION, READ, DOS_PUNTOS;  // Terminal para manejar errores léxicos o sintácticos
 
-// Operadores lógicos
-terminal AND, OR, NOT;
+/* No terminales que se usarán en las reglas de producción */
+non terminal program;
+non terminal statement;
 
-// Otros tokens
-terminal PARENTESIS_ABRE, PARENTESIS_CIERRA;
-terminal CORCHETE_ABRE, CORCHETE_CIERRA;
-terminal LLAVE_ABRE, LLAVE_CIERRA;
-terminal ASIGNACION, FIN_EXPRESION, DOS_PUNTOS;
-terminal BREAK, RETURN;
-terminal ERROR;
+/* Regla de inicio */
+start with program;
 
-// No terminales
-non terminal programa;
-non terminal declaracion;
-non terminal lista_declaraciones;
-non terminal sentencia;
-non terminal lista_sentencias;
-non terminal expresion;
-non terminal expresion_aritmetica;
-non terminal expresion_logica;
-non terminal expresion_relacional;
-non terminal funcion;
-non terminal parametros;
-non terminal estructura_control;
-non terminal lista_case;
-
-// Precedencia de operadores
-precedence left OR;
-precedence left AND;
-precedence left NOT;
-precedence left MENOR, MENOR_IGUAL, MAYOR, MAYOR_IGUAL, IGUAL, DIFERENTE;
-precedence left SUMA, RESTA;
-precedence left MULTIPLICACION, DIVISION, MODULO;
-precedence left POTENCIA;
-precedence left INC, DEC;
-
-// Símbolo inicial
-start with programa;
-
-// Reglas gramaticales
-programa ::= lista_declaraciones MAIN PARENTESIS_ABRE PARENTESIS_CIERRA LLAVE_ABRE lista_sentencias LLAVE_CIERRA
-           {:
-               System.out.println("Programa compilado exitosamente.");
-           :}
-           | error
-           {:
-               System.err.println("Error en la estructura del programa.");
-           :}
-;
-
-lista_declaraciones ::= declaracion
-                      | lista_declaraciones declaracion
-;
-
-declaracion ::= TIPO_ENTERO IDENTIFICADOR FIN_EXPRESION
-                {:
-                    String varName = (String)$2;
-                    symbolTable.insert(varName, new SymbolInfo("ENTERO", null));
-                :}
-              | TIPO_FLOTANTE IDENTIFICADOR FIN_EXPRESION
-                {:
-                    String varName = (String)$2;
-                    symbolTable.insert(varName, new SymbolInfo("FLOTANTE", null));
-                :}
-              | TIPO_BOOLEANO IDENTIFICADOR FIN_EXPRESION
-                {:
-                    String varName = (String)$2;
-                    symbolTable.insert(varName, new SymbolInfo("BOOLEANO", null));
-                :}
-              | TIPO_CHAR IDENTIFICADOR FIN_EXPRESION
-                {:
-                    String varName = (String)$2;
-                    symbolTable.insert(varName, new SymbolInfo("CHAR", null));
-                :}
-              | TIPO_STRING IDENTIFICADOR FIN_EXPRESION
-                {:
-                    String varName = (String)$2;
-                    symbolTable.insert(varName, new SymbolInfo("STRING", null));
-                :}
-;
-
-lista_sentencias ::= sentencia
-                   | lista_sentencias sentencia
-;
-
-sentencia ::= IDENTIFICADOR ASIGNACION expresion FIN_EXPRESION
-             {:
-                 String varName = (String)$1;
-                 // La lógica de tipado y asignación se manejará en la acción semántica de expresion
-             :}
-           | PRINT PARENTESIS_ABRE expresion PARENTESIS_CIERRA FIN_EXPRESION
-             {:
-                 // Imprimir el valor de la expresión
-             :}
-           | estructura_control
-           | BREAK FIN_EXPRESION
-           | RETURN expresion FIN_EXPRESION
-;
-
-estructura_control ::= IF PARENTESIS_ABRE expresion PARENTESIS_CIERRA LLAVE_ABRE lista_sentencias LLAVE_CIERRA
-                     | IF PARENTESIS_ABRE expresion PARENTESIS_CIERRA LLAVE_ABRE lista_sentencias LLAVE_CIERRA ELSE LLAVE_ABRE lista_sentencias LLAVE_CIERRA
-                     | WHILE PARENTESIS_ABRE expresion PARENTESIS_CIERRA LLAVE_ABRE lista_sentencias LLAVE_CIERRA
-                     | FOR PARENTESIS_ABRE declaracion expresion FIN_EXPRESION expresion PARENTESIS_CIERRA LLAVE_ABRE lista_sentencias LLAVE_CIERRA
-                     | SWITCH PARENTESIS_ABRE expresion PARENTESIS_CIERRA LLAVE_ABRE
-                       lista_case
-                       LLAVE_CIERRA
-;
-
-lista_case ::= CASE LITERAL_ENTERO DOS_PUNTOS lista_sentencias
-             | lista_case CASE LITERAL_ENTERO DOS_PUNTOS lista_sentencias
-             | DEFAULT DOS_PUNTOS lista_sentencias
-;
-
-expresion ::= expresion_aritmetica
-            | expresion_logica
-            | expresion_relacional
-;
-
-expresion_aritmetica ::= LITERAL_ENTERO
-                       | LITERAL_FLOTANTE
-                       | IDENTIFICADOR
-                       | expresion_aritmetica SUMA expresion_aritmetica
-                       | expresion_aritmetica RESTA expresion_aritmetica
-                       | expresion_aritmetica MULTIPLICACION expresion_aritmetica
-                       | expresion_aritmetica DIVISION expresion_aritmetica
-                       | expresion_aritmetica MODULO expresion_aritmetica
-                       | expresion_aritmetica POTENCIA expresion_aritmetica
-                       | PARENTESIS_ABRE expresion_aritmetica PARENTESIS_CIERRA
-;
-
-expresion_logica ::= LITERAL_BOOLEANO
-                   | IDENTIFICADOR
-                   | expresion_logica AND expresion_logica
-                   | expresion_logica OR expresion_logica
-                   | NOT expresion_logica
-;
-
-expresion_relacional ::= expresion_aritmetica MENOR expresion_aritmetica
-                       | expresion_aritmetica MENOR_IGUAL expresion_aritmetica
-                       | expresion_aritmetica MAYOR expresion_aritmetica
-                       | expresion_aritmetica MAYOR_IGUAL expresion_aritmetica
-                       | expresion_aritmetica IGUAL expresion_aritmetica
-                       | expresion_aritmetica DIFERENTE expresion_aritmetica
-;
+/* Definición de las reglas del lenguaje */
+program ::=
+    MAIN {:
+        System.out.println("Programa principal");
+    :}
+    | IF {:
+        System.out.println("Condicional");
+    :}
+    | ERROR {:
+        System.out.println("Error sintáctico en el programa.");
+    :}
+    | statement {:
+        System.out.println("Sentencia: " + $1);
+    :}
+    ;

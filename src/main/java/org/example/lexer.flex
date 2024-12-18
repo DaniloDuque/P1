@@ -26,13 +26,10 @@ import org.example.sym;
 
 // Definiciones regulares
 _verano_ = _verano_
-espacio         = [ \t\r\n\f]
-saltoLinea      = \r|\n|\r\n
-comentario = @.*\n
-comentarioMultilinea = \\_.*?_\/
-
-
-
+saltoLinea           = \r|\n|\r\n
+comentario           = @.*\n
+comentarioMultilinea = \\_(.*?)_\/
+espacio              = [ \t\r\n\f]
 
 // Tipos de datos
 rodolfo         = rodolfo
@@ -94,30 +91,28 @@ digito          = [0-9]
 identificador   = _[a-zA-Z]([a-zA-Z0-9_])*_
 entero          = {digito}+
 flotante        = {digito}+\.{digito}+
-caracter        = \'[^\'\\\n\r]\'
+caracter        = \'[^\'\\\n\r]*\'
 cadena          = \"[^\"]*\"
 coma            = ,
-
+booleano        = (true|false)
 
 %%
 
 //cosas para ignorar
 {comentario} { /* No token, just consume the comment */ }
 {comentarioMultilinea} {/* No token, just consume the comment */}
-{espacio} {/* No token, just consume the comment */}
 {coma} {
         symbolTable.addSymbol(yytext(), "COMA", yyline, yycolumn, null);
         return new Symbol(sym.COMA, yyline, yycolumn);
 }
+{espacio} {/* No token, just consume the comment */}
+
 
 
 {rodolfo}                {
     symbolTable.addSymbol(yytext(), "TIPO_ENTERO", yyline, yycolumn, null);
     return new Symbol(sym.TIPO_ENTERO, yyline, yycolumn);
 }
-
-
-
 
 {bromista}               {
     symbolTable.addSymbol(yytext(), "TIPO_FLOTANTE", yyline, yycolumn, null);
@@ -172,6 +167,10 @@ coma            = ,
 {envia}                  {
     symbolTable.addSymbol(yytext(), "RETURN", yyline, yycolumn, null);
     return new Symbol(sym.RETURN, yyline, yycolumn);
+}
+{sigue}                  {
+    symbolTable.addSymbol(yytext(), "DOS_PUNTOS", yyline, yycolumn, null);
+    return new Symbol(sym.DOS_PUNTOS, yyline, yycolumn);
 }
 
 /* --- Sección de operadores aritméticos --- */
@@ -272,7 +271,12 @@ coma            = ,
 
 {_verano_}               {
     symbolTable.addSymbol(yytext(), "MAIN", yyline, yycolumn, null);
-    return new Symbol(-1, yyline, yycolumn);
+    return new Symbol(sym.MAIN, yyline, yycolumn);
+}
+
+{escucha}                {
+    symbolTable.addSymbol(yytext(), "READ", yyline, yycolumn, null);
+    return new Symbol(sym.READ, yyline, yycolumn);
 }
 
 /* --- Sección de literales y valores --- */
@@ -289,6 +293,11 @@ coma            = ,
 {cadena}                 {
     symbolTable.addSymbol(yytext(), "LITERAL_STRING", yyline, yycolumn, yytext());
     return new Symbol(sym.LITERAL_STRING, yyline, yycolumn, yytext());
+}
+
+{booleano}               {
+    symbolTable.addSymbol(yytext(), "LITERAL_BOOLEANO", yyline, yycolumn, null);
+    return new Symbol(sym.LITERAL_BOOLEANO, yyline, yycolumn);
 }
 
 {abrecuento}             {

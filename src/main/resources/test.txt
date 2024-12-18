@@ -47,8 +47,7 @@ cierracuento
 envia 1 finregalo @hola
 cierracuento
 rodolfo _verano_ abreregalo cierraregalo abrecuento
-\
-_
+\_
 _/
 Comentario 1
 @comentario 2
