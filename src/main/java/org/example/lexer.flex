@@ -3,9 +3,11 @@ package org.example;
 import java_cup.runtime.*;
 import java.util.HashMap;
 import org.example.SymbolTable;
+import org.example.sym;
 
 %%
 %class Lexer
+%public
 %cup
 %line
 %column

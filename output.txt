@@ -1,0 +1,14 @@
+Tabla de símbolos
+Lexema: "x is not greater than 5" Tipo de token: LITERAL_STRING, Línea: 7, Columna: 17, Valor: "x is not greater than 5"
+Lexema: hada Tipo de token: IDENTIFICADOR, Línea: 5, Columna: 0
+Lexema: rodolfo Tipo de token: IDENTIFICADOR, Línea: 0, Columna: 0
+Lexema: abreregalo Tipo de token: IDENTIFICADOR, Línea: 7, Columna: 6
+Lexema: finregalo Tipo de token: IDENTIFICADOR, Línea: 0, Columna: 23
+Lexema: "x is greater than 5" Tipo de token: LITERAL_STRING, Línea: 3, Columna: 17, Valor: "x is greater than 5"
+Lexema: cierraregalo Tipo de token: IDENTIFICADOR, Línea: 7, Columna: 43
+Lexema: 5 Tipo de token: LITERAL_ENTERO, Línea: 1, Columna: 28, Valor: 5
+Lexema: narra Tipo de token: IDENTIFICADOR, Línea: 7, Columna: 0
+Lexema: entrega Tipo de token: IDENTIFICADOR, Línea: 0, Columna: 12
+Lexema: minstix Tipo de token: IDENTIFICADOR, Línea: 1, Columna: 20
+Lexema: abrecuento Tipo de token: IDENTIFICADOR, Línea: 6, Columna: 0
+Lexema: cierracuento Tipo de token: IDENTIFICADOR, Línea: 8, Columna: 

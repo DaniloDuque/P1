@@ -4,15 +4,19 @@ import org.example.SymbolTable;
 import org.example.sym;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         try {
-            // Cargar el archivo desde la carpeta resources
-            String path = Paths.get(Main.class.getClassLoader().getResource("test.txt").toURI()).toString();
+            Scanner sc = new Scanner(System.in);
+            String filename = sc.nextLine();
+            String path = Paths.get(Objects.requireNonNull(Main.class.getClassLoader().getResource(filename)).toURI()).toString();
             FileReader reader = new FileReader(path);
 
             // Crea una instancia del lexer generado por JFlex
@@ -24,12 +28,13 @@ public class Main {
             }
 
             // Imprime el contenido de la tabla de símbolos
-            System.out.println("Tabla de símbolos:");
+            FileWriter writer = new FileWriter("output.txt");
+            writer.write("Tabla de símbolos\n");
             for (Map.Entry<String, SymbolInfo> entry : lexer.getSymbolTable().getSymbols().entrySet()) {
                 String key = entry.getKey(); // Clave
                 SymbolInfo value = entry.getValue(); // Valor
                 // Aquí puedes trabajar con key y value
-                System.out.println("Clave: " + key + ", Valor: " + value);
+                writer.write("Lexema: " + key + " "+ value + "\n");
             }
 
         } catch (Exception e) {

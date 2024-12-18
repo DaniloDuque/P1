@@ -15,7 +15,7 @@ public class SymbolInfo {
 
     @Override
     public String toString() {
-        String str = "Tipo: " + type + ", Línea: " + line + ", Columna: " + column;
+        String str = "Tipo de token: " + type + ", Línea: " + line + ", Columna: " + column;
         if(value != null) {str += ", Valor: " + value;}
         return str;
     }
