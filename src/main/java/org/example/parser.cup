@@ -6,11 +6,11 @@ import org.example.sym;
 import org.example.SymbolInfo;
 
 parser code {: 
-    /* Código del parser, si lo deseas, puedes definir métodos auxiliares aquí */
+    /* Código del parser */
 :};
 
 action code {: 
-    /* Código de acción, si lo deseas, puedes definir acciones especiales aquí */
+    /* Código de acción */
 :};
 
 /* Terminales (tokens) que vienen del lexer */

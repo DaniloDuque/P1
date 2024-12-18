@@ -28,7 +28,7 @@ import org.example.sym;
 _verano_ = _verano_
 saltoLinea           = \r|\n|\r\n
 comentario           = @.*\n
-comentarioMultilinea = \\_(.*?)_\/
+comentarioMultilinea = "\\_"([^\\_]|\\n|\\r)*"_/"
 espacio              = [ \t\r\n\f]
 
 // Tipos de datos
@@ -88,7 +88,7 @@ finregalo       = finregalo
 // Definiciones para literales y otros elementos
 letra           = [a-zA-Z]
 digito          = [0-9]
-identificador   = _[a-zA-Z]([a-zA-Z0-9_])*_
+identificador   = _{letra}({letra}|{digito})*_
 entero          = {digito}+
 flotante        = {digito}+\.{digito}+
 caracter        = \'[^\n\r\'\\]*\'
@@ -106,8 +106,6 @@ booleano        = (true|false)
         return new Symbol(sym.COMA, yyline, yycolumn);
 }
 {espacio} {/* No token, just consume the comment */}
-
-
 
 {rodolfo}                {
     symbolTable.addSymbol(yytext(), "TIPO_ENTERO", yyline, yycolumn, null);
