@@ -85,7 +85,6 @@ cierraregalo Tipo de token: PARENTESIS_CIERRA, Línea: 56, Columna: 56
 1 Tipo de token: LITERAL_ENTERO, Línea: 52, Columna: 11, Valor: 1
 2 Tipo de token: LITERAL_ENTERO, Línea: 20, Columna: 25, Valor: 2
 2 Tipo de token: LITERAL_ENTERO, Línea: 41, Columna: 9, Valor: 2
-2 Tipo de token: LITERAL_ENTERO, Línea: 53, Columna: 12, Valor: 2
 12.2 Tipo de token: LITERAL_FLOTANTE, Línea: 25, Columna: 35, Valor: 12.2
 narra Tipo de token: PRINT, Línea: 55, Columna: 0
 abreempaque Tipo de token: CORCHETE_ABRE, Línea: 5, Columna: 13
@@ -147,11 +146,4 @@ _str1_ Tipo de token: IDENTIFICADOR, Línea: 3, Columna: 7
 mary Tipo de token: IGUAL, Línea: 31, Columna: 22
 _miChar_ Tipo de token: IDENTIFICADOR, Línea: 2, Columna: 7
 _lit_ Tipo de token: IDENTIFICADOR, Línea: 5, Columna: 25
-_lit_ Tipo de token: IDENTIFICADOR, Línea: 9, Columna: 14
-varios Tipo de token: SWITCH, Línea: 39, Columna: 0
-_s1_ Tipo de token: IDENTIFICADOR, Línea: 54, Columna: 19
-_x22_ Tipo de token: IDENTIFICADOR, Línea: 1, Columna: 35
-_x22_ Tipo de token: IDENTIFICADOR, Línea: 1, Columna: 50
-_miFunc_ Tipo de token: IDENTIFICADOR, Línea: 56, Columna: 18
-_ch_ Tipo de token: IDENTIFICADOR, Línea: 39, Columna: 18
-gaspar Tipo de token: OR, Línea: 25, Columna: 
+_lit_ Tipo de

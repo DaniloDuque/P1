@@ -28,8 +28,11 @@ import org.example.sym;
 _verano_ = _verano_
 espacio         = [ \t\r\n\f]
 saltoLinea      = \r|\n|\r\n
-comentario = @[^\n]*
-comentarioMultilinea = \\_[^_]*_\/
+comentario = @.*\n
+comentarioMultilinea = \\_.*?_\/
+
+
+
 
 // Tipos de datos
 rodolfo         = rodolfo
@@ -93,13 +96,29 @@ entero          = {digito}+
 flotante        = {digito}+\.{digito}+
 caracter        = \'[^\'\\\n\r]\'
 cadena          = \"[^\"]*\"
+coma            = ,
+
 
 %%
+
+//cosas para ignorar
+{comentario} { /* No token, just consume the comment */ }
+{comentarioMultilinea} {/* No token, just consume the comment */}
+{espacio} {/* No token, just consume the comment */}
+{coma} {
+        symbolTable.addSymbol(yytext(), "COMA", yyline, yycolumn, null);
+        return new Symbol(sym.COMA, yyline, yycolumn);
+}
+
 
 {rodolfo}                {
     symbolTable.addSymbol(yytext(), "TIPO_ENTERO", yyline, yycolumn, null);
     return new Symbol(sym.TIPO_ENTERO, yyline, yycolumn);
 }
+
+
+
+
 {bromista}               {
     symbolTable.addSymbol(yytext(), "TIPO_FLOTANTE", yyline, yycolumn, null);
     return new Symbol(sym.TIPO_FLOTANTE, yyline, yycolumn);
