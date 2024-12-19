@@ -850,6 +850,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           case 1:
             { System.err.println("Error léxico: Carácter no reconocido '" + yytext() +
                        "' en línea " + (yyline+1) + ", columna " + (yycolumn+1));
+    symbolTable.addSymbol(yytext(), "ERROR", yyline, yycolumn, null);
     return new Symbol(sym.ERROR, yyline, yycolumn, yytext());
             }
           // fall through

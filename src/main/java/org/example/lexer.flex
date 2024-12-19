@@ -107,6 +107,8 @@ booleano        = (true|false)
 }
 {espacio} {/* No token, just consume the comment */}
 
+
+// Tipos de datos
 {rodolfo}                {
     symbolTable.addSymbol(yytext(), "TIPO_ENTERO", yyline, yycolumn, null);
     return new Symbol(sym.TIPO_ENTERO, yyline, yycolumn);
@@ -338,5 +340,6 @@ booleano        = (true|false)
 [^]                      {
     System.err.println("Error léxico: Carácter no reconocido '" + yytext() +
                        "' en línea " + (yyline+1) + ", columna " + (yycolumn+1));
+    symbolTable.addSymbol(yytext(), "ERROR", yyline, yycolumn, null);
     return new Symbol(sym.ERROR, yyline, yycolumn, yytext());
 }

@@ -2,6 +2,7 @@ package org.example;
 
 import java.util.Stack;
 
+// Por el momento no se usa
 public class ScopedSymbolTable {
 
     private Stack<SymbolTable> scopes;
