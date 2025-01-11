@@ -1,7 +1,6 @@
 import org.example.Lexer;
 import org.example.SymbolInfo;
 import org.example.SymbolTable;
-import org.example.sym;
 
 import java.io.FileReader;
 import java.io.FileWriter;

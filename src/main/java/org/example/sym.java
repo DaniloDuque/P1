@@ -8,115 +8,113 @@ package org.example;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int LITERAL_ENTERO = 41;
-  public static final int LITERAL_FLOTANTE = 42;
-  public static final int FIN_EXPRESION = 50;
-  public static final int PARENTESIS_CIERRA = 36;
-  public static final int CASE = 12;
-  public static final int DIFERENTE = 31;
-  public static final int RESTA = 17;
-  public static final int DOS_PUNTOS = 52;
-  public static final int CONTINUE = 25;
-  public static final int TIPO_STRING = 6;
-  public static final int FOR = 10;
-  public static final int IDENTIFICADOR = 44;
-  public static final int NOT = 34;
-  public static final int AND = 32;
-  public static final int IGUAL = 30;
-  public static final int OR = 33;
-  public static final int CORCHETE_CIERRA = 39;
-  public static final int INCREMENTO = 23;
-  public static final int SUMA = 16;
-  public static final int MAIN = 40;
-  public static final int IF = 7;
+  public static final int STRING_LITERAL = 43;
+  public static final int HISTORIA = 19;
+  public static final int CHAR_LITERAL = 44;
+  public static final int MINSTIX = 33;
+  public static final int UMINUS = 40;
+  public static final int FINREGALO = 5;
+  public static final int ULTIMO = 20;
+  public static final int HADA = 15;
+  public static final int VARIOS = 18;
+  public static final int CIERRACUENTO = 4;
+  public static final int REYES = 25;
+  public static final int DUENDE = 17;
+  public static final int ENTREGA = 10;
+  public static final int CIERRAREGALO = 7;
+  public static final int ABREEMPAQUE = 8;
+  public static final int RODOLFO = 47;
+  public static final int BROMISTA = 48;
+  public static final int CIERRAEMPAQUE = 9;
+  public static final int NAVIDAD = 23;
+  public static final int MARY = 35;
+  public static final int NARRA = 21;
+  public static final int MAIN = 2;
+  public static final int ENVUELVE = 16;
+  public static final int COMETA = 51;
+  public static final int UPATREE = 34;
+  public static final int GRINCH = 30;
   public static final int EOF = 0;
-  public static final int RETURN = 15;
-  public static final int TIPO_ENTERO = 2;
-  public static final int DECREMENTO = 24;
+  public static final int CORTA = 12;
+  public static final int MELCHOR = 37;
+  public static final int EVERGREEN = 32;
+  public static final int TRUENO = 49;
   public static final int error = 1;
-  public static final int COMA = 46;
-  public static final int TIPO_CHAR = 5;
-  public static final int LITERAL_CHAR = 53;
-  public static final int MODULO = 20;
-  public static final int MENOR = 26;
-  public static final int BREAK = 14;
-  public static final int LLAVE_ABRE = 47;
-  public static final int ERROR = 49;
-  public static final int ASIGNACION = 22;
-  public static final int SWITCH = 11;
-  public static final int MAYOR = 28;
-  public static final int POTENCIA = 21;
-  public static final int CORCHETE_ABRE = 38;
-  public static final int ELSE = 8;
-  public static final int READ = 51;
-  public static final int LITERAL_STRING = 43;
-  public static final int WHILE = 9;
-  public static final int DEFAULT = 13;
-  public static final int MAYOR_IGUAL = 29;
-  public static final int LLAVE_CIERRA = 48;
-  public static final int TIPO_BOOLEANO = 4;
-  public static final int MENOR_IGUAL = 27;
-  public static final int DIVISION = 19;
-  public static final int LITERAL_BOOLEANO = 45;
-  public static final int PARENTESIS_ABRE = 35;
-  public static final int PRINT = 37;
-  public static final int MULTIPLICACION = 18;
-  public static final int TIPO_FLOTANTE = 3;
+  public static final int COMA = 52;
+  public static final int INTERCAMBIO = 24;
+  public static final int GASPAR = 38;
+  public static final int SIGUE = 11;
+  public static final int ABRECUENTO = 3;
+  public static final int NOCHEBUENA = 26;
+  public static final int SNOWBALL = 31;
+  public static final int ESCUCHA = 22;
+  public static final int ABREREGALO = 6;
+  public static final int CUPIDO = 50;
+  public static final int ENVIA = 13;
+  public static final int ADVIENTO = 28;
+  public static final int MAGOS = 27;
+  public static final int BALTAZAR = 39;
+  public static final int ELFO = 14;
+  public static final int FLOAT_LITERAL = 42;
+  public static final int QUIEN = 29;
+  public static final int BOOL_LITERAL = 45;
+  public static final int INT_LITERAL = 41;
+  public static final int OPENSLAE = 36;
+  public static final int IDENTIFIER = 46;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
-  "TIPO_ENTERO",
-  "TIPO_FLOTANTE",
-  "TIPO_BOOLEANO",
-  "TIPO_CHAR",
-  "TIPO_STRING",
-  "IF",
-  "ELSE",
-  "WHILE",
-  "FOR",
-  "SWITCH",
-  "CASE",
-  "DEFAULT",
-  "BREAK",
-  "RETURN",
-  "SUMA",
-  "RESTA",
-  "MULTIPLICACION",
-  "DIVISION",
-  "MODULO",
-  "POTENCIA",
-  "ASIGNACION",
-  "INCREMENTO",
-  "DECREMENTO",
-  "CONTINUE",
-  "MENOR",
-  "MENOR_IGUAL",
-  "MAYOR",
-  "MAYOR_IGUAL",
-  "IGUAL",
-  "DIFERENTE",
-  "AND",
-  "OR",
-  "NOT",
-  "PARENTESIS_ABRE",
-  "PARENTESIS_CIERRA",
-  "PRINT",
-  "CORCHETE_ABRE",
-  "CORCHETE_CIERRA",
   "MAIN",
-  "LITERAL_ENTERO",
-  "LITERAL_FLOTANTE",
-  "LITERAL_STRING",
-  "IDENTIFICADOR",
-  "LITERAL_BOOLEANO",
-  "COMA",
-  "LLAVE_ABRE",
-  "LLAVE_CIERRA",
-  "ERROR",
-  "FIN_EXPRESION",
-  "READ",
-  "DOS_PUNTOS",
-  "LITERAL_CHAR"
+  "ABRECUENTO",
+  "CIERRACUENTO",
+  "FINREGALO",
+  "ABREREGALO",
+  "CIERRAREGALO",
+  "ABREEMPAQUE",
+  "CIERRAEMPAQUE",
+  "ENTREGA",
+  "SIGUE",
+  "CORTA",
+  "ENVIA",
+  "ELFO",
+  "HADA",
+  "ENVUELVE",
+  "DUENDE",
+  "VARIOS",
+  "HISTORIA",
+  "ULTIMO",
+  "NARRA",
+  "ESCUCHA",
+  "NAVIDAD",
+  "INTERCAMBIO",
+  "REYES",
+  "NOCHEBUENA",
+  "MAGOS",
+  "ADVIENTO",
+  "QUIEN",
+  "GRINCH",
+  "SNOWBALL",
+  "EVERGREEN",
+  "MINSTIX",
+  "UPATREE",
+  "MARY",
+  "OPENSLAE",
+  "MELCHOR",
+  "GASPAR",
+  "BALTAZAR",
+  "UMINUS",
+  "INT_LITERAL",
+  "FLOAT_LITERAL",
+  "STRING_LITERAL",
+  "CHAR_LITERAL",
+  "BOOL_LITERAL",
+  "IDENTIFIER",
+  "RODOLFO",
+  "BROMISTA",
+  "TRUENO",
+  "CUPIDO",
+  "COMETA",
+  "COMA"
   };
 }
 

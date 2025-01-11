@@ -1,49 +1,180 @@
+/* CUP specification for the compiler project */
 package org.example;
 
-// Importaciones necesarias
 import java_cup.runtime.*;
-import org.example.sym;
-import org.example.SymbolInfo;
 
-parser code {: 
-    /* Código del parser */
-:};
+/* Terminals (tokens from the lexer) */
+terminal            MAIN, ABRECUENTO, CIERRACUENTO, FINREGALO;
+terminal            ABREREGALO, CIERRAREGALO, ABREEMPAQUE, CIERRAEMPAQUE;
+terminal            ENTREGA, SIGUE, CORTA, ENVIA;
+terminal            ELFO, HADA, ENVUELVE, DUENDE, VARIOS, HISTORIA, ULTIMO;
+terminal            NARRA, ESCUCHA;
+terminal            NAVIDAD, INTERCAMBIO, REYES, NOCHEBUENA, MAGOS, ADVIENTO;
+terminal            QUIEN, GRINCH;
+terminal            SNOWBALL, EVERGREEN, MINSTIX, UPATREE, MARY, OPENSLAE;
+terminal            MELCHOR, GASPAR, BALTAZAR;
+terminal            UMINUS;
+terminal Integer    INT_LITERAL;
+terminal Float      FLOAT_LITERAL;
+terminal String     STRING_LITERAL;
+terminal Character  CHAR_LITERAL;
+terminal Boolean    BOOL_LITERAL;
+terminal String     IDENTIFIER;
+terminal            RODOLFO, BROMISTA, TRUENO, CUPIDO, COMETA;
+terminal            COMA;
 
-action code {: 
-    /* Código de acción */
-:};
+/* Non-terminals */
+non terminal Program                 program;
+non terminal FunctionDeclaration    function_declaration;
+non terminal MainFunction           main_function;
+non terminal StatementList          statement_list;
+non terminal Statement              statement;
+non terminal Expression             expression;
+non terminal Block                  block;
+non terminal ParameterList          parameter_list;
+non terminal Parameter              parameter;
+non terminal Type                   type;
+non terminal BaseType               base_type;
+non terminal VariableDeclaration    var_declaration;
+non terminal AssignmentStatement    assignment;
+non terminal IfStatement            if_statement;
+non terminal WhileStatement         while_statement;
+non terminal ForStatement           for_statement;
+non terminal SwitchStatement        switch_statement;
+non terminal CaseList               case_list;
+non terminal CaseStatement          case_statement;
+non terminal Expression             condition;
+non terminal ExpressionList         expression_list;
+non terminal FunctionDeclarationList function_declaration_list;
 
-/* Terminales (tokens) que vienen del lexer */
-terminal TIPO_ENTERO, TIPO_FLOTANTE, TIPO_BOOLEANO, TIPO_CHAR, TIPO_STRING;
-terminal IF, ELSE, WHILE, FOR, SWITCH, CASE, DEFAULT, BREAK, RETURN;
-terminal SUMA, RESTA, MULTIPLICACION, DIVISION, MODULO, POTENCIA;
-terminal ASIGNACION, INCREMENTO, DECREMENTO, CONTINUE;
-terminal MENOR, MENOR_IGUAL, MAYOR, MAYOR_IGUAL, IGUAL, DIFERENTE;
-terminal AND, OR, NOT, PARENTESIS_ABRE, PARENTESIS_CIERRA;
-terminal PRINT, CORCHETE_ABRE, CORCHETE_CIERRA, MAIN;
-terminal LITERAL_ENTERO, LITERAL_FLOTANTE, LITERAL_STRING, IDENTIFICADOR, LITERAL_BOOLEANO;
-terminal COMA, LLAVE_ABRE, LLAVE_CIERRA;
-terminal ERROR, FIN_EXPRESION, READ, DOS_PUNTOS, LITERAL_CHAR;  // Terminal para manejar errores léxicos o sintácticos
+/* Precedence declarations */
+precedence left MELCHOR, GASPAR;
+precedence right BALTAZAR;
+precedence left MARY, OPENSLAE;
+precedence left SNOWBALL, EVERGREEN, MINSTIX, UPATREE;
+precedence left NAVIDAD, INTERCAMBIO;
+precedence left NOCHEBUENA, REYES, MAGOS;
+precedence left ADVIENTO;
+precedence right UMINUS;
+precedence left QUIEN, GRINCH;
 
-/* No terminales que se usarán en las reglas de producción */
-non terminal program;
-non terminal statement;
+/* The grammar rules */
+program ::= function_declaration_list:fdl main_function:mf
+         | main_function:mf
+         ;
 
-/* Regla de inicio */
-start with program;
+function_declaration_list ::= function_declaration:fd
+                          | function_declaration_list:fdl function_declaration:fd
+                          ;
 
-/* Definición de las reglas del lenguaje */
-program ::=
-    MAIN {:
-        System.out.println("Programa principal");
-    :}
-    | IF {:
-        System.out.println("Condicional");
-    :}
-    | ERROR {:
-        System.out.println("Error sintáctico en el programa.");
-    :}
-    | statement {:
-        System.out.println("Sentencia: " + $1);
-    :}
-    ;
+function_declaration ::= type:t IDENTIFIER:id ABREREGALO parameter_list:pl CIERRAREGALO block:b
+                      | type:t IDENTIFIER:id ABREREGALO CIERRAREGALO block:b
+                      ;
+
+main_function ::= MAIN block:b
+                ;
+
+parameter_list ::= parameter:p
+                | parameter_list:pl COMA parameter:p
+                ;
+
+parameter ::= type:t IDENTIFIER:id
+            ;
+
+type ::= base_type:bt
+       | base_type:bt ABREEMPAQUE INT_LITERAL:size CIERRAEMPAQUE
+       ;
+
+base_type ::= RODOLFO
+            | BROMISTA
+            | TRUENO
+            | CUPIDO
+            | COMETA
+            ;
+
+block ::= ABRECUENTO statement_list:sl CIERRACUENTO
+        | ABRECUENTO CIERRACUENTO
+        ;
+
+statement_list ::= statement:s
+                | statement_list:sl statement:s
+                ;
+
+statement ::= var_declaration:vd FINREGALO
+           | assignment:a FINREGALO
+           | if_statement:is
+           | while_statement:ws
+           | for_statement:fs
+           | switch_statement:ss
+           | CORTA FINREGALO
+           | ENVIA expression:e FINREGALO
+           | expression:e FINREGALO
+           | NARRA expression:e FINREGALO
+           | ESCUCHA IDENTIFIER:id FINREGALO
+           ;
+
+var_declaration ::= type:t IDENTIFIER:id
+                 | type:t IDENTIFIER:id ENTREGA expression:e
+                 ;
+
+assignment ::= IDENTIFIER:id ENTREGA expression:e
+             | IDENTIFIER:id ABREEMPAQUE expression:idx CIERRAEMPAQUE ENTREGA expression:e
+             ;
+
+expression ::= INT_LITERAL:il
+             | FLOAT_LITERAL:fl
+             | STRING_LITERAL:sl
+             | CHAR_LITERAL:cl
+             | BOOL_LITERAL:bl
+             | IDENTIFIER:id
+             | IDENTIFIER:id ABREEMPAQUE expression:idx CIERRAEMPAQUE
+             | expression:e1 NAVIDAD expression:e2
+             | expression:e1 INTERCAMBIO expression:e2
+             | expression:e1 REYES expression:e2
+             | expression:e1 NOCHEBUENA expression:e2
+             | expression:e1 MAGOS expression:e2
+             | expression:e1 ADVIENTO expression:e2
+             | INTERCAMBIO expression:e              %prec UMINUS
+             | expression:e1 QUIEN
+             | expression:e1 GRINCH
+             | expression:e1 SNOWBALL expression:e2
+             | expression:e1 EVERGREEN expression:e2
+             | expression:e1 MINSTIX expression:e2
+             | expression:e1 UPATREE expression:e2
+             | expression:e1 MARY expression:e2
+             | expression:e1 OPENSLAE expression:e2
+             | expression:e1 MELCHOR expression:e2
+             | expression:e1 GASPAR expression:e2
+             | BALTAZAR expression:e
+             | ABREREGALO expression:e CIERRAREGALO
+             | IDENTIFIER:id ABREREGALO expression_list:el CIERRAREGALO
+             | IDENTIFIER:id ABREREGALO CIERRAREGALO
+             ;
+
+expression_list ::= expression:e
+                 | expression_list:el COMA expression:e
+                 ;
+
+if_statement ::= ELFO ABREREGALO condition:c CIERRAREGALO block:b
+               | ELFO ABREREGALO condition:c CIERRAREGALO block:b1 HADA block:b2
+               ;
+
+while_statement ::= ENVUELVE ABREREGALO condition:c CIERRAREGALO block:b
+                 ;
+
+for_statement ::= DUENDE ABREREGALO statement:s1 FINREGALO condition:c FINREGALO expression:e CIERRAREGALO block:b
+                ;
+
+switch_statement ::= VARIOS ABREREGALO expression:e CIERRAREGALO ABRECUENTO case_list:cl CIERRACUENTO
+                  | VARIOS ABREREGALO expression:e CIERRAREGALO ABRECUENTO case_list:cl ULTIMO SIGUE statement_list:sl CIERRACUENTO
+                  ;
+
+case_list ::= case_statement:cs
+            | case_list:cl case_statement:cs
+            ;
+
+case_statement ::= HISTORIA expression:e SIGUE statement_list:sl
+                ;
+
+condition ::= expression:e
+           ;
