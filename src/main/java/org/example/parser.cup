@@ -4,7 +4,7 @@ package org.example;
 import java_cup.runtime.*;
 
 /* Terminals (tokens from the lexer) */
-terminal            MAIN, ABRECUENTO, CIERRACUENTO, FINREGALO;
+terminal            MAIN, ABRECUENTO, CIERRACUENTO, FINREGALO, ERROR;
 terminal            ABREREGALO, CIERRAREGALO, ABREEMPAQUE, CIERRAEMPAQUE;
 terminal            ENTREGA, SIGUE, CORTA, ENVIA;
 terminal            ELFO, HADA, ENVUELVE, DUENDE, VARIOS, HISTORIA, ULTIMO;
@@ -14,38 +14,75 @@ terminal            QUIEN, GRINCH;
 terminal            SNOWBALL, EVERGREEN, MINSTIX, UPATREE, MARY, OPENSLAE;
 terminal            MELCHOR, GASPAR, BALTAZAR;
 terminal            UMINUS;
-terminal Integer    INT_LITERAL;
-terminal Float      FLOAT_LITERAL;
-terminal String     STRING_LITERAL;
-terminal Character  CHAR_LITERAL;
-terminal Boolean    BOOL_LITERAL;
-terminal String     IDENTIFIER;
+terminal Integer    LITERAL_ENTERO;
+terminal Float      LITERAL_FLOTANTE;
+terminal String     LITERAL_STRING;
+terminal Character  LITERAL_CHAR;
+terminal Boolean    LITERAL_BOOLEANO;
+terminal String     IDENTIFICADOR;
 terminal            RODOLFO, BROMISTA, TRUENO, CUPIDO, COMETA;
 terminal            COMA;
 
 /* Non-terminals */
-non terminal Program                 program;
-non terminal FunctionDeclaration    function_declaration;
-non terminal MainFunction           main_function;
-non terminal StatementList          statement_list;
-non terminal Statement              statement;
-non terminal Expression             expression;
-non terminal Block                  block;
-non terminal ParameterList          parameter_list;
-non terminal Parameter              parameter;
-non terminal Type                   type;
-non terminal BaseType               base_type;
-non terminal VariableDeclaration    var_declaration;
-non terminal AssignmentStatement    assignment;
-non terminal IfStatement            if_statement;
-non terminal WhileStatement         while_statement;
-non terminal ForStatement           for_statement;
-non terminal SwitchStatement        switch_statement;
-non terminal CaseList               case_list;
-non terminal CaseStatement          case_statement;
-non terminal Expression             condition;
-non terminal ExpressionList         expression_list;
-non terminal FunctionDeclarationList function_declaration_list;
+non terminal program;
+non terminal function_declaration;
+non terminal main_function;
+non terminal statement_list;
+non terminal statement;
+non terminal expression;
+non terminal block;
+non terminal parameter_list;
+non terminal parameter;
+non terminal type;
+non terminal base_type;
+non terminal var_declaration;
+terminal ASIGNACION;
+terminal IF;
+terminal ELSE;
+terminal IGUAL;
+terminal BREAK;
+terminal RETURN;
+terminal MODULO;
+terminal PRINT;
+terminal INCREMENTO;
+terminal DIVISION;
+terminal DOS_PUNTOS;
+terminal TIPO_STRING;
+terminal TIPO_CHAR;
+terminal WHILE;
+terminal FOR;
+terminal SWITCH;
+terminal DECREMENTO;
+terminal TIPO_BOOLEANO;
+terminal DEFAULT;
+non terminal case_list;
+non terminal case_statement;
+non terminal condition;
+non terminal expression_list;
+terminal READ;
+terminal AND;
+terminal OR;
+terminal MAYOR;
+terminal SUMA;
+terminal TIPO_ENTERO;
+terminal MAYOR_IGUAL;
+terminal POTENCIA;
+terminal NOT;
+terminal TIPO_FLOTANTE;
+terminal CASE;
+terminal DIFERENTE;
+terminal MENOR;
+terminal MENOR_IGUAL;
+terminal FIN_EXPRESION;
+terminal LLAVE_ABRE;
+terminal PARENTESIS_ABRE;
+terminal MULTIPLICACION;
+terminal CORCHETE_ABRE;
+terminal RESTA;
+terminal LLAVE_CIERRA;
+terminal PARENTESIS_CIERRA;
+terminal CORCHETE_CIERRA;
+terminal function_declaration_list;
 
 /* Precedence declarations */
 precedence left MELCHOR, GASPAR;
@@ -67,8 +104,8 @@ function_declaration_list ::= function_declaration:fd
                           | function_declaration_list:fdl function_declaration:fd
                           ;
 
-function_declaration ::= type:t IDENTIFIER:id ABREREGALO parameter_list:pl CIERRAREGALO block:b
-                      | type:t IDENTIFIER:id ABREREGALO CIERRAREGALO block:b
+function_declaration ::= type:t IDENTIFICADOR:id ABREREGALO parameter_list:pl CIERRAREGALO block:b
+                      | type:t IDENTIFICADOR:id ABREREGALO CIERRAREGALO block:b
                       ;
 
 main_function ::= MAIN block:b
@@ -78,11 +115,11 @@ parameter_list ::= parameter:p
                 | parameter_list:pl COMA parameter:p
                 ;
 
-parameter ::= type:t IDENTIFIER:id
+parameter ::= type:t IDENTIFICADOR:id
             ;
 
 type ::= base_type:bt
-       | base_type:bt ABREEMPAQUE INT_LITERAL:size CIERRAEMPAQUE
+       | base_type:bt ABREEMPAQUE LITERAL_ENTERO:size CIERRAEMPAQUE
        ;
 
 base_type ::= RODOLFO
@@ -101,33 +138,33 @@ statement_list ::= statement:s
                 ;
 
 statement ::= var_declaration:vd FINREGALO
-           | assignment:a FINREGALO
-           | if_statement:is
-           | while_statement:ws
-           | for_statement:fs
-           | switch_statement:ss
+           | ASIGNACION:a FINREGALO
+           | IF:is
+           | WHILE:ws
+           | FOR:fs
+
            | CORTA FINREGALO
            | ENVIA expression:e FINREGALO
            | expression:e FINREGALO
            | NARRA expression:e FINREGALO
-           | ESCUCHA IDENTIFIER:id FINREGALO
+           | ESCUCHA IDENTIFICADOR:id FINREGALO
            ;
 
-var_declaration ::= type:t IDENTIFIER:id
-                 | type:t IDENTIFIER:id ENTREGA expression:e
+var_declaration ::= type:t IDENTIFICADOR:id
+                 | type:t IDENTIFICADOR:id ENTREGA expression:e
                  ;
 
-assignment ::= IDENTIFIER:id ENTREGA expression:e
-             | IDENTIFIER:id ABREEMPAQUE expression:idx CIERRAEMPAQUE ENTREGA expression:e
+ASIGNACION ::= IDENTIFICADOR:id ENTREGA expression:e
+             | IDENTIFICADOR:id ABREEMPAQUE expression:idx CIERRAEMPAQUE ENTREGA expression:e
              ;
 
-expression ::= INT_LITERAL:il
-             | FLOAT_LITERAL:fl
-             | STRING_LITERAL:sl
-             | CHAR_LITERAL:cl
-             | BOOL_LITERAL:bl
-             | IDENTIFIER:id
-             | IDENTIFIER:id ABREEMPAQUE expression:idx CIERRAEMPAQUE
+expression ::= LITERAL_ENTERO:il
+             | LITERAL_FLOTANTE:fl
+             | LITERAL_STRING:sl
+             | LITERAL_CHAR:cl
+             | LITERAL_BOOLEANO:bl
+             | IDENTIFICADOR:id
+             | IDENTIFICADOR:id ABREEMPAQUE expression:idx CIERRAEMPAQUE
              | expression:e1 NAVIDAD expression:e2
              | expression:e1 INTERCAMBIO expression:e2
              | expression:e1 REYES expression:e2
@@ -147,27 +184,23 @@ expression ::= INT_LITERAL:il
              | expression:e1 GASPAR expression:e2
              | BALTAZAR expression:e
              | ABREREGALO expression:e CIERRAREGALO
-             | IDENTIFIER:id ABREREGALO expression_list:el CIERRAREGALO
-             | IDENTIFIER:id ABREREGALO CIERRAREGALO
+             | IDENTIFICADOR:id ABREREGALO expression_list:el CIERRAREGALO
+             | IDENTIFICADOR:id ABREREGALO CIERRAREGALO
              ;
 
 expression_list ::= expression:e
                  | expression_list:el COMA expression:e
                  ;
 
-if_statement ::= ELFO ABREREGALO condition:c CIERRAREGALO block:b
+IF ::= ELFO ABREREGALO condition:c CIERRAREGALO block:b
                | ELFO ABREREGALO condition:c CIERRAREGALO block:b1 HADA block:b2
                ;
 
-while_statement ::= ENVUELVE ABREREGALO condition:c CIERRAREGALO block:b
+WHILE ::= ENVUELVE ABREREGALO condition:c CIERRAREGALO block:b
                  ;
 
-for_statement ::= DUENDE ABREREGALO statement:s1 FINREGALO condition:c FINREGALO expression:e CIERRAREGALO block:b
+FOR ::= DUENDE ABREREGALO statement:s1 FINREGALO condition:c FINREGALO expression:e CIERRAREGALO block:b
                 ;
-
-switch_statement ::= VARIOS ABREREGALO expression:e CIERRAREGALO ABRECUENTO case_list:cl CIERRACUENTO
-                  | VARIOS ABREREGALO expression:e CIERRAREGALO ABRECUENTO case_list:cl ULTIMO SIGUE statement_list:sl CIERRACUENTO
-                  ;
 
 case_list ::= case_statement:cs
             | case_list:cl case_statement:cs

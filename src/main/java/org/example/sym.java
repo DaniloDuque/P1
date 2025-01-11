@@ -8,59 +8,103 @@ package org.example;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int STRING_LITERAL = 43;
-  public static final int HISTORIA = 19;
-  public static final int CHAR_LITERAL = 44;
-  public static final int MINSTIX = 33;
-  public static final int UMINUS = 40;
-  public static final int FINREGALO = 5;
-  public static final int ULTIMO = 20;
-  public static final int HADA = 15;
-  public static final int VARIOS = 18;
-  public static final int CIERRACUENTO = 4;
-  public static final int REYES = 25;
-  public static final int DUENDE = 17;
-  public static final int ENTREGA = 10;
-  public static final int CIERRAREGALO = 7;
-  public static final int ABREEMPAQUE = 8;
-  public static final int RODOLFO = 47;
-  public static final int BROMISTA = 48;
-  public static final int CIERRAEMPAQUE = 9;
-  public static final int NAVIDAD = 23;
-  public static final int MARY = 35;
-  public static final int NARRA = 21;
-  public static final int MAIN = 2;
-  public static final int ENVUELVE = 16;
-  public static final int COMETA = 51;
-  public static final int UPATREE = 34;
-  public static final int GRINCH = 30;
-  public static final int EOF = 0;
-  public static final int CORTA = 12;
-  public static final int MELCHOR = 37;
-  public static final int EVERGREEN = 32;
-  public static final int TRUENO = 49;
-  public static final int error = 1;
-  public static final int COMA = 52;
-  public static final int INTERCAMBIO = 24;
-  public static final int GASPAR = 38;
-  public static final int SIGUE = 11;
+  public static final int IDENTIFICADOR = 47;
+  public static final int FIN_EXPRESION = 87;
   public static final int ABRECUENTO = 3;
-  public static final int NOCHEBUENA = 26;
-  public static final int SNOWBALL = 31;
-  public static final int ESCUCHA = 22;
-  public static final int ABREREGALO = 6;
-  public static final int CUPIDO = 50;
-  public static final int ENVIA = 13;
-  public static final int ADVIENTO = 28;
-  public static final int MAGOS = 27;
-  public static final int BALTAZAR = 39;
-  public static final int ELFO = 14;
-  public static final int FLOAT_LITERAL = 42;
-  public static final int QUIEN = 29;
-  public static final int BOOL_LITERAL = 45;
-  public static final int INT_LITERAL = 41;
-  public static final int OPENSLAE = 36;
-  public static final int IDENTIFIER = 46;
+  public static final int DIVISION = 63;
+  public static final int HISTORIA = 20;
+  public static final int MENOR_IGUAL = 86;
+  public static final int PARENTESIS_ABRE = 89;
+  public static final int QUIEN = 30;
+  public static final int READ = 73;
+  public static final int NOCHEBUENA = 27;
+  public static final int TIPO_STRING = 65;
+  public static final int UPATREE = 35;
+  public static final int PARENTESIS_CIERRA = 94;
+  public static final int POTENCIA = 80;
+  public static final int ADVIENTO = 29;
+  public static final int ESCUCHA = 23;
+  public static final int TIPO_CHAR = 66;
+  public static final int BALTAZAR = 40;
+  public static final int MAYOR = 76;
+  public static final int ENVIA = 14;
+  public static final int ABREREGALO = 7;
+  public static final int CIERRAEMPAQUE = 10;
+  public static final int ENTREGA = 11;
+  public static final int DIFERENTE = 84;
+  public static final int MARY = 36;
+  public static final int LITERAL_FLOTANTE = 43;
+  public static final int MINSTIX = 34;
+  public static final int CIERRACUENTO = 4;
+  public static final int CORCHETE_ABRE = 91;
+  public static final int CIERRAREGALO = 8;
+  public static final int NOT = 81;
+  public static final int ERROR = 6;
+  public static final int BROMISTA = 49;
+  public static final int DOS_PUNTOS = 64;
+  public static final int LITERAL_STRING = 44;
+  public static final int INCREMENTO = 62;
+  public static final int COMA = 53;
+  public static final int LLAVE_CIERRA = 93;
+  public static final int MODULO = 60;
+  public static final int TIPO_BOOLEANO = 71;
+  public static final int HADA = 16;
+  public static final int IGUAL = 57;
+  public static final int WHILE = 67;
+  public static final int OPENSLAE = 37;
+  public static final int COMETA = 52;
+  public static final int TIPO_ENTERO = 78;
+  public static final int function_declaration_list = 96;
+  public static final int SWITCH = 69;
+  public static final int FOR = 68;
+  public static final int DECREMENTO = 70;
+  public static final int RETURN = 59;
+  public static final int GASPAR = 39;
+  public static final int ELSE = 56;
+  public static final int MENOR = 85;
+  public static final int BREAK = 58;
+  public static final int TRUENO = 50;
+  public static final int LLAVE_ABRE = 88;
+  public static final int DUENDE = 18;
+  public static final int ELFO = 15;
+  public static final int EOF = 0;
+  public static final int DEFAULT = 72;
+  public static final int SUMA = 77;
+  public static final int PRINT = 61;
+  public static final int MAGOS = 28;
+  public static final int MAIN = 2;
+  public static final int SNOWBALL = 32;
+  public static final int VARIOS = 19;
+  public static final int OR = 75;
+  public static final int error = 1;
+  public static final int LITERAL_BOOLEANO = 46;
+  public static final int LITERAL_ENTERO = 42;
+  public static final int RESTA = 92;
+  public static final int NARRA = 22;
+  public static final int ENVUELVE = 17;
+  public static final int IF = 55;
+  public static final int ABREEMPAQUE = 9;
+  public static final int MULTIPLICACION = 90;
+  public static final int RODOLFO = 48;
+  public static final int FINREGALO = 5;
+  public static final int CUPIDO = 51;
+  public static final int NAVIDAD = 24;
+  public static final int LITERAL_CHAR = 45;
+  public static final int CASE = 83;
+  public static final int ASIGNACION = 54;
+  public static final int SIGUE = 12;
+  public static final int CORTA = 13;
+  public static final int GRINCH = 31;
+  public static final int ULTIMO = 21;
+  public static final int TIPO_FLOTANTE = 82;
+  public static final int REYES = 26;
+  public static final int AND = 74;
+  public static final int EVERGREEN = 33;
+  public static final int UMINUS = 41;
+  public static final int INTERCAMBIO = 25;
+  public static final int CORCHETE_CIERRA = 95;
+  public static final int MAYOR_IGUAL = 79;
+  public static final int MELCHOR = 38;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -68,6 +112,7 @@ public class sym {
   "ABRECUENTO",
   "CIERRACUENTO",
   "FINREGALO",
+  "ERROR",
   "ABREREGALO",
   "CIERRAREGALO",
   "ABREEMPAQUE",
@@ -103,18 +148,61 @@ public class sym {
   "GASPAR",
   "BALTAZAR",
   "UMINUS",
-  "INT_LITERAL",
-  "FLOAT_LITERAL",
-  "STRING_LITERAL",
-  "CHAR_LITERAL",
-  "BOOL_LITERAL",
-  "IDENTIFIER",
+  "LITERAL_ENTERO",
+  "LITERAL_FLOTANTE",
+  "LITERAL_STRING",
+  "LITERAL_CHAR",
+  "LITERAL_BOOLEANO",
+  "IDENTIFICADOR",
   "RODOLFO",
   "BROMISTA",
   "TRUENO",
   "CUPIDO",
   "COMETA",
-  "COMA"
+  "COMA",
+  "ASIGNACION",
+  "IF",
+  "ELSE",
+  "IGUAL",
+  "BREAK",
+  "RETURN",
+  "MODULO",
+  "PRINT",
+  "INCREMENTO",
+  "DIVISION",
+  "DOS_PUNTOS",
+  "TIPO_STRING",
+  "TIPO_CHAR",
+  "WHILE",
+  "FOR",
+  "SWITCH",
+  "DECREMENTO",
+  "TIPO_BOOLEANO",
+  "DEFAULT",
+  "READ",
+  "AND",
+  "OR",
+  "MAYOR",
+  "SUMA",
+  "TIPO_ENTERO",
+  "MAYOR_IGUAL",
+  "POTENCIA",
+  "NOT",
+  "TIPO_FLOTANTE",
+  "CASE",
+  "DIFERENTE",
+  "MENOR",
+  "MENOR_IGUAL",
+  "FIN_EXPRESION",
+  "LLAVE_ABRE",
+  "PARENTESIS_ABRE",
+  "MULTIPLICACION",
+  "CORCHETE_ABRE",
+  "RESTA",
+  "LLAVE_CIERRA",
+  "PARENTESIS_CIERRA",
+  "CORCHETE_CIERRA",
+  "function_declaration_list"
   };
 }
 
