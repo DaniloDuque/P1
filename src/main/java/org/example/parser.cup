@@ -3,211 +3,163 @@ package org.example;
 
 import java_cup.runtime.*;
 
-/* Terminals (tokens from the lexer) */
-terminal            MAIN, ABRECUENTO, CIERRACUENTO, FINREGALO, ERROR;
-terminal            ABREREGALO, CIERRAREGALO, ABREEMPAQUE, CIERRAEMPAQUE;
-terminal            ENTREGA, SIGUE, CORTA, ENVIA;
-terminal            ELFO, HADA, ENVUELVE, DUENDE, VARIOS, HISTORIA, ULTIMO;
-terminal            NARRA, ESCUCHA;
-terminal            NAVIDAD, INTERCAMBIO, REYES, NOCHEBUENA, MAGOS, ADVIENTO;
-terminal            QUIEN, GRINCH;
-terminal            SNOWBALL, EVERGREEN, MINSTIX, UPATREE, MARY, OPENSLAE;
-terminal            MELCHOR, GASPAR, BALTAZAR;
-terminal            UMINUS;
-terminal Integer    LITERAL_ENTERO;
-terminal Float      LITERAL_FLOTANTE;
-terminal String     LITERAL_STRING;
-terminal Character  LITERAL_CHAR;
-terminal Boolean    LITERAL_BOOLEANO;
-terminal String     IDENTIFICADOR;
-terminal            RODOLFO, BROMISTA, TRUENO, CUPIDO, COMETA;
-terminal            COMA;
+terminal Integer ENTERO;
+terminal Float FLOTANTE;
+terminal Character CARACTER;
+terminal String CADENA;
+terminal Boolean BOOLEANO;
+terminal COMA, IF, ELSE, WHILE, FOR, SWITCH, CASE, DEFAULT, BREAK, RETURN;
+terminal DOS_PUNTOS, SUMA, RESTA, DIVISION, MULTIPLICACION, MODULO, POTENCIA;
+terminal ASIGNACION, INCREMENTO, DECREMENTO, MENOR, MENOR_IGUAL, MAYOR, MAYOR_IGUAL;
+terminal IGUAL, DIFERENTE, AND, OR, NOT, PRINT, CORCHETE_ABRE, CORCHETE_CIERRA;
+terminal MAIN, READ, LIT_ENTERO, LIT_FLOTANTE, LIT_CADENA, LIT_CHAR, LIT_BOOL;
+terminal LLAVE_ABRE, LLAVE_CIERRA, PARENTESIS_ABRE, PARENTESIS_CIERRA, FIN_EXPRESION;
+terminal IDENTIFICADOR, ERROR;
 
 /* Non-terminals */
-non terminal program;
-non terminal function_declaration;
-non terminal main_function;
-non terminal statement_list;
-non terminal statement;
-non terminal expression;
-non terminal block;
-non terminal parameter_list;
-non terminal parameter;
-non terminal type;
-non terminal base_type;
-non terminal var_declaration;
-terminal ASIGNACION;
-terminal IF;
-terminal ELSE;
-terminal IGUAL;
-terminal BREAK;
-terminal RETURN;
-terminal MODULO;
-terminal PRINT;
-terminal INCREMENTO;
-terminal DIVISION;
-terminal DOS_PUNTOS;
-terminal TIPO_STRING;
-terminal TIPO_CHAR;
-terminal WHILE;
-terminal FOR;
-terminal SWITCH;
-terminal DECREMENTO;
-terminal TIPO_BOOLEANO;
-terminal DEFAULT;
-non terminal case_list;
-non terminal case_statement;
-non terminal condition;
-non terminal expression_list;
-terminal READ;
-terminal AND;
-terminal OR;
-terminal MAYOR;
-terminal SUMA;
-terminal TIPO_ENTERO;
-terminal MAYOR_IGUAL;
-terminal POTENCIA;
-terminal NOT;
-terminal TIPO_FLOTANTE;
-terminal CASE;
-terminal DIFERENTE;
-terminal MENOR;
-terminal MENOR_IGUAL;
-terminal FIN_EXPRESION;
-terminal LLAVE_ABRE;
-terminal PARENTESIS_ABRE;
-terminal MULTIPLICACION;
-terminal CORCHETE_ABRE;
-terminal RESTA;
-terminal LLAVE_CIERRA;
-terminal PARENTESIS_CIERRA;
-terminal CORCHETE_CIERRA;
-terminal function_declaration_list;
+non terminal Object program;
+non terminal Object func_declarations, func_declaration, params_opt, param_list;
+non terminal Object param, type, statement, statements;
+non terminal Object var_declaration, assignment, array_declaration;
+non terminal Object expression, arithmetic_expr, term;
+non terminal Object relational_expr, logical_expr;
+non terminal Object if_statement, else_opt, while_statement, for_statement;
+non terminal Object switch_statement, cases, case_statement, default_opt;
+non terminal Object io_statement, element_list;
+non terminal Object identifier_list;
 
-/* Precedence declarations */
-precedence left MELCHOR, GASPAR;
-precedence right BALTAZAR;
-precedence left MARY, OPENSLAE;
-precedence left SNOWBALL, EVERGREEN, MINSTIX, UPATREE;
-precedence left NAVIDAD, INTERCAMBIO;
-precedence left NOCHEBUENA, REYES, MAGOS;
-precedence left ADVIENTO;
-precedence right UMINUS;
-precedence left QUIEN, GRINCH;
+/* Precedences */
+precedence left OR;
+precedence left AND;
+precedence left IGUAL, DIFERENTE;
+precedence left MENOR, MENOR_IGUAL, MAYOR, MAYOR_IGUAL;
+precedence left SUMA, RESTA;
+precedence left MULTIPLICACION, DIVISION, MODULO;
+precedence right POTENCIA;
+precedence right NOT;
+precedence right INCREMENTO, DECREMENTO;
 
-/* The grammar rules */
-program ::= function_declaration_list:fdl main_function:mf
-         | main_function:mf
-         ;
+/* Grammar rules */
+program ::= func_declarations MAIN LLAVE_ABRE statements LLAVE_CIERRA
+          | MAIN LLAVE_ABRE statements LLAVE_CIERRA
+          ;
 
-function_declaration_list ::= function_declaration:fd
-                          | function_declaration_list:fdl function_declaration:fd
-                          ;
+func_declarations ::= func_declaration func_declarations
+                   | func_declaration
+                   ;
 
-function_declaration ::= type:t IDENTIFICADOR:id ABREREGALO parameter_list:pl CIERRAREGALO block:b
-                      | type:t IDENTIFICADOR:id ABREREGALO CIERRAREGALO block:b
-                      ;
+func_declaration ::= type IDENTIFICADOR PARENTESIS_ABRE params_opt PARENTESIS_CIERRA LLAVE_ABRE statements LLAVE_CIERRA
+                  ;
 
-main_function ::= MAIN block:b
-                ;
+params_opt ::= param_list
+             | /* empty */
+             ;
 
-parameter_list ::= parameter:p
-                | parameter_list:pl COMA parameter:p
-                ;
+param_list ::= param COMA param_list
+             | param
+             ;
 
-parameter ::= type:t IDENTIFICADOR:id
-            ;
-
-type ::= base_type:bt
-       | base_type:bt ABREEMPAQUE LITERAL_ENTERO:size CIERRAEMPAQUE
-       ;
-
-base_type ::= RODOLFO
-            | BROMISTA
-            | TRUENO
-            | CUPIDO
-            | COMETA
-            ;
-
-block ::= ABRECUENTO statement_list:sl CIERRACUENTO
-        | ABRECUENTO CIERRACUENTO
+param ::= type IDENTIFICADOR
         ;
 
-statement_list ::= statement:s
-                | statement_list:sl statement:s
-                ;
+type ::= ENTERO
+       | FLOTANTE
+       | BOOLEANO
+       | CARACTER
+       | CADENA
+       ;
 
-statement ::= var_declaration:vd FINREGALO
-           | ASIGNACION:a FINREGALO
-           | IF:is
-           | WHILE:ws
-           | FOR:fs
-
-           | CORTA FINREGALO
-           | ENVIA expression:e FINREGALO
-           | expression:e FINREGALO
-           | NARRA expression:e FINREGALO
-           | ESCUCHA IDENTIFICADOR:id FINREGALO
-           ;
-
-var_declaration ::= type:t IDENTIFICADOR:id
-                 | type:t IDENTIFICADOR:id ENTREGA expression:e
-                 ;
-
-ASIGNACION ::= IDENTIFICADOR:id ENTREGA expression:e
-             | IDENTIFICADOR:id ABREEMPAQUE expression:idx CIERRAEMPAQUE ENTREGA expression:e
+statements ::= statement statements
+             | /* empty */
              ;
 
-expression ::= LITERAL_ENTERO:il
-             | LITERAL_FLOTANTE:fl
-             | LITERAL_STRING:sl
-             | LITERAL_CHAR:cl
-             | LITERAL_BOOLEANO:bl
-             | IDENTIFICADOR:id
-             | IDENTIFICADOR:id ABREEMPAQUE expression:idx CIERRAEMPAQUE
-             | expression:e1 NAVIDAD expression:e2
-             | expression:e1 INTERCAMBIO expression:e2
-             | expression:e1 REYES expression:e2
-             | expression:e1 NOCHEBUENA expression:e2
-             | expression:e1 MAGOS expression:e2
-             | expression:e1 ADVIENTO expression:e2
-             | INTERCAMBIO expression:e              %prec UMINUS
-             | expression:e1 QUIEN
-             | expression:e1 GRINCH
-             | expression:e1 SNOWBALL expression:e2
-             | expression:e1 EVERGREEN expression:e2
-             | expression:e1 MINSTIX expression:e2
-             | expression:e1 UPATREE expression:e2
-             | expression:e1 MARY expression:e2
-             | expression:e1 OPENSLAE expression:e2
-             | expression:e1 MELCHOR expression:e2
-             | expression:e1 GASPAR expression:e2
-             | BALTAZAR expression:e
-             | ABREREGALO expression:e CIERRAREGALO
-             | IDENTIFICADOR:id ABREREGALO expression_list:el CIERRAREGALO
-             | IDENTIFICADOR:id ABREREGALO CIERRAREGALO
-             ;
-
-expression_list ::= expression:e
-                 | expression_list:el COMA expression:e
-                 ;
-
-IF ::= ELFO ABREREGALO condition:c CIERRAREGALO block:b
-               | ELFO ABREREGALO condition:c CIERRAREGALO block:b1 HADA block:b2
-               ;
-
-WHILE ::= ENVUELVE ABREREGALO condition:c CIERRAREGALO block:b
-                 ;
-
-FOR ::= DUENDE ABREREGALO statement:s1 FINREGALO condition:c FINREGALO expression:e CIERRAREGALO block:b
-                ;
-
-case_list ::= case_statement:cs
-            | case_list:cl case_statement:cs
+statement ::= var_declaration
+            | assignment
+            | array_declaration
+            | if_statement
+            | while_statement
+            | for_statement
+            | switch_statement
+            | io_statement
+            | RETURN expression FIN_EXPRESION
+            | BREAK FIN_EXPRESION
             ;
 
-case_statement ::= HISTORIA expression:e SIGUE statement_list:sl
+var_declaration ::= type IDENTIFICADOR ASIGNACION expression FIN_EXPRESION
+                 ;
+
+assignment ::= IDENTIFICADOR ASIGNACION expression FIN_EXPRESION
+            ;
+
+array_declaration ::= type IDENTIFICADOR CORCHETE_ABRE IDENTIFICADOR CORCHETE_CIERRA ASIGNACION LLAVE_ABRE element_list LLAVE_CIERRA FIN_EXPRESION
+                   ;
+
+element_list ::= expression COMA element_list
+               | expression
+               ;
+
+expression ::= arithmetic_expr
+             | relational_expr
+             | logical_expr
+             | LIT_ENTERO
+             | LIT_FLOTANTE
+             | LIT_CADENA
+             | LIT_CHAR
+             | LIT_BOOL
+             | IDENTIFICADOR
+             ;
+
+arithmetic_expr ::= expression SUMA expression
+                 | expression RESTA expression
+                 | expression MULTIPLICACION expression
+                 | expression DIVISION expression
+                 | expression MODULO expression
+                 | expression POTENCIA expression
+                 | RESTA expression
+                 | INCREMENTO expression
+                 | DECREMENTO expression
+                 ;
+
+relational_expr ::= expression MENOR expression
+                 | expression MENOR_IGUAL expression
+                 | expression MAYOR expression
+                 | expression MAYOR_IGUAL expression
+                 | expression IGUAL expression
+                 | expression DIFERENTE expression
+                 ;
+
+logical_expr ::= expression AND expression
+               | expression OR expression
+               | NOT expression
+               ;
+
+if_statement ::= IF PARENTESIS_ABRE expression PARENTESIS_CIERRA LLAVE_ABRE statements LLAVE_CIERRA else_opt
+               ;
+
+else_opt ::= ELSE LLAVE_ABRE statements LLAVE_CIERRA
+           | /* empty */
+           ;
+
+while_statement ::= WHILE PARENTESIS_ABRE expression PARENTESIS_CIERRA LLAVE_ABRE statements LLAVE_CIERRA
+                 ;
+
+for_statement ::= FOR PARENTESIS_ABRE var_declaration expression FIN_EXPRESION expression PARENTESIS_CIERRA LLAVE_ABRE statements LLAVE_CIERRA
                 ;
 
-condition ::= expression:e
-           ;
+switch_statement ::= SWITCH PARENTESIS_ABRE IDENTIFICADOR PARENTESIS_CIERRA LLAVE_ABRE cases default_opt LLAVE_CIERRA
+                  ;
+
+cases ::= case_statement cases
+        | /* empty */
+        ;
+
+case_statement ::= CASE LIT_ENTERO DOS_PUNTOS statement
+                ;
+
+default_opt ::= DEFAULT DOS_PUNTOS statement
+              | /* empty */
+              ;
+
+io_statement ::= PRINT PARENTESIS_ABRE expression PARENTESIS_CIERRA FIN_EXPRESION
+               | READ PARENTESIS_ABRE IDENTIFICADOR PARENTESIS_CIERRA FIN_EXPRESION
+               ;
