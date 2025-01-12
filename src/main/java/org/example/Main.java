@@ -26,9 +26,6 @@ public class Main {
             Parser parser = new Parser(lexer);
             parser.parse();
 
-
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,24 +1,22 @@
-@ Función que calcula el factorial de un número
+@ Función que calcula el factorial
 rodolfo _factorial_ abreregalo rodolfo _n_ cierraregalo abrecuento
-    elfo abreregalo _n_ snowball _1_ cierraregalo abrecuento
-        envia _1_ finregalo
+    rodolfo _resultado_ entrega 1 finregalo
+    elfo abreregalo _n_ snowball 2 cierraregalo abrecuento
+        envia 1 finregalo
     cierracuento
-    envia _n_ nochebuena _factorial_ abreregalo _n_ intercambio _1_ cierraregalo finregalo
+    _resultado_ entrega _n_ nochebuena _factorial_ abreregalo _n_ intercambio 1 cierraregalo finregalo
+    envia _resultado_ finregalo
 cierracuento
 
 _verano_ abrecuento
-    @ Declaración de variables
-    rodolfo _numero_ entrega _5_ finregalo
-    rodolfo _resultado_ entrega _0_ finregalo
-    
-    @ Llamada a la función factorial
+    rodolfo _numero_ entrega 5 finregalo
+    rodolfo _resultado_ entrega 1 finregalo
+
     _resultado_ entrega _factorial_ abreregalo _numero_ cierraregalo finregalo
-    
-    @ Imprimir el resultado
+
     narra abreregalo _resultado_ cierraregalo finregalo
-    
-    @ Ejemplo de un if-else
-    elfo abreregalo _resultado_ minstix _100_ cierraregalo abrecuento
+
+    elfo abreregalo _resultado_ minstix 100 cierraregalo abrecuento
         narra abreregalo "El factorial es mayor que 100" cierraregalo finregalo
     cierracuento
     hada abrecuento
