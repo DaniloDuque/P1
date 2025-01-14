@@ -108,24 +108,24 @@ booleano        = (true|false)
 {espacio} {/* No token, just consume the comment */}
 
 {rodolfo}                {
-    symbolTable.addSymbol(yytext(), "TIPO_ENTERO", yyline, yycolumn, null);
+    symbolTable.addSymbol(yytext(), "ENTERO", yyline, yycolumn, null);
     return new Symbol(sym.ENTERO, yyline, yycolumn);
 }
 
 {bromista}               {
-    symbolTable.addSymbol(yytext(), "TIPO_FLOTANTE", yyline, yycolumn, null);
+    symbolTable.addSymbol(yytext(), "FLOTANTE", yyline, yycolumn, null);
     return new Symbol(sym.FLOTANTE, yyline, yycolumn);
 }
 {trueno}                 {
-    symbolTable.addSymbol(yytext(), "TIPO_BOOLEANO", yyline, yycolumn, null);
+    symbolTable.addSymbol(yytext(), "BOOLEANO", yyline, yycolumn, null);
     return new Symbol(sym.BOOLEANO, yyline, yycolumn);
 }
 {cupido}                 {
-    symbolTable.addSymbol(yytext(), "TIPO_CHAR", yyline, yycolumn, null);
+    symbolTable.addSymbol(yytext(), "CARACTER", yyline, yycolumn, null);
     return new Symbol(sym.CARACTER, yyline, yycolumn);
 }
 {cometa}                 {
-    symbolTable.addSymbol(yytext(), "TIPO_STRING", yyline, yycolumn, null);
+    symbolTable.addSymbol(yytext(), "CADENA", yyline, yycolumn, null);
     return new Symbol(sym.CADENA, yyline, yycolumn);
 }
 
@@ -279,17 +279,17 @@ booleano        = (true|false)
 
 /* --- Sección de literales y valores --- */
 {entero}                 {
-    symbolTable.addSymbol(yytext(), "LITERAL_ENTERO", yyline, yycolumn, Integer.valueOf(yytext()));
+    symbolTable.addSymbol(yytext(), "LIT_ENTERO", yyline, yycolumn, Integer.valueOf(yytext()));
     return new Symbol(sym.LIT_ENTERO, yyline, yycolumn, Integer.valueOf(yytext()));
 }
 
 {flotante}               {
-    symbolTable.addSymbol(yytext(), "LITERAL_FLOTANTE", yyline, yycolumn, Float.valueOf(yytext()));
+    symbolTable.addSymbol(yytext(), "LIT_FLOTANTE", yyline, yycolumn, Float.valueOf(yytext()));
     return new Symbol(sym.LIT_FLOTANTE, yyline, yycolumn, Float.valueOf(yytext()));
 }
 
 {cadena}                 {
-    symbolTable.addSymbol(yytext(), "LITERAL_STRING", yyline, yycolumn, yytext());
+    symbolTable.addSymbol(yytext(), "LIT_CADENA", yyline, yycolumn, yytext());
     return new Symbol(sym.LIT_CADENA, yyline, yycolumn, yytext());
 }
 
@@ -299,7 +299,7 @@ booleano        = (true|false)
 }
 
 {booleano}               {
-    symbolTable.addSymbol(yytext(), "LITERAL_BOOLEANO", yyline, yycolumn, null);
+    symbolTable.addSymbol(yytext(), "LIT_BOOL", yyline, yycolumn, null);
     return new Symbol(sym.LIT_BOOL, yyline, yycolumn);
 }
 

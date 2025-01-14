@@ -866,13 +866,13 @@ public class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 55: break;
           case 4:
-            { symbolTable.addSymbol(yytext(), "LITERAL_ENTERO", yyline, yycolumn, Integer.valueOf(yytext()));
+            { symbolTable.addSymbol(yytext(), "LIT_ENTERO", yyline, yycolumn, Integer.valueOf(yytext()));
     return new Symbol(sym.LIT_ENTERO, yyline, yycolumn, Integer.valueOf(yytext()));
             }
           // fall through
           case 56: break;
           case 5:
-            { symbolTable.addSymbol(yytext(), "LITERAL_STRING", yyline, yycolumn, yytext());
+            { symbolTable.addSymbol(yytext(), "LIT_CADENA", yyline, yycolumn, yytext());
     return new Symbol(sym.LIT_CADENA, yyline, yycolumn, yytext());
             }
           // fall through
@@ -884,7 +884,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 58: break;
           case 7:
-            { symbolTable.addSymbol(yytext(), "LITERAL_FLOTANTE", yyline, yycolumn, Float.valueOf(yytext()));
+            { symbolTable.addSymbol(yytext(), "LIT_FLOTANTE", yyline, yycolumn, Float.valueOf(yytext()));
     return new Symbol(sym.LIT_FLOTANTE, yyline, yycolumn, Float.valueOf(yytext()));
             }
           // fall through
@@ -914,7 +914,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 63: break;
           case 12:
-            { symbolTable.addSymbol(yytext(), "LITERAL_BOOLEANO", yyline, yycolumn, null);
+            { symbolTable.addSymbol(yytext(), "LIT_BOOL", yyline, yycolumn, null);
     return new Symbol(sym.LIT_BOOL, yyline, yycolumn);
             }
           // fall through
@@ -962,13 +962,13 @@ public class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 71: break;
           case 20:
-            { symbolTable.addSymbol(yytext(), "TIPO_STRING", yyline, yycolumn, null);
+            { symbolTable.addSymbol(yytext(), "CADENA", yyline, yycolumn, null);
     return new Symbol(sym.CADENA, yyline, yycolumn);
             }
           // fall through
           case 72: break;
           case 21:
-            { symbolTable.addSymbol(yytext(), "TIPO_CHAR", yyline, yycolumn, null);
+            { symbolTable.addSymbol(yytext(), "CARACTER", yyline, yycolumn, null);
     return new Symbol(sym.CARACTER, yyline, yycolumn);
             }
           // fall through
@@ -992,7 +992,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 76: break;
           case 25:
-            { symbolTable.addSymbol(yytext(), "TIPO_BOOLEANO", yyline, yycolumn, null);
+            { symbolTable.addSymbol(yytext(), "BOOLEANO", yyline, yycolumn, null);
     return new Symbol(sym.BOOLEANO, yyline, yycolumn);
             }
           // fall through
@@ -1040,7 +1040,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 84: break;
           case 33:
-            { symbolTable.addSymbol(yytext(), "TIPO_ENTERO", yyline, yycolumn, null);
+            { symbolTable.addSymbol(yytext(), "ENTERO", yyline, yycolumn, null);
     return new Symbol(sym.ENTERO, yyline, yycolumn);
             }
           // fall through
@@ -1070,7 +1070,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 89: break;
           case 38:
-            { symbolTable.addSymbol(yytext(), "TIPO_FLOTANTE", yyline, yycolumn, null);
+            { symbolTable.addSymbol(yytext(), "FLOTANTE", yyline, yycolumn, null);
     return new Symbol(sym.FLOTANTE, yyline, yycolumn);
             }
           // fall through

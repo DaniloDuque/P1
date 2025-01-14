@@ -83,11 +83,9 @@ statement ::= var_declaration:v
             ;
 
 var_declaration ::= type:t IDENTIFICADOR:i ASIGNACION expression:e FIN_EXPRESION
-                 {: System.out.println("Declaración de variable: " + i + " tipo: " + t); :}
                  ;
 
 assignment ::= IDENTIFICADOR:i ASIGNACION expression:e FIN_EXPRESION
-            {: System.out.println("Asignación a variable: " + i); :}
             ;
 
 expression ::= arithmetic_expr:a
@@ -99,74 +97,46 @@ expression ::= arithmetic_expr:a
              ;
 
 literal ::= LIT_ENTERO
-          {: System.out.println("Literal entero encontrado"); :}
           | LIT_FLOTANTE
-          {: System.out.println("Literal flotante encontrado"); :}
           | LIT_CADENA
-          {: System.out.println("Literal cadena encontrado"); :}
           | LIT_CHAR
-          {: System.out.println("Literal char encontrado"); :}
           | LIT_BOOL
-          {: System.out.println("Literal booleano encontrado"); :}
           ;
 
 arithmetic_expr ::= expression:e1 SUMA expression:e2
-                 {: System.out.println("Suma: " + e1 + " + " + e2); :}
                  | expression:e1 RESTA expression:e2
-                 {: System.out.println("Resta: " + e1 + " - " + e2); :}
                  | expression:e1 MULTIPLICACION expression:e2
-                 {: System.out.println("Multiplicación: " + e1 + " * " + e2); :}
                  | expression:e1 DIVISION expression:e2
-                 {: System.out.println("División: " + e1 + " / " + e2); :}
                  | expression:e1 MODULO expression:e2
-                 {: System.out.println("Módulo: " + e1 + " % " + e2); :}
                  | expression:e1 POTENCIA expression:e2
-                 {: System.out.println("Potencia: " + e1 + " ^ " + e2); :}
                  | RESTA expression:e
-                 {: System.out.println("Negación unaria: " + e); :}
                  | INCREMENTO expression:e
-                 {: System.out.println("Incremento: " + e); :}
                  | DECREMENTO expression:e
-                 {: System.out.println("Decremento: " + e); :}
                  ;
 
 relational_expr ::= expression:e1 MENOR expression:e2
-                 {: System.out.println("Relacional (menor): " + e1 + " < " + e2); :}
                  | expression:e1 MENOR_IGUAL expression:e2
-                 {: System.out.println("Relacional (menor o igual): " + e1 + " <= " + e2); :}
                  | expression:e1 MAYOR expression:e2
-                 {: System.out.println("Relacional (mayor): " + e1 + " > " + e2); :}
                  | expression:e1 MAYOR_IGUAL expression:e2
-                 {: System.out.println("Relacional (mayor o igual): " + e1 + " >= " + e2); :}
                  | expression:e1 IGUAL expression:e2
-                 {: System.out.println("Relacional (igual): " + e1 + " == " + e2); :}
                  | expression:e1 DIFERENTE expression:e2
-                 {: System.out.println("Relacional (diferente): " + e1 + " != " + e2); :}
                  ;
 
 logical_expr ::= expression:e1 AND expression:e2
-               {: System.out.println("Lógica (AND): " + e1 + " && " + e2); :}
                | expression:e1 OR expression:e2
-               {: System.out.println("Lógica (OR): " + e1 + " || " + e2); :}
                | NOT expression:e
-               {: System.out.println("Lógica (NOT): " + e); :}
                ;
 
 if_statement ::= IF PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE_ABRE statements:s LLAVE_CIERRA else_opt:eo
-               {: System.out.println("If statement: " + e); :}
                ;
 
 else_opt ::= ELSE LLAVE_ABRE statements:s LLAVE_CIERRA
-           {: System.out.println("Else statement"); :}
            | /* empty */
            ;
 
 while_statement ::= WHILE PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE_ABRE statements:s LLAVE_CIERRA
-                 {: System.out.println("While statement: " + e); :}
                  ;
 
 io_statement ::= PRINT PARENTESIS_ABRE expression:e PARENTESIS_CIERRA
-               {: System.out.println("Print statement: " + e); :}
                | READ PARENTESIS_ABRE IDENTIFICADOR:i PARENTESIS_CIERRA
-               {: System.out.println("Read statement: " + i); :}
                ;
