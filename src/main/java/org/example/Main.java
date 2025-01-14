@@ -26,6 +26,15 @@ public class Main {
             Parser parser = new Parser(lexer);
             parser.parse();
 
+            FileWriter writer = new FileWriter("output.txt");
+            writer.write("Tabla de símbolos\n");
+            for (Map.Entry<String, List<SymbolInfo>> entry : lexer.getSymbolTable().getSymbols().entrySet()) {
+                for (SymbolInfo symbolInfo : entry.getValue()) {
+                    System.out.println(entry.getKey() + " " + symbolInfo + "\n");
+                    writer.write(entry.getKey() + " " + symbolInfo + "\n");
+                }
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }

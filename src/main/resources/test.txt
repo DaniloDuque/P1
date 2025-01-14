@@ -1,7 +1,14 @@
+rodolfo _suma_ abreregalo rodolfo _a_, rodolfo _b_ cierraregalo abrecuento
+    envia _a_ navidad _b_ finregalo
+cierracuento
+
 _verano_ abrecuento
     rodolfo _numero_ entrega 5 finregalo
     rodolfo _n_ entrega 100000 finregalo
     elfo abreregalo _numero_ snowball _n_ cierraregalo abrecuento
         narra abreregalo "hola" cierraregalo finregalo
+    cierracuento
+    hada abrecuento
+        narra abreregalo "adios" cierraregalo finregalo
     cierracuento
 cierracuento

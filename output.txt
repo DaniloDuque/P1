@@ -1,0 +1,44 @@
+Tabla de símbolos
+navidad Tipo de token: SUMA, Línea: 1, Columna: 14
+envia Tipo de token: RETURN, Línea: 1, Columna: 4
+hada Tipo de token: ELSE, Línea: 10, Columna: 4
+100000 Tipo de token: LIT_ENTERO, Línea: 6, Columna: 24, Valor: 100000
+rodolfo Tipo de token: ENTERO, Línea: 0, Columna: 0
+rodolfo Tipo de token: ENTERO, Línea: 0, Columna: 26
+rodolfo Tipo de token: ENTERO, Línea: 0, Columna: 39
+rodolfo Tipo de token: ENTERO, Línea: 5, Columna: 4
+rodolfo Tipo de token: ENTERO, Línea: 6, Columna: 4
+, Tipo de token: COMA, Línea: 0, Columna: 37
+_suma_ Tipo de token: IDENTIFICADOR, Línea: 0, Columna: 8
+abreregalo Tipo de token: PARENTESIS_ABRE, Línea: 0, Columna: 15
+abreregalo Tipo de token: PARENTESIS_ABRE, Línea: 7, Columna: 9
+abreregalo Tipo de token: PARENTESIS_ABRE, Línea: 8, Columna: 14
+abreregalo Tipo de token: PARENTESIS_ABRE, Línea: 11, Columna: 14
+finregalo Tipo de token: FIN_EXPRESION, Línea: 1, Columna: 26
+finregalo Tipo de token: FIN_EXPRESION, Línea: 5, Columna: 31
+finregalo Tipo de token: FIN_EXPRESION, Línea: 6, Columna: 31
+finregalo Tipo de token: FIN_EXPRESION, Línea: 8, Columna: 45
+finregalo Tipo de token: FIN_EXPRESION, Línea: 11, Columna: 46
+cierraregalo Tipo de token: PARENTESIS_CIERRA, Línea: 0, Columna: 51
+cierraregalo Tipo de token: PARENTESIS_CIERRA, Línea: 7, Columna: 42
+cierraregalo Tipo de token: PARENTESIS_CIERRA, Línea: 8, Columna: 32
+cierraregalo Tipo de token: PARENTESIS_CIERRA, Línea: 11, Columna: 33
+_n_ Tipo de token: IDENTIFICADOR, Línea: 6, Columna: 12
+_n_ Tipo de token: IDENTIFICADOR, Línea: 7, Columna: 38
+5 Tipo de token: LIT_ENTERO, Línea: 5, Columna: 29, Valor: 5
+narra Tipo de token: PRINT, Línea: 8, Columna: 8
+narra Tipo de token: PRINT, Línea: 11, Columna: 8
+"hola" Tipo de token: LIT_CADENA, Línea: 8, Columna: 25, Valor: "hola"
+"adios" Tipo de token: LIT_CADENA, Línea: 11, Columna: 25, Valor: "adios"
+_numero_ Tipo de token: IDENTIFICADOR, Línea: 5, Columna: 12
+_numero_ Tipo de token: IDENTIFICADOR, Línea: 7, Columna: 20
+entrega Tipo de token: ASIGNACION, Línea: 5, Columna: 21
+entrega Tipo de token: ASIGNACION, Línea: 6, Columna: 16
+abrecuento Tipo de token: LLAVE_ABRE, Línea: 0, Columna: 64
+abrecuento Tipo de token: LLAVE_ABRE, Línea: 4, Columna: 9
+abrecuento Tipo de token: LLAVE_ABRE, Línea: 7, Columna: 55
+abrecuento Tipo de token: LLAVE_ABRE, Línea: 10, Columna: 9
+snowball Tipo de token: MENOR, Línea: 7, Columna: 29
+_a_ Tipo de token: IDENTIFICADOR, Línea: 0, Columna: 34
+_a_ Tipo de token: IDENTIFICADOR, Línea: 1, Columna: 10
+_b_ Tipo 

@@ -21,12 +21,13 @@ non terminal Object program;
 non terminal Object func_declarations, func_declaration, params_opt, param_list;
 non terminal Object param, type, statement, statements;
 non terminal Object var_declaration, assignment, array_declaration;
-non terminal Object expression, arithmetic_expr, term;
+non terminal Object expression, arithmetic_expr;
 non terminal Object relational_expr, logical_expr;
 non terminal Object if_statement, else_opt, while_statement, for_statement;
 non terminal Object switch_statement, cases, case_statement, default_opt;
+non terminal Object for_initialization, for_update;
 non terminal Object io_statement, element_list;
-non terminal Object literal;
+non terminal Object literal, error_nterm;
 
 /* Precedences */
 precedence left OR;
@@ -75,18 +76,30 @@ statements ::= statement:s statements:ss
 
 statement ::= var_declaration:v
             | assignment:a
+            | array_declaration:ad
             | if_statement:i
             | while_statement:w
+            | for_statement:f
+            | switch_statement:sw
             | io_statement:io FIN_EXPRESION
             | RETURN expression:e FIN_EXPRESION
             | BREAK FIN_EXPRESION
+            | error_nterm:e
             ;
+
+array_declaration ::= type:t IDENTIFICADOR:i CORCHETE_ABRE LIT_ENTERO CORCHETE_CIERRA FIN_EXPRESION
+                    | type:t IDENTIFICADOR:i CORCHETE_ABRE CORCHETE_CIERRA ASIGNACION LLAVE_ABRE element_list:el LLAVE_CIERRA FIN_EXPRESION
+                    ;
+
+element_list ::= expression:e COMA element_list:el
+               | expression:e
+               ;
 
 var_declaration ::= type:t IDENTIFICADOR:i ASIGNACION expression:e FIN_EXPRESION
-                 ;
+                    ;
 
 assignment ::= IDENTIFICADOR:i ASIGNACION expression:e FIN_EXPRESION
-            ;
+               ;
 
 expression ::= arithmetic_expr:a
              | relational_expr:r
@@ -137,6 +150,35 @@ else_opt ::= ELSE LLAVE_ABRE statements:s LLAVE_CIERRA
 while_statement ::= WHILE PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE_ABRE statements:s LLAVE_CIERRA
                  ;
 
+for_statement ::= FOR PARENTESIS_ABRE for_initialization:fi FIN_EXPRESION expression:e FIN_EXPRESION for_update:fu PARENTESIS_CIERRA LLAVE_ABRE statements:s LLAVE_CIERRA
+                ;
+
+for_initialization ::= var_declaration:v
+                     | assignment:a
+                     | /* empty */
+                     ;
+
+for_update ::= assignment:a
+          | /* empty */
+          ;
+
+switch_statement ::= SWITCH PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE_ABRE cases:c default_opt:dfo LLAVE_CIERRA
+                     ;
+
+cases ::= case_statement:c cases:cs
+        | /* empty */
+        ;
+
+case_statement ::= CASE literal:l DOS_PUNTOS statements:s
+                 ;
+
+default_opt ::= DEFAULT DOS_PUNTOS statements:s
+              | /* empty */
+              ;
+
 io_statement ::= PRINT PARENTESIS_ABRE expression:e PARENTESIS_CIERRA
                | READ PARENTESIS_ABRE IDENTIFICADOR:i PARENTESIS_CIERRA
                ;
+
+error_nterm ::= ERROR {: System.out.println("error_nterm"); :}
+          ;
