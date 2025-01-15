@@ -18,22 +18,32 @@ public class Main {
     public static void main(String[] args) {
         try {
             Scanner sc = new Scanner(System.in);
-            String filename = "test.txt";
+            String filename = args[0];
             String path = Paths.get(Objects.requireNonNull(Main.class.getClassLoader().getResource(filename)).toURI()).toString();
             FileReader reader = new FileReader(path);
 
             Lexer lexer = new Lexer(reader);
-            Parser parser = new Parser(lexer);
+            Parser parser = new Parser(lexer, lexer.getSymbolTable());
             parser.parse();
 
-            FileWriter writer = new FileWriter("output.txt");
+            FileWriter writer = new FileWriter("Tokens.txt");
+            writer.write("Tokens encontrados\n");
+            for (Map.Entry<String, List<SymbolInfo>> entry : lexer.getSymbolTable().getSymbols().entrySet()) {
+                for (SymbolInfo symbolInfo : entry.getValue()) {
+                    writer.write("Lexema: " + symbolInfo.getLexema() + "\n");
+                }
+            }
+            writer.close();
+
+            writer = new FileWriter("SymbolTable.txt");
             writer.write("Tabla de símbolos\n");
             for (Map.Entry<String, List<SymbolInfo>> entry : lexer.getSymbolTable().getSymbols().entrySet()) {
                 for (SymbolInfo symbolInfo : entry.getValue()) {
-                    System.out.println(entry.getKey() + " " + symbolInfo + "\n");
-                    writer.write(entry.getKey() + " " + symbolInfo + "\n");
+                    System.out.println(symbolInfo + "\n");
+                    writer.write(symbolInfo + "\n");
                 }
             }
+            writer.close();
 
         } catch (Exception e) {
             e.printStackTrace();

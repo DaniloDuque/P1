@@ -5,6 +5,11 @@ import java.util.*;
 public class SymbolTable {
     private Map<String, List<SymbolInfo>> table = new HashMap<>();
 
+    public void addSymbol(String lexema, String tipo, String scope, int linea, int columna) {
+        SymbolInfo symbolInfo = new SymbolInfo(lexema, tipo, scope, linea, columna);
+        table.computeIfAbsent(lexema, k -> new ArrayList<>()).add(symbolInfo);
+    }
+
     public void addSymbol(String lexema, String tipo, int linea, int columna) {
         SymbolInfo symbolInfo = new SymbolInfo(lexema, tipo, linea, columna);
         table.computeIfAbsent(lexema, k -> new ArrayList<>()).add(symbolInfo);

@@ -4,6 +4,7 @@ import java_cup.runtime.*;
 import java.util.HashMap;
 import org.example.SymbolTable;
 import org.example.sym;
+import java.util.Stack;
 
 %%
 
@@ -22,6 +23,7 @@ import org.example.sym;
     public SymbolTable getSymbolTable() {
         return symbolTable;
     }
+
 %}
 
 // Definiciones regulares
