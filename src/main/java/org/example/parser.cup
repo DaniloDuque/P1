@@ -27,7 +27,7 @@ non terminal Object if_statement, else_opt, while_statement, for_statement;
 non terminal Object switch_statement, cases, case_statement, default_opt;
 non terminal Object for_initialization, for_update;
 non terminal Object io_statement, element_list;
-non terminal Object literal, error_nterm;
+non terminal Object literal, error_nterm, function_call, arg_list;
 
 /* Precedences */
 precedence left OR;
@@ -82,10 +82,18 @@ statement ::= var_declaration:v
             | for_statement:f
             | switch_statement:sw
             | io_statement:io FIN_EXPRESION
+            | function_call:fc FIN_EXPRESION
             | RETURN expression:e FIN_EXPRESION
             | BREAK FIN_EXPRESION
             | error_nterm:e
             ;
+
+function_call ::= IDENTIFICADOR:i PARENTESIS_ABRE arg_list:args PARENTESIS_CIERRA
+                ;
+
+arg_list ::= expression:a COMA arg_list:al
+           | expression:a
+           ;
 
 array_declaration ::= type:t IDENTIFICADOR:i CORCHETE_ABRE LIT_ENTERO CORCHETE_CIERRA FIN_EXPRESION
                     | type:t IDENTIFICADOR:i CORCHETE_ABRE CORCHETE_CIERRA ASIGNACION LLAVE_ABRE element_list:el LLAVE_CIERRA FIN_EXPRESION
