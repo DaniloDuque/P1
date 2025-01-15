@@ -1,26 +1,52 @@
 plugins {
     id 'java'
+    id 'application' // Añadimos el plugin de application para facilitar la ejecución
 }
 
 group = 'org.example'
-version = '2.0-SNAPSHOT'
+version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
     flatDir {
-        dirs 'libs'
+        dirs 'libs' // Si tienes librerías locales en el directorio 'libs', las incluirá
     }
 }
 
 dependencies {
+    // Dependencias de prueba
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 
+    // Dependencias de JFlex y Java CUP (asegúrate de tener las librerías correspondientes)
     implementation name: 'jflex-full-1.9.1'
     implementation name: 'java-cup-11b'
     implementation name: 'java-cup-11b-runtime'
 }
 
 test {
-    useJUnitPlatform()
+    useJUnitPlatform() // Configuración para usar JUnit 5
 }
+
+// Configuración para la tarea 'jar'
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'org.example.Main' // Asegúrate de que esta ruta coincida con la ubicación de tu clase Main
+        )
+    }
+
+    // Incluye las dependencias en el JAR
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    // Evita errores de duplicación de archivos
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// Configuración del plugin de aplicación para facilitar la ejecución
+application {
+    mainClass = 'org.example.Main' // Especifica la clase principal de la aplicación
+}
+

@@ -17,7 +17,6 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         try {
-            Scanner sc = new Scanner(System.in);
             String filename = args[0];
             String path = Paths.get(Objects.requireNonNull(Main.class.getClassLoader().getResource(filename)).toURI()).toString();
             FileReader reader = new FileReader(path);
