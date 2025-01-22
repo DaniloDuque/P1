@@ -42,7 +42,7 @@ non terminal Object relational_expr, logical_expr;
 non terminal Object if_statement, else_opt, while_statement, for_statement;
 non terminal Object switch_statement, cases, case_statement, default_opt;
 non terminal Object for_initialization, for_update;
-non terminal Object io_statement, element_list;
+non terminal Object io_statement, element_list, opt_equals_value;
 non terminal Object literal, error_nterm, function_call, arg_list;
 
 /* Precedences */
@@ -97,13 +97,13 @@ statements ::= statement:s statements:ss
              | /* empty */
              ;
 
-statement ::= var_declaration:v
-            | assignment:a
-            | array_declaration:ad
-            | if_statement:i
-            | while_statement:w
-            | for_statement:f
-            | switch_statement:sw
+statement ::= var_declaration:v FIN_EXPRESION
+            | assignment:a  FIN_EXPRESION
+            | array_declaration:ad FIN_EXPRESION
+            | if_statement:i FIN_EXPRESION
+            | while_statement:w FIN_EXPRESION
+            | for_statement:f FIN_EXPRESION
+            | switch_statement:sw FIN_EXPRESION
             | io_statement:io FIN_EXPRESION
             | function_call:fc FIN_EXPRESION
             | RETURN expression:e FIN_EXPRESION
@@ -118,21 +118,23 @@ arg_list ::= expression:a COMA arg_list:al
            | expression:a
            ;
 
-array_declaration ::= type:t IDENTIFICADOR:i CORCHETE_ABRE LIT_ENTERO CORCHETE_CIERRA FIN_EXPRESION
-                    | type:t IDENTIFICADOR:i CORCHETE_ABRE CORCHETE_CIERRA ASIGNACION LLAVE_ABRE element_list:el LLAVE_CIERRA FIN_EXPRESION
+array_declaration ::= type:t IDENTIFICADOR:i CORCHETE_ABRE LIT_ENTERO CORCHETE_CIERRA
+                    | type:t IDENTIFICADOR:i CORCHETE_ABRE CORCHETE_CIERRA ASIGNACION LLAVE_ABRE element_list:el LLAVE_CIERRA
                     ;
 
 element_list ::= expression:e COMA element_list:el
                | expression:e
                ;
 
-var_declaration ::= type:t IDENTIFICADOR:i ASIGNACION expression:e FIN_EXPRESION
+opt_equals_value ::= ASIGNACION expression | /* empty */ ;
+
+var_declaration ::= type:t IDENTIFICADOR:i opt_equals_value 
                     {:
                             symbolTable.addSymbol(i.toString(), (t == null) ? "Variable" : t.toString(), scopeStack.peek().toString(), ileft, iright); // Agregar variable al scope actual
                     :}
                     ;
 
-assignment ::= IDENTIFICADOR:i ASIGNACION expression:e FIN_EXPRESION
+assignment ::= IDENTIFICADOR:i ASIGNACION expression:e
                ;
 
 expression ::= arithmetic_expr:a
@@ -141,6 +143,8 @@ expression ::= arithmetic_expr:a
              | literal:l
              | IDENTIFICADOR:i
              | PARENTESIS_ABRE expression:e PARENTESIS_CIERRA
+             | CORCHETE_ABRE expression:e CORCHETE_CIERRA
+             | /* empty */
              ;
 
 literal ::= LIT_ENTERO
@@ -157,8 +161,8 @@ arithmetic_expr ::= expression:e1 SUMA expression:e2
                  | expression:e1 MODULO expression:e2
                  | expression:e1 POTENCIA expression:e2
                  | RESTA expression:e
-                 | INCREMENTO expression:e
-                 | DECREMENTO expression:e
+                 | expression:e INCREMENTO
+                 | expression:e DECREMENTO
                  ;
 
 relational_expr ::= expression:e1 MENOR expression:e2
