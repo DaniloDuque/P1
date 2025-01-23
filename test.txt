@@ -11,7 +11,7 @@ _verano_ abrecuento
     elfo abreregalo _numero_ snowball _n_ cierraregalo abrecuento
         narra abreregalo "hola" cierraregalo finregalo
     cierracuento
-    hada abrecuento 
+    hada abrecuento
         narra abreregalo "adios" cierraregalo finregalo
     cierracuento
     _suma_ abreregalo 8, 9 cierraregalo finregalo

@@ -41,7 +41,7 @@ non terminal Object expression, arithmetic_expr;
 non terminal Object relational_expr, logical_expr;
 non terminal Object if_statement, else_opt, while_statement, for_statement;
 non terminal Object switch_statement, cases, case_statement, default_opt;
-non terminal Object for_initialization, for_update;
+non terminal Object for_initialization, for_update, opt_expression;
 non terminal Object io_statement, element_list, opt_equals_value;
 non terminal Object literal, error_nterm, function_call, arg_list;
 
@@ -100,13 +100,13 @@ statements ::= statement:s statements:ss
 statement ::= var_declaration:v FIN_EXPRESION
             | assignment:a  FIN_EXPRESION
             | array_declaration:ad FIN_EXPRESION
-            | if_statement:i FIN_EXPRESION
-            | while_statement:w FIN_EXPRESION
-            | for_statement:f FIN_EXPRESION
-            | switch_statement:sw FIN_EXPRESION
+            | if_statement:i
+            | while_statement:w
+            | for_statement:f
+            | switch_statement:sw
             | io_statement:io FIN_EXPRESION
-            | function_call:fc FIN_EXPRESION
-            | RETURN expression:e FIN_EXPRESION
+            | function_call:fc
+            | RETURN opt_expression:e FIN_EXPRESION
             | BREAK FIN_EXPRESION
             | error_nterm:e
             ;
@@ -137,6 +137,10 @@ var_declaration ::= type:t IDENTIFICADOR:i opt_equals_value
 assignment ::= IDENTIFICADOR:i ASIGNACION expression:e
                ;
 
+opt_expression ::= /* empty */
+                 | expression;
+
+
 expression ::= arithmetic_expr:a
              | relational_expr:r
              | logical_expr:l
@@ -144,7 +148,6 @@ expression ::= arithmetic_expr:a
              | IDENTIFICADOR:i
              | PARENTESIS_ABRE expression:e PARENTESIS_CIERRA
              | CORCHETE_ABRE expression:e CORCHETE_CIERRA
-             | /* empty */
              ;
 
 literal ::= LIT_ENTERO
@@ -200,21 +203,17 @@ while_statement ::= WHILE PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE_A
 :}
                  ;
 
-for_statement ::= FOR PARENTESIS_ABRE for_initialization:fi FIN_EXPRESION expression:e FIN_EXPRESION for_update:fu PARENTESIS_CIERRA LLAVE_ABRE {:
-    scopeStack.push(scopeStack.peek()+1);  // Nuevo scope para el bloque for
-:} statements:s LLAVE_CIERRA {:
-    scopeStack.pop();  // Regresar al scope anterior
-:}
+for_statement ::= FOR PARENTESIS_ABRE for_initialization:fi FIN_EXPRESION opt_expression:c FIN_EXPRESION for_update:fu PARENTESIS_CIERRA LLAVE_ABRE statements:bloque LLAVE_CIERRA
                 ;
 
-for_initialization ::= var_declaration:v
-                     | assignment:a
-                     | /* empty */
-                     ;
+for_initialization ::= assignment
+                     | var_declaration
+                     | /* vacío */;
 
-for_update ::= assignment:a
-          | /* empty */
-          ;
+for_update ::= assignment
+             | arithmetic_expr:e
+             | /* vacío */;
+
 
 switch_statement ::= SWITCH PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE_ABRE {:
     scopeStack.push(scopeStack.peek()+1);  // Nuevo scope para el bloque switch
