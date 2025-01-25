@@ -178,9 +178,7 @@ expression ::= arithmetic_expr:a
              | function_call
              ;
 
-array_access ::= IDENTIFICADOR:i CORCHETE_ABRE expression:e CORCHETE_CIERRA {:
-    // Aquí se manejan las operaciones con arreglos, si es necesario
-:}
+array_access ::= IDENTIFICADOR:i CORCHETE_ABRE expression:e CORCHETE_CIERRA
                ;
 
 literal ::= LIT_ENTERO
@@ -199,6 +197,8 @@ arithmetic_expr ::= expression:e1 SUMA expression:e2
                  | RESTA expression:e
                  | expression:e INCREMENTO
                  | expression:e DECREMENTO
+                 | DECREMENTO expression:e
+                 | INCREMENTO expression:e
                  ;
 
 relational_expr ::= expression:e1 MENOR expression:e2

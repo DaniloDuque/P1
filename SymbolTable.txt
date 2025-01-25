@@ -3,16 +3,9 @@ SymbolInfo{lexema='quien', tipo='INCREMENTO', scope='0', linea=2, columna=87}
 SymbolInfo{lexema='navidad', tipo='SUMA', scope='0', linea=2, columna=63}
 SymbolInfo{lexema='navidad', tipo='SUMA', scope='0', linea=5, columna=14}
 SymbolInfo{lexema='envia', tipo='RETURN', scope='0', linea=5, columna=4}
-SymbolInfo{lexema='_x_', tipo='IDENTIFICADOR', scope='0', linea=2, columna=22}
-SymbolInfo{lexema='_x_', tipo='IDENTIFICADOR', scope='0', linea=2, columna=46}
-SymbolInfo{lexema='_x_', tipo='IDENTIFICADOR', scope='0', linea=2, columna=83}
-SymbolInfo{lexema='_x_', tipo='IDENTIFICADOR', scope='0', linea=3, columna=17}
 SymbolInfo{lexema='_x_', tipo='Variable', scope='0', linea=3, columna=17}
-SymbolInfo{lexema='_x_', tipo='IDENTIFICADOR', scope='0', linea=5, columna=10}
 SymbolInfo{lexema='rodolfo', tipo='ENTERO', scope='0', linea=1, columna=4}
 SymbolInfo{lexema=',', tipo='COMA', scope='0', linea=5, columna=73}
-SymbolInfo{lexema='_suma_', tipo='IDENTIFICADOR', scope='0', linea=5, columna=22}
-SymbolInfo{lexema='_suma_', tipo='IDENTIFICADOR', scope='0', linea=5, columna=40}
 SymbolInfo{lexema='abreregalo', tipo='PARENTESIS_ABRE', scope='0', linea=2, columna=11}
 SymbolInfo{lexema='abreregalo', tipo='PARENTESIS_ABRE', scope='0', linea=5, columna=29}
 SymbolInfo{lexema='abreregalo', tipo='PARENTESIS_ABRE', scope='0', linea=5, columna=47}
@@ -28,10 +21,8 @@ SymbolInfo{lexema='0', tipo='LIT_ENTERO', scope='0', linea=2, columna=34}
 SymbolInfo{lexema='bromista', tipo='FLOTANTE', scope='0', linea=3, columna=8}
 SymbolInfo{lexema='4', tipo='LIT_ENTERO', scope='0', linea=2, columna=71}
 SymbolInfo{lexema='4', tipo='LIT_ENTERO', scope='0', linea=5, columna=58}
-SymbolInfo{lexema='_i_', tipo='IDENTIFICADOR', scope='0', linea=2, columna=59}
 SymbolInfo{lexema='5', tipo='LIT_ENTERO', scope='0', linea=1, columna=29}
 SymbolInfo{lexema='5', tipo='LIT_ENTERO', scope='0', linea=5, columna=75}
-SymbolInfo{lexema='_numero_', tipo='IDENTIFICADOR', scope='0', linea=1, columna=12}
 SymbolInfo{lexema='_numero_', tipo='Variable', scope='0', linea=1, columna=12}
 SymbolInfo{lexema='entrega', tipo='ASIGNACION', scope='0', linea=1, columna=21}
 SymbolInfo{lexema='entrega', tipo='ASIGNACION', scope='0', linea=2, columna=26}

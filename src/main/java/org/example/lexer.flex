@@ -333,7 +333,6 @@ booleano        = (true|false)
 
 /* --- Sección de identificadores --- */
 {identificador}          {
-    symbolTable.addSymbol(yytext(), "IDENTIFICADOR", yyline, yycolumn);
     return new Symbol(sym.IDENTIFICADOR, yyline, yycolumn, yytext());
 }
 

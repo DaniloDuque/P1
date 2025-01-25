@@ -419,8 +419,6 @@ public class Lexer implements java_cup.runtime.Scanner {
     // Tabla de símbolos
     SymbolTable symbolTable = new SymbolTable();
 
-    Stack<String> scopeStack = new Stack<>();
-
     // Método para obtener la tabla de símbolos
     public SymbolTable getSymbolTable() {
         return symbolTable;
