@@ -3,5 +3,5 @@ _verano_ abrecuento
     duende abreregalo _x_ entrega 0 finregalo _x_ snowball _i_ navidad 4 finregalo _x_ quien cierraregalo abrecuento
         bromista _x_ finregalo
     cierracuento
-    envia _x_ finregalo
+    envia _x_ navidad _suma_ abreregalo _suma_ abreregalo 4 cierraregalo , 5 cierraregalo finregalo
 cierracuento

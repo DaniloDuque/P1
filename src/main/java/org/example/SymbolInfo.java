@@ -3,12 +3,12 @@ package org.example;
 public class SymbolInfo {
     private String lexema;
     private String tipo;
-    private String scope; // Alcance del símbolo
+    private int scope; // Alcance del símbolo
     private int linea;
     private int columna;
 
     // Constructor
-    public SymbolInfo(String lexema, String tipo, String scope, int linea, int columna) {
+    public SymbolInfo(String lexema, String tipo, int scope, int linea, int columna) {
         this.lexema = lexema;
         this.tipo = tipo;
         this.scope = scope;
@@ -20,7 +20,7 @@ public class SymbolInfo {
     public SymbolInfo(String lexema, String tipo, int linea, int columna) {
         this.lexema = lexema;
         this.tipo = tipo;
-        this.scope = "global";
+        this.scope = 0;
         this.linea = linea;
         this.columna = columna;
     }
@@ -44,7 +44,7 @@ public class SymbolInfo {
         return tipo;
     }
 
-    public String getScope() {
+    public int getScope() {
         return scope;
     }
 
@@ -64,7 +64,7 @@ public class SymbolInfo {
         this.tipo = tipo;
     }
 
-    public void setScope(String scope) {
+    public void setScope(int scope) {
         this.scope = scope;
     }
 

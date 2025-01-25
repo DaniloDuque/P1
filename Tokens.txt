@@ -1,6 +1,7 @@
 Tokens encontrados
 Lexema: quien
 Lexema: navidad
+Lexema: navidad
 Lexema: envia
 Lexema: _x_
 Lexema: _x_
@@ -9,6 +10,11 @@ Lexema: _x_
 Lexema: _x_
 Lexema: _x_
 Lexema: rodolfo
+Lexema: ,
+Lexema: _suma_
+Lexema: _suma_
+Lexema: abreregalo
+Lexema: abreregalo
 Lexema: abreregalo
 Lexema: finregalo
 Lexema: finregalo
@@ -16,10 +22,14 @@ Lexema: finregalo
 Lexema: finregalo
 Lexema: finregalo
 Lexema: cierraregalo
+Lexema: cierraregalo
+Lexema: cierraregalo
 Lexema: 0
 Lexema: bromista
 Lexema: 4
+Lexema: 4
 Lexema: _i_
+Lexema: 5
 Lexema: 5
 Lexema: _numero_
 Lexema: _numero_
