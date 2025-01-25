@@ -1,4 +1,10 @@
 package org.example.node;
 
-public class FuncDeclNode {
+import org.example.generator.ASTVisitor;
+
+public class FuncDeclNode extends ASTNode {
+    @Override
+    public void accept(ASTVisitor visitor) {
+
+    }
 }

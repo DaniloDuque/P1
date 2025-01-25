@@ -1,4 +1,10 @@
 package org.example.node;
 
-public class SwitchNode {
+import org.example.generator.ASTVisitor;
+
+public class SwitchNode extends ASTNode{
+    @Override
+    public void accept(ASTVisitor visitor) {
+
+    }
 }

@@ -1,4 +1,10 @@
 package org.example.node;
 
-public class ForNode {
+import org.example.generator.ASTVisitor;
+
+public class ForNode extends ASTNode {
+    @Override
+    public void accept(ASTVisitor visitor) {
+
+    }
 }

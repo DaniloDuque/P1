@@ -1,4 +1,4 @@
-package org.example;
+package org.example.table;
 
 public class SymbolInfo {
     private String lexema;

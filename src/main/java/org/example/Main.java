@@ -1,18 +1,17 @@
 package org.example;
 
-import org.example.Lexer;
-import org.example.SymbolInfo;
-import org.example.SymbolTable;
-import org.example.sym;
+import org.example.cup.Parser;
+import org.example.lexer.Lexer;
+import org.example.table.SymbolInfo;
 
+import java.beans.JavaBean;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Scanner;
+
 
 public class Main {
     public static void main(String[] args) {

@@ -1,10 +1,7 @@
 package org.example;
 
 import java_cup.runtime.*;
-import java.util.HashMap;
-import org.example.SymbolTable;
-import org.example.sym;
-import java.util.Stack;
+import org.example.cup.sym;import org.example.table.SymbolTable;
 
 %%
 
@@ -17,14 +14,14 @@ import java.util.Stack;
 
 %{
     // Tabla de símbolos
-    SymbolTable symbolTable = new SymbolTable();
+        SymbolTable symbolTable = new SymbolTable();
 
-    // Método para obtener la tabla de símbolos
-    public SymbolTable getSymbolTable() {
-        return symbolTable;
-    }
+        // Método para obtener la tabla de símbolos
+        public SymbolTable getSymbolTable() {
+            return symbolTable;
+        }
 
-%}
+    %}
 
 // Definiciones regulares
 _verano_             = _verano_
