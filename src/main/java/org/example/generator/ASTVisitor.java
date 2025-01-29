@@ -18,8 +18,9 @@ public interface ASTVisitor {
     void visit(LiteralNode node);
     void visit(LogicalExprNode node);
     void visit(RelationalExprNode node);
-    void vist(ReturnNode node);
+    void visit(ReturnNode node);
     void visit(SwitchNode node);
+    void visit(SwitchCaseNode node);
     void visit(VarDeclNode node);
     void visit(WhileNode node);
     void write(File file, String code);
