@@ -1,7 +1,11 @@
-package org.example;
+// Terminal symbols
+package org.example.cup;
 
 import java_cup.runtime.*;
 import java.util.Stack;
+import org.example.node.*;
+import org.example.table.*;
+import org.example.generator.*;
 
 parser code {:
 
@@ -43,7 +47,6 @@ parser code {:
 
 :}
 
-/* Tokens */
 terminal Integer ENTERO;
 terminal Float FLOTANTE;
 terminal Character CARACTER;
@@ -57,18 +60,18 @@ terminal MAIN, READ, LIT_ENTERO, LIT_FLOTANTE, LIT_CADENA, LIT_CHAR, LIT_BOOL;
 terminal LLAVE_ABRE, LLAVE_CIERRA, PARENTESIS_ABRE, PARENTESIS_CIERRA, FIN_EXPRESION;
 terminal IDENTIFICADOR, ERROR;
 
-/* Non-terminals */
-non terminal Object program;
-non terminal Object func_declarations, func_declaration, params_opt, param_list;
-non terminal Object param, type, statement, statements;
-non terminal Object var_declaration, assignment, array_declaration;
-non terminal Object expression, arithmetic_expr, array_access;
-non terminal Object relational_expr, logical_expr;
-non terminal Object if_statement, else_opt, while_statement, for_statement;
-non terminal Object switch_statement, cases, case_statement, default_opt;
-non terminal Object for_initialization, for_update, opt_expression;
-non terminal Object io_statement, element_list, opt_equals_value;
-non terminal Object literal, error_nterm, function_call, arg_list;
+// Non-terminals
+non terminal ASTNode program;
+non terminal ASTNode func_declarations, func_declaration, params_opt, param_list;
+non terminal ASTNode param, type, statement, statements;
+non terminal ASTNode var_declaration, assignment, array_declaration;
+non terminal ASTNode expression, arithmetic_expr, array_access;
+non terminal ASTNode relational_expr, logical_expr;
+non terminal ASTNode if_statement, else_opt, while_statement, for_statement;
+non terminal ASTNode switch_statement, cases, case_statement, default_opt;
+non terminal ASTNode for_initialization, for_update, opt_expression;
+non terminal ASTNode io_statement, element_list, opt_equals_value;
+non terminal ASTNode literal, error_nterm, function_call, arg_list;
 
 /* Precedences */
 precedence left OR;
@@ -84,140 +87,221 @@ precedence right INCREMENTO, DECREMENTO;
 /* Grammar rules */
 
 program ::= func_declarations:f MAIN LLAVE_ABRE statements:s LLAVE_CIERRA
+          {: RESULT = new ProgramNode(f, s); :}
           | MAIN LLAVE_ABRE statements:s LLAVE_CIERRA
+          {: RESULT = new ProgramNode(null, s); :}
           ;
 
 func_declarations ::= func_declaration:f func_declarations:fs
+                   {: RESULT = new FuncDeclNode(f, fs); :}
                    | func_declaration:f
+                   {: RESULT = new FuncDeclNode(f, null); :}
                    ;
 
 func_declaration ::= type:t IDENTIFICADOR:i PARENTESIS_ABRE params_opt:p PARENTESIS_CIERRA LLAVE_ABRE {:
     scopeStack.push(scopeStack.peek() + 1);  // Nuevo scope para la función
 :} statements:s LLAVE_CIERRA {:
     scopeStack.pop();  // Regresar al scope anterior
+    RESULT = new FuncDeclNode(t.toString(), i.toString(), p, s);
 :}
                   ;
 
 type ::= ENTERO
+       {: RESULT = "int"; :}
        | FLOTANTE
+       {: RESULT = "float"; :}
        | BOOLEANO
+       {: RESULT = "boolean"; :}
        | CARACTER
+       {: RESULT = "char"; :}
        | CADENA
+       {: RESULT = "string"; :}
        ;
 
 params_opt ::= param_list:p
+             {: RESULT = p; :}
              | /* empty */
+             {: RESULT = null; :}
              ;
 
 param_list ::= param:p COMA param_list:pl
+             {: RESULT = new ParamListNode(p, pl); :}
              | param:p
+             {: RESULT = new ParamListNode(p, null); :}
              ;
 
 param ::= type:t IDENTIFICADOR:i {:
         symbolTable.addSymbol(i.toString(), (t == null) ? "parametro" : t.toString(), scopeStack.peek(), ileft, iright);
+        RESULT = new ParamNode(t.toString(), i.toString());
 :}
         ;
 
 statements ::= statement:s statements:ss
+             {: RESULT = new StatementsNode(s, ss); :}
              | /* empty */
+             {: RESULT = null; :}
              ;
 
 statement ::= var_declaration:v FIN_EXPRESION
+            {: RESULT = v; :}
             | assignment:a  FIN_EXPRESION
+            {: RESULT = a; :}
             | array_declaration:ad FIN_EXPRESION
+            {: RESULT = ad; :}
             | if_statement:i
+            {: RESULT = i; :}
             | while_statement:w
+            {: RESULT = w; :}
             | for_statement:f
+            {: RESULT = f; :}
             | switch_statement:sw
+            {: RESULT = sw; :}
             | io_statement:io FIN_EXPRESION
+            {: RESULT = io; :}
             | function_call:fc
+            {: RESULT = fc; :}
             | RETURN opt_expression:e FIN_EXPRESION
+            {: RESULT = new ReturnNode(e); :}
             | BREAK FIN_EXPRESION
+            {: RESULT = new BreakNode(); :}
             | error_nterm:e
+            {: RESULT = e; :}
             ;
 
 function_call ::= IDENTIFICADOR:i PARENTESIS_ABRE arg_list:args PARENTESIS_CIERRA
+                {: RESULT = new FunctionCallNode(i.toString(), args); :}
                 ;
 
 arg_list ::= /* empty */
+           {: RESULT = null; :}
            | expression:a COMA arg_list:al
+           {: RESULT = new ArgListNode(a, al); :}
            | expression:a
+           {: RESULT = new ArgListNode(a, null); :}
            ;
 
 array_declaration ::= type:t IDENTIFICADOR:i CORCHETE_ABRE CORCHETE_CIERRA ASIGNACION LLAVE_ABRE element_list:el LLAVE_CIERRA
+                    {: RESULT = new ArrayDeclNode(t.toString(), i.toString(), el); :}
                     | type:t IDENTIFICADOR:i CORCHETE_ABRE expression:e CORCHETE_CIERRA
+                    {: RESULT = new ArrayDeclNode(t.toString(), i.toString(), e); :}
                     ;
 
 element_list ::= expression:e COMA element_list:el
+               {: RESULT = new ElementListNode(e, el); :}
                | expression:e
+               {: RESULT = new ElementListNode(e, null); :}
                ;
 
-opt_equals_value ::= ASIGNACION expression | /* empty */ ;
+opt_equals_value ::= ASIGNACION expression:e
+                   {: RESULT = e; :}
+                   | /* empty */
+                   {: RESULT = null; :}
+                   ;
 
-var_declaration ::= type:t IDENTIFICADOR:i opt_equals_value
+var_declaration ::= type:t IDENTIFICADOR:i opt_equals_value:ov
                     {:
                         symbolTable.addSymbol(i.toString(), (t == null) ? "Variable" : t.toString(), scopeStack.peek(), ileft, iright);
+                        RESULT = new VarDeclNode(t.toString(), i.toString(), ov);
                     :}
                     ;
 
 assignment ::= IDENTIFICADOR:i ASIGNACION expression:e
+               {: RESULT = new AssignNode(i.toString(), e); :}
                ;
 
 opt_expression ::= /* empty */
-                 | expression;
-
+                 {: RESULT = null; :}
+                 | expression:e
+                 {: RESULT = e; :}
+                 ;
 
 expression ::= arithmetic_expr:a
+             {: RESULT = a; :}
              | relational_expr:r
+             {: RESULT = r; :}
              | logical_expr:l
+             {: RESULT = l; :}
              | literal:l
+             {: RESULT = l; :}
              | IDENTIFICADOR:i
+             {: RESULT = new IdentifierNode(i.toString()); :}
              | PARENTESIS_ABRE expression:e PARENTESIS_CIERRA
+             {: RESULT = e; :}
              | CORCHETE_ABRE expression:e CORCHETE_CIERRA
-             | array_access
-             | function_call
+             {: RESULT = e; :}
+             | array_access:aa
+             {: RESULT = aa; :}
+             | function_call:fc
+             {: RESULT = fc; :}
              ;
 
 array_access ::= IDENTIFICADOR:i CORCHETE_ABRE expression:e CORCHETE_CIERRA
+               {: RESULT = new ArrayAccessNode(i.toString(), e); :}
                ;
 
 literal ::= LIT_ENTERO
+          {: RESULT = new LiteralNode(Integer.parseInt(yytext())); :}
           | LIT_FLOTANTE
+          {: RESULT = new LiteralNode(Float.parseFloat(yytext())); :}
           | LIT_CADENA
+          {: RESULT = new LiteralNode(yytext()); :}
           | LIT_CHAR
+          {: RESULT = new LiteralNode(yytext().charAt(0)); :}
           | LIT_BOOL
+          {: RESULT = new LiteralNode(Boolean.parseBoolean(yytext())); :}
           ;
 
 arithmetic_expr ::= expression:e1 SUMA expression:e2
+                 {: RESULT = new ArithmeticExprNode("+", e1, e2); :}
                  | expression:e1 RESTA expression:e2
+                 {: RESULT = new ArithmeticExprNode("-", e1, e2); :}
                  | expression:e1 MULTIPLICACION expression:e2
+                 {: RESULT = new ArithmeticExprNode("*", e1, e2); :}
                  | expression:e1 DIVISION expression:e2
+                 {: RESULT = new ArithmeticExprNode("/", e1, e2); :}
                  | expression:e1 MODULO expression:e2
+                 {: RESULT = new ArithmeticExprNode("%", e1, e2); :}
                  | expression:e1 POTENCIA expression:e2
+                 {: RESULT = new ArithmeticExprNode("^", e1, e2); :}
                  | RESTA expression:e
+                 {: RESULT = new ArithmeticExprNode("-", new LiteralNode(0), e); :}
                  | expression:e INCREMENTO
+                 {: RESULT = new ArithmeticExprNode("++", e, null); :}
                  | expression:e DECREMENTO
+                 {: RESULT = new ArithmeticExprNode("--", e, null); :}
                  | DECREMENTO expression:e
+                 {: RESULT = new ArithmeticExprNode("--", e, null); :}
                  | INCREMENTO expression:e
+                 {: RESULT = new ArithmeticExprNode("++", e, null); :}
                  ;
 
 relational_expr ::= expression:e1 MENOR expression:e2
+                 {: RESULT = new RelationalExprNode("<", e1, e2); :}
                  | expression:e1 MENOR_IGUAL expression:e2
+                 {: RESULT = new RelationalExprNode("<=", e1, e2); :}
                  | expression:e1 MAYOR expression:e2
+                 {: RESULT = new RelationalExprNode(">", e1, e2); :}
                  | expression:e1 MAYOR_IGUAL expression:e2
+                 {: RESULT = new RelationalExprNode(">=", e1, e2); :}
                  | expression:e1 IGUAL expression:e2
+                 {: RESULT = new RelationalExprNode("==", e1, e2); :}
                  | expression:e1 DIFERENTE expression:e2
+                 {: RESULT = new RelationalExprNode("!=", e1, e2); :}
                  ;
 
 logical_expr ::= expression:e1 AND expression:e2
+               {: RESULT = new LogicalExprNode("&&", e1, e2); :}
                | expression:e1 OR expression:e2
+               {: RESULT = new LogicalExprNode("||", e1, e2); :}
                | NOT expression:e
+               {: RESULT = new LogicalExprNode("!", e, null); :}
                ;
 
 if_statement ::= IF PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE_ABRE {:
     scopeStack.push(scopeStack.peek() + 1);  // Nuevo scope para el bloque if
 :} statements:s LLAVE_CIERRA else_opt:eo {:
     scopeStack.pop();  // Regresar al scope anterior
+    RESULT = new IfNode(e, s, eo);
 :}
                ;
 
@@ -225,50 +309,69 @@ else_opt ::= ELSE LLAVE_ABRE {:
     scopeStack.push(scopeStack.peek() + 1);  // Nuevo scope para el bloque else
 :} statements:s LLAVE_CIERRA {:
     scopeStack.pop();  // Regresar al scope anterior
+    RESULT = s;
 :}
            | /* empty */
+           {: RESULT = null; :}
            ;
 
 while_statement ::= WHILE PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE_ABRE {:
     scopeStack.push(scopeStack.peek() + 1);  // Nuevo scope para el bloque while
 :} statements:s LLAVE_CIERRA {:
     scopeStack.pop();  // Regresar al scope anterior
+    RESULT = new WhileNode(e, s);
 :}
                  ;
 
 for_statement ::= FOR PARENTESIS_ABRE for_initialization:fi FIN_EXPRESION opt_expression:c FIN_EXPRESION for_update:fu PARENTESIS_CIERRA LLAVE_ABRE statements:bloque LLAVE_CIERRA
+                {: RESULT = new ForNode(fi, c, fu, bloque); :}
                 ;
 
-for_initialization ::= assignment
-                     | var_declaration
-                     | /* empty */;
+for_initialization ::= assignment:a
+                     {: RESULT = a; :}
+                     | var_declaration:v
+                     {: RESULT = v; :}
+                     | /* empty */
+                     {: RESULT = null; :}
+                     ;
 
-for_update ::= assignment
+for_update ::= assignment:a
+             {: RESULT = a; :}
              | arithmetic_expr:e
-             | /* empty */;
-
+             {: RESULT = e; :}
+             | /* empty */
+             {: RESULT = null; :}
+             ;
 
 switch_statement ::= SWITCH PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE_ABRE {:
     scopeStack.push(scopeStack.peek() + 1);  // Nuevo scope para el bloque switch
 :} cases:c default_opt:dfo LLAVE_CIERRA {:
     scopeStack.pop();  // Regresar al scope anterior
+    RESULT = new SwitchNode(e, c, dfo);
 :}
                      ;
 
 cases ::= case_statement:c cases:cs
+        {: RESULT = new CasesNode(c, cs); :}
         | /* empty */
+        {: RESULT = null; :}
         ;
 
 case_statement ::= CASE literal:l DOS_PUNTOS statements:s
+                 {: RESULT = new CaseNode(l, s); :}
                  ;
 
 default_opt ::= DEFAULT DOS_PUNTOS statements:s
+              {: RESULT = s; :}
               | /* empty */
+              {: RESULT = null; :}
               ;
 
 io_statement ::= PRINT PARENTESIS_ABRE expression:e PARENTESIS_CIERRA
+               {: RESULT = new PrintNode(e); :}
                | READ PARENTESIS_ABRE IDENTIFICADOR:i PARENTESIS_CIERRA
+               {: RESULT = new ReadNode(i.toString()); :}
                ;
 
-error_nterm ::= ERROR {: handleError("Error encontrado", null); :}
+error_nterm ::= ERROR {: handleError("Error encontrado", null); RESULT = new ErrorNode(); :}
           ;

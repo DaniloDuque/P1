@@ -6,7 +6,7 @@ public class FileWriter implements Writer {
 
     private File file;
 
-    public FileWriter(String fileName) {
+    public FileWriter(File fileName) {
 
     }
     @Override

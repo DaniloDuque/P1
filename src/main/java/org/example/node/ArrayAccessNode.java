@@ -21,8 +21,8 @@ public class ArrayAccessNode extends ASTNode {
     }
 
     @Override
-    public void accept(ASTVisitor visitor) {
-        visitor.visit(this);
+    public String accept(ASTVisitor visitor) {
+        return visitor.visit(this);
     }
 
 }
