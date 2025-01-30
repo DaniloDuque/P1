@@ -352,13 +352,13 @@ switch_statement ::= SWITCH PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE
                      ;
 
 cases ::= case_statement:c cases:cs
-        {: RESULT = new CasesNode(c, cs); :}
+        {: RESULT = new SwitchCasesNode(c, cs); :}
         | /* empty */
         {: RESULT = null; :}
         ;
 
 case_statement ::= CASE literal:l DOS_PUNTOS statements:s
-                 {: RESULT = new CaseNode(l, s); :}
+                 {: RESULT = new SwtichCaseNode(l, s); :}
                  ;
 
 default_opt ::= DEFAULT DOS_PUNTOS statements:s
