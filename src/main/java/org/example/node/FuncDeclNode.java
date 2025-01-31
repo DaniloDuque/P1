@@ -2,29 +2,44 @@ package org.example.node;
 
 import org.example.generator.ASTVisitor;
 
-import java.util.List;
-
 public class FuncDeclNode extends ASTNode {
-    private String functionName;
-    private List<String> parameters;
-    private ASTNode body;
+    private String returnType; // Tipo de retorno de la función (ej: "int", "float")
+    private String functionName; // Nombre de la función
+    private ASTNode parameters; // Lista de parámetros (ParamListNode)
+    private ASTNode body; // Cuerpo de la función (StatementsNode o similar)
 
-    public FuncDeclNode(String functionName, List<String> parameters, ASTNode body) {
+    public FuncDeclNode(String returnType, String functionName, ASTNode parameters, ASTNode body) {
+        this.returnType = returnType;
         this.functionName = functionName;
         this.parameters = parameters;
         this.body = body;
+    }
+
+    // Getters
+    public String getReturnType() {
+        return returnType;
     }
 
     public String getFunctionName() {
         return functionName;
     }
 
-    public List<String> getParameters() {
+    public ASTNode getParameters() {
         return parameters;
     }
 
     public ASTNode getBody() {
         return body;
+    }
+
+    @Override
+    public String toString() {
+        return "FuncDeclNode{" +
+                "returnType='" + returnType + '\'' +
+                ", functionName='" + functionName + '\'' +
+                ", parameters=" + parameters +
+                ", body=" + body +
+                '}';
     }
 
     @Override

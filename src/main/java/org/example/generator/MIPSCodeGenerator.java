@@ -240,36 +240,51 @@ public class MIPSCodeGenerator implements ASTVisitor {
     @Override
     public String visit(FuncDeclNode node) {
         StringBuilder code = new StringBuilder();
+        code.append(node.getFunctionName()).append(":").append("\n");
 
-        // Get function name
-        String functionName = node.getFunctionName();
+        // Prologue
+        code.append("sw $ra, 0($sp)\n");
+        code.append("sw $fp, -4($sp)\n");
+        code.append("move $fp, $sp\n");
+        code.append("addi $sp, $sp, -8\n");
 
-        // Write function label
-        code.append(functionName).append(":").append("\n");
-
-        // Save return address
-        code.append("sw $ra, 0($sp)").append("\n");  // Save return address
-        code.append("addi $sp, $sp, -4").append("\n");  // Adjust stack pointer
-
-        // Assign parameters to registers
-        List<String> parameters = node.getParameters();
-        for (int i = 0; i < parameters.size(); i++) {
-            String register = registerAllocator.allocateRegister();
-            code.append("sw ").append(register).append(", ").append(i * 4).append("($sp)").append("\n");  // Save parameter on stack
+        // Parámetros
+        if (node.getParameters() != null) {
+            code.append(node.getParameters().accept(this)).append("\n");
         }
 
-        // Generate code for function body
-        String bodyCode = node.getBody().accept(this);
-        code.append(bodyCode).append("\n");
+        // Cuerpo de la función
+        code.append(node.getBody().accept(this)).append("\n");
 
-        // Restore stack pointer and return address
-        code.append("addi $sp, $sp, ").append(parameters.size() * 4).append("\n");
-        code.append("lw $ra, 0($sp)").append("\n");  // Restore return address
-
-        // Generate function return
-        code.append("jr $ra").append("\n");
+        // Epilogue
+        code.append("lw $fp, -4($fp)\n");
+        code.append("lw $ra, 0($fp)\n");
+        code.append("addi $sp, $sp, 8\n");
+        code.append("jr $ra\n");
 
         return code.toString();
+    }
+
+    @Override
+    public String visit(ParamListNode node) {
+        StringBuilder code = new StringBuilder();
+        int paramOffset = 8; // Offset para los parámetros
+
+        for (int i = 0; i < node.getParams().size(); i++) {
+            ASTNode paramNode = node.getParams().get(i);
+            String paramRegister = paramNode.accept(this); // Obtiene el registro del parámetro
+            code.append("sw ").append(paramRegister).append(", ").append(paramOffset + i * 4).append("($fp)\n");
+        }
+
+        return code.toString();
+    }
+
+    @Override
+    public String visit(ParamNode node) {
+        // Asigna un registro para el parámetro (ej: $a0, $a1, etc.)
+        String register = registerAllocator.allocateRegister();
+        String argRegisterIndex = registerAllocator.allocateRegister();
+        return "move " + register + ", $a" + argRegisterIndex;
     }
 
     @Override
@@ -668,9 +683,7 @@ public class MIPSCodeGenerator implements ASTVisitor {
         StringBuilder code = new StringBuilder();
 
         // Generate code for global declarations
-        for (ASTNode decl : node.getGlobalDeclarations()) {
-            code.append(decl.accept(this)).append("\n");
-        }
+        code.append(node.getGlobalDeclarations().accept(this)).append("\n");
 
         // Generate code for the main function
         code.append(node.getMainFunction().accept(this)).append("\n");

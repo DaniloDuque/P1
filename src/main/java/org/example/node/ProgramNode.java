@@ -7,15 +7,15 @@ import org.example.generator.ASTVisitor;
 import java.util.List;
 
 public class ProgramNode extends ASTNode {
-    private List<ASTNode> globalDeclarations; // List of global declarations (e.g., functions, variables)
+    private ASTNode globalDeclarations; // List of global declarations (e.g., functions, variables)
     private ASTNode mainFunction; // The main function block
 
-    public ProgramNode(List<ASTNode> globalDeclarations, ASTNode mainFunction) {
+    public ProgramNode(ASTNode globalDeclarations, ASTNode mainFunction) {
         this.globalDeclarations = globalDeclarations;
         this.mainFunction = mainFunction;
     }
 
-    public List<ASTNode> getGlobalDeclarations() {
+    public ASTNode getGlobalDeclarations() {
         return globalDeclarations;
     }
 

@@ -102,20 +102,20 @@ func_declaration ::= type:t IDENTIFICADOR:i PARENTESIS_ABRE params_opt:p PARENTE
     scopeStack.push(scopeStack.peek() + 1);  // Nuevo scope para la función
 :} statements:s LLAVE_CIERRA {:
     scopeStack.pop();  // Regresar al scope anterior
-    RESULT = new FuncDeclNode(t.toString(), i.toString(), p, s);
+    RESULT = new FuncDeclNode(t, i.toString(), p, s);
 :}
-                  ;
+;
 
 type ::= ENTERO
-       {: RESULT = "int"; :}
+       {: RESULT = new TypeNode("int"); :}
        | FLOTANTE
-       {: RESULT = "float"; :}
+       {: RESULT = new TypeNode("float"); :}
        | BOOLEANO
-       {: RESULT = "boolean"; :}
+       {: RESULT = new TypeNode("boolean"); :}
        | CARACTER
-       {: RESULT = "char"; :}
+       {: RESULT = new TypeNode("char"); :}
        | CADENA
-       {: RESULT = "string"; :}
+       {: RESULT = new TypeNode("string"); :}
        ;
 
 params_opt ::= param_list:p
@@ -131,10 +131,17 @@ param_list ::= param:p COMA param_list:pl
              ;
 
 param ::= type:t IDENTIFICADOR:i {:
-        symbolTable.addSymbol(i.toString(), (t == null) ? "parametro" : t.toString(), scopeStack.peek(), ileft, iright);
-        RESULT = new ParamNode(t.toString(), i.toString());
+        symbolTable.addSymbol(i.toString(), t.getType(), scopeStack.peek(), ileft, iright);
+        RESULT = new ParamNode(t, i.toString());
 :}
         ;
+
+var_declaration ::= type:t IDENTIFICADOR:i opt_equals_value:ov
+                    {:
+                        symbolTable.addSymbol(i.toString(), t.getType(), scopeStack.peek(), ileft, iright);
+                        RESULT = new VarDeclNode(t, i.toString(), ov);
+                    :}
+                    ;
 
 statements ::= statement:s statements:ss
              {: RESULT = new StatementsNode(s, ss); :}
@@ -198,12 +205,6 @@ opt_equals_value ::= ASIGNACION expression:e
                    {: RESULT = null; :}
                    ;
 
-var_declaration ::= type:t IDENTIFICADOR:i opt_equals_value:ov
-                    {:
-                        symbolTable.addSymbol(i.toString(), (t == null) ? "Variable" : t.toString(), scopeStack.peek(), ileft, iright);
-                        RESULT = new VarDeclNode(t.toString(), i.toString(), ov);
-                    :}
-                    ;
 
 assignment ::= IDENTIFICADOR:i ASIGNACION expression:e
                {: RESULT = new AssignNode(i.toString(), e); :}

@@ -24,5 +24,7 @@ public interface ASTVisitor {
     String visit(VarDeclNode node);
     String visit(WhileNode node);
     String visit(ProgramNode node);
+    String visit(ParamListNode node);
+    String visit(ParamNode node);
     void write(String code);
 }
