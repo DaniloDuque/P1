@@ -4,7 +4,7 @@ import org.example.generator.ASTVisitor;
 import java.util.List;
 import java.util.ArrayList;
 
-public class StatementsNode extends ASTNode {
+public class StatementsNode implements ASTNode {
     private List<ASTNode> statements;
 
     public StatementsNode(ASTNode statement, ASTNode statementsNode) {

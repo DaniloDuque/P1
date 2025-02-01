@@ -3,7 +3,7 @@ package org.example.node;
 import org.example.generator.ASTVisitor;
 import org.example.node.ASTNode;
 
-public class ErrorNode extends ASTNode {
+public class ErrorNode implements ASTNode {
     private ASTNode errorMessage;
 
     public ErrorNode() {

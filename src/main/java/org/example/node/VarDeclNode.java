@@ -2,7 +2,7 @@ package org.example.node;
 
 import org.example.generator.ASTVisitor;
 
-public class VarDeclNode extends ASTNode {
+public class VarDeclNode implements ASTNode {
     private ASTNode varName;  // Nombre de la variable
     private ASTNode varType;  // Tipo de la variable (por ejemplo, "int")
     private ASTNode initValue;  // Valor inicial (puede ser null si no tiene inicialización)

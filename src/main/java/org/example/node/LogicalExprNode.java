@@ -2,7 +2,7 @@ package org.example.node;
 
 import org.example.generator.ASTVisitor;
 
-public class LogicalExprNode extends ASTNode {
+public class LogicalExprNode implements ASTNode {
     private ASTNode left;      // Operando izquierdo
     private ASTNode right;     // Operando derecho (en el caso de operaciones binarias)
     private String operator;   // Operador lógico (&&, ||, !)

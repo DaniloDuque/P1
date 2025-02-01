@@ -2,7 +2,7 @@ package org.example.node;
 
 import org.example.generator.ASTVisitor;
 
-public class ReadNode extends ASTNode {
+public class ReadNode implements ASTNode {
     private String identifier;
 
     public ReadNode(String identifier) {

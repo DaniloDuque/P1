@@ -2,7 +2,7 @@ package org.example.node;
 
 import org.example.generator.ASTVisitor;
 
-public class LiteralNode extends ASTNode {
+public class LiteralNode implements ASTNode {
     private String type, value;
 
     public LiteralNode(String type, String value) {

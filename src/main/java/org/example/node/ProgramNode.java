@@ -6,7 +6,7 @@ import org.example.generator.ASTVisitor;
 
 import java.util.List;
 
-public class ProgramNode extends ASTNode {
+public class ProgramNode implements ASTNode {
     private ASTNode globalDeclarations; // List of global declarations (e.g., functions, variables)
     private ASTNode mainFunction; // The main function block
 

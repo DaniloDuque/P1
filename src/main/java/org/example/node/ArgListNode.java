@@ -4,7 +4,7 @@ import org.example.generator.ASTVisitor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArgListNode extends ASTNode {
+public class ArgListNode implements ASTNode {
     private List<ASTNode> arguments; // List of argument expressions
 
     // Constructor for an empty argument list

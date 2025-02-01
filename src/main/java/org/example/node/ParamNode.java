@@ -2,7 +2,7 @@ package org.example.node;
 
 import org.example.generator.ASTVisitor;
 
-public class ParamNode extends ASTNode {
+public class ParamNode implements ASTNode {
     private ASTNode paramName; // Nombre del parámetro
     private ASTNode paramType; // Tipo del parámetro (ej: "int", "float")
 

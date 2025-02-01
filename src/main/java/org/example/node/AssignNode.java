@@ -2,7 +2,7 @@ package org.example.node;
 
 import org.example.generator.ASTVisitor;
 
-public class AssignNode extends ASTNode {
+public class AssignNode implements ASTNode {
     private ASTNode left;
     private ASTNode right;
 

@@ -3,7 +3,7 @@ package org.example.node;
 import org.example.generator.ASTVisitor;
 import org.example.node.ASTNode;
 
-public class ArrayAccessNode extends ASTNode {
+public class ArrayAccessNode implements ASTNode {
     private ASTNode array;
     private ASTNode index;
 

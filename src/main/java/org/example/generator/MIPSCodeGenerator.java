@@ -5,16 +5,14 @@ import org.example.register.MIPSRegisterAllocator;
 import org.example.register.RegisterAllocator;
 
 import java.io.BufferedWriter;
-import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 
 public class MIPSCodeGenerator implements ASTVisitor {
 
     private int labelCounter = 0; // For generating unique labels
     private BufferedWriter writer; // For writing MIPS code to a file
     private RegisterAllocator registerAllocator = new MIPSRegisterAllocator(); // For managing registers
-    private FileWriter fileWriter;
 
     // Helper method to generate a unique label
     private String generateLabel(String prefix) {
@@ -33,7 +31,12 @@ public class MIPSCodeGenerator implements ASTVisitor {
     @Override
     public String visit(ProgramNode node) {
         // Initialize the output file
-        fileWriter = new FileWriter(new File("output.asm"));
+        try {
+            writer = new BufferedWriter(new FileWriter("output.asm"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
 
         // Emit the .data section
         emit(".data");
@@ -50,7 +53,7 @@ public class MIPSCodeGenerator implements ASTVisitor {
 
         // Visit the main function
         emit("main:");
-        visit((FuncDeclNode )node.getMainFunction());
+        visit((FuncDeclNode) node.getMainFunction());
 
         // Exit the program
         emit("li $v0, 10"); // syscall for exit
@@ -172,10 +175,9 @@ public class MIPSCodeGenerator implements ASTVisitor {
 
     @Override
     public String visit(ParamListNode node) {
-        for(ASTNode n : node.getParams()) {
+        for (ASTNode n : node.getParams()) {
             visit((ParamNode) n);
         }
-
         return null; // Parameter list doesn't return a value
     }
 
@@ -216,120 +218,362 @@ public class MIPSCodeGenerator implements ASTVisitor {
         return resultReg;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Ocupamos de alguna manera poder visitar los expression nodes de cualquier tipo
-
-    @Override
-    public String visit(BreakNode node) {
-        return "";
-    }
-
-    @Override
-    public String visit(StatementsNode node) {
-        return "";
-    }
-
     @Override
     public String visit(ArithmeticExprNode node) {
-        return "";
-    }
+        // Allocate a register for the left operand
+        String leftRegister = registerAllocator.allocateRegister();
+        String leftCode = node.getLeft().accept(this); // Evaluate the left operand
+        emit(leftCode); // Emit the code for the left operand
 
-    @Override
-    public String visit(ArrayAccessNode node) {
-        return "";
-    }
+        // Allocate a register for the right operand
+        String rightRegister = registerAllocator.allocateRegister();
+        String rightCode = node.getRight().accept(this); // Evaluate the right operand
+        emit(rightCode); // Emit the code for the right operand
 
-    @Override
-    public String visit(ArrayDeclNode node) {
-        return "";
-    }
+        // Determine the MIPS instruction based on the operator
+        String operator = node.getOperator();
+        String mipsInstruction;
+        switch (operator) {
+            case "+": mipsInstruction = "add"; break;
+            case "-": mipsInstruction = "sub"; break;
+            case "*": mipsInstruction = "mul"; break;
+            case "/": mipsInstruction = "div"; break;
+            default: throw new IllegalArgumentException("Unsupported operator: " + operator);
+        }
 
-    @Override
-    public String visit(AssignNode node) {
-        return "";
-    }
+        // Allocate a register for the result
+        String resultRegister = registerAllocator.allocateRegister();
 
-    @Override
-    public String visit(ErrorNode node) {
-        return "";
-    }
+        // Emit the MIPS code for the operation
+        emit(mipsInstruction + " " + resultRegister + ", " + leftRegister + ", " + rightRegister);
 
-    @Override
-    public String visit(ForNode node) {
-        return "";
-    }
+        // Free the registers used for the left and right operands (they are no longer needed)
+        registerAllocator.freeRegister(leftRegister);
+        registerAllocator.freeRegister(rightRegister);
 
-    @Override
-    public String visit(IfNode node) {
-        return "";
+        return resultRegister; // Return the register where the result is stored
     }
 
     @Override
     public String visit(LogicalExprNode node) {
-        return "";
+        // Allocate a register for the left operand
+        String leftRegister = registerAllocator.allocateRegister();
+        String leftCode = node.getLeft().accept(this); // Evaluate the left operand
+        emit(leftCode); // Emit the code for the left operand
+
+        // Allocate a register for the right operand
+        String rightRegister = registerAllocator.allocateRegister();
+        String rightCode = node.getRight().accept(this); // Evaluate the right operand
+        emit(rightCode); // Emit the code for the right operand
+
+        // Determine the MIPS instruction based on the operator
+        String operator = node.getOperator();
+        String mipsInstruction;
+        switch (operator) {
+            case "&&": mipsInstruction = "and"; break;
+            case "||": mipsInstruction = "or"; break;
+            default: throw new IllegalArgumentException("Unsupported logical operator: " + operator);
+        }
+
+        // Allocate a register for the result
+        String resultRegister = registerAllocator.allocateRegister();
+
+        // Emit the MIPS code for the operation
+        emit(mipsInstruction + " " + resultRegister + ", " + leftRegister + ", " + rightRegister);
+
+        // Free the registers used for the left and right operands (they are no longer needed)
+        registerAllocator.freeRegister(leftRegister);
+        registerAllocator.freeRegister(rightRegister);
+
+        return resultRegister; // Return the register where the result is stored
+    }
+
+    @Override
+    public String visit(BreakNode node) {
+        // Generate a label for the end of the loop
+        String endLabel = generateLabel("end_loop");
+        emit("j " + endLabel); // Jump to the end of the loop
+        return null;
+    }
+
+    @Override
+    public String visit(StatementsNode node) {
+        // Visit each statement in the list
+        for (ASTNode stmt : node.getStatements()) {
+            stmt.accept(this);
+        }
+        return null;
+    }
+
+    @Override
+    public String visit(ArrayAccessNode node) {
+        // Get the array name and index
+        String arrayName = node.getArray().toString();
+        String indexRegister = node.getIndex().accept(this); // Evaluate the index expression
+
+        // Allocate a register for the result
+        String resultRegister = registerAllocator.allocateRegister();
+
+        // Calculate the address of the array element
+        emit("sll $t0, " + indexRegister + ", 2"); // Multiply index by 4 (word size)
+        emit("add $t0, $t0, " + arrayName); // Add base address of the array
+        emit("lw " + resultRegister + ", 0($t0)"); // Load the array element
+
+        // Free the index register
+        registerAllocator.freeRegister(indexRegister);
+
+        return resultRegister; // Return the register holding the array element
+    }
+
+    @Override
+    public String visit(ArrayDeclNode node) {
+        // Get the array name and size
+        String arrayName = node.getArrayName().toString();
+        //int size = node.getSize();
+        int size = 100;
+
+        // Allocate space for the array in the .data section
+        emit(".data");
+        emit(arrayName + ": .space " + (size * 4)); // Allocate size * 4 bytes (word-aligned)
+        emit(".text");
+
+        return null;
+    }
+
+    @Override
+    public String visit(AssignNode node) {
+        // Get the left-hand side (LHS) and right-hand side (RHS) of the assignment
+        String lhs = node.getLeft().accept(this); // Evaluate the LHS
+        String rhs = node.getRight().accept(this); // Evaluate the RHS
+
+        // Emit the MIPS code for the assignment
+        emit("sw " + rhs + ", " + lhs); // Store the RHS value into the LHS address
+
+        // Free the registers used for the LHS and RHS
+        registerAllocator.freeRegister(lhs);
+        registerAllocator.freeRegister(rhs);
+
+        return null;
+    }
+
+    @Override
+    public String visit(ErrorNode node) {
+        // Handle errors (e.g., print an error message)
+        emit("# Error: " + node.getErrorMessage());
+        return null;
+    }
+
+    @Override
+    public String visit(ForNode node) {
+        // Generate labels for the loop
+        String startLabel = generateLabel("start_loop");
+        String endLabel = generateLabel("end_loop");
+
+        // Visit the initialization statement
+        if (node.getInitialization() != null) {
+            visit((AssignNode) node.getInitialization());
+        }
+
+        // Emit the start label
+        emit(startLabel + ":");
+
+        // Visit the condition expression
+        if (node.getCondition() != null) {
+            String conditionRegister = node.getCondition().accept(this);
+            emit("beqz " + conditionRegister + ", " + endLabel); // Branch to end if condition is false
+            registerAllocator.freeRegister(conditionRegister);
+        }
+
+        // Visit the body of the loop
+        visit((StatementsNode) node.getBody());
+
+        // Visit the update statement
+        if (node.getUpdate() != null) {
+            visit((AssignNode) node.getUpdate());
+        }
+
+        // Jump back to the start of the loop
+        emit("j " + startLabel);
+
+        // Emit the end label
+        emit(endLabel + ":");
+
+        return null;
+    }
+
+    @Override
+    public String visit(IfNode node) {
+        // Generate labels for the if-else structure
+        String elseLabel = generateLabel("else");
+        String endLabel = generateLabel("end_if");
+
+        // Visit the condition expression
+        String conditionRegister = node.getCondition().accept(this);
+        emit("beqz " + conditionRegister + ", " + elseLabel); // Branch to else if condition is false
+        registerAllocator.freeRegister(conditionRegister);
+
+        // Visit the if body
+        visit((StatementsNode) node.getThenBlock());
+
+        // Jump to the end of the if-else structure
+        emit("j " + endLabel);
+
+        // Emit the else label
+        emit(elseLabel + ":");
+
+        // Visit the else body (if it exists)
+        if (node.getElseBlock() != null) {
+            visit((StatementsNode) node.getElseBlock());
+        }
+
+        // Emit the end label
+        emit(endLabel + ":");
+
+        return null;
     }
 
     @Override
     public String visit(RelationalExprNode node) {
-        return "";
+        // Allocate a register for the left operand
+        String leftRegister = registerAllocator.allocateRegister();
+        String leftCode = node.getLeft().accept(this); // Evaluate the left operand
+        emit(leftCode); // Emit the code for the left operand
+
+        // Allocate a register for the right operand
+        String rightRegister = registerAllocator.allocateRegister();
+        String rightCode = node.getRight().accept(this); // Evaluate the right operand
+        emit(rightCode); // Emit the code for the right operand
+
+        // Determine the MIPS instruction based on the operator
+        String operator = node.getOperator();
+        String mipsInstruction;
+        switch (operator) {
+            case "==": mipsInstruction = "seq"; break;
+            case "!=": mipsInstruction = "sne"; break;
+            case "<": mipsInstruction = "slt"; break;
+            case "<=": mipsInstruction = "sle"; break;
+            case ">": mipsInstruction = "sgt"; break;
+            case ">=": mipsInstruction = "sge"; break;
+            default: throw new IllegalArgumentException("Unsupported relational operator: " + operator);
+        }
+
+        // Allocate a register for the result
+        String resultRegister = registerAllocator.allocateRegister();
+
+        // Emit the MIPS code for the operation
+        emit(mipsInstruction + " " + resultRegister + ", " + leftRegister + ", " + rightRegister);
+
+        // Free the registers used for the left and right operands (they are no longer needed)
+        registerAllocator.freeRegister(leftRegister);
+        registerAllocator.freeRegister(rightRegister);
+
+        return resultRegister; // Return the register where the result is stored
     }
 
     @Override
     public String visit(ReturnNode node) {
-        return "";
+        // Visit the return expression (if it exists)
+        if (node.getReturnValue() != null) {
+            String resultRegister = node.getReturnValue().accept(this);
+            emit("move $v0, " + resultRegister); // Move the result into $v0
+            registerAllocator.freeRegister(resultRegister);
+        }
+
+        // Jump to the function epilogue
+        emit("j " + generateLabel("function_epilogue"));
+
+        return null;
     }
 
     @Override
     public String visit(VarDeclNode node) {
-        return "";
+        // Get the variable name and type
+        String varName = node.getVarName().toString();
+        String varType = node.getVarType().toString();
+
+        // Allocate space for the variable in the .data section
+        emit(".data");
+        emit(varName + ": .space 4"); // Allocate 4 bytes for the variable
+        emit(".text");
+
+        return null;
     }
 
     @Override
     public String visit(WhileNode node) {
-        return "";
+        // Generate labels for the loop
+        String startLabel = generateLabel("start_loop");
+        String endLabel = generateLabel("end_loop");
+
+        // Emit the start label
+        emit(startLabel + ":");
+
+        // Visit the condition expression
+        String conditionRegister = node.getCondition().accept(this);
+        emit("beqz " + conditionRegister + ", " + endLabel); // Branch to end if condition is false
+        registerAllocator.freeRegister(conditionRegister);
+
+        // Visit the body of the loop
+        visit((StatementsNode) node.getBody());
+
+        // Jump back to the start of the loop
+        emit("j " + startLabel);
+
+        // Emit the end label
+        emit(endLabel + ":");
+
+        return null;
     }
 
     @Override
     public String visit(ArgListNode node) {
-        return "";
+        // Visit each argument in the list
+        for (ASTNode arg : node.getArguments()) {
+            arg.accept(this);
+        }
+        return null;
     }
 
     @Override
     public String visit(ElementListNode node) {
-        return "";
+        // Visit each element in the list
+        for (ASTNode element : node.getElements()) {
+            element.accept(this);
+        }
+        return null;
     }
 
     @Override
     public String visit(PrintNode node) {
-        return "";
+        // Visit the expression to be printed
+        String resultRegister = node.getExpression().accept(this);
+
+        // Emit the MIPS code for printing
+        emit("li $v0, 1"); // syscall for printing an integer
+        emit("move $a0, " + resultRegister); // Move the result into $a0
+        emit("syscall");
+
+        // Free the result register
+        registerAllocator.freeRegister(resultRegister);
+
+        return null;
     }
 
     @Override
     public String visit(ReadNode node) {
-        return "";
+        // Get the variable name
+        String varName = node.getIdentifier().toString();
+
+        // Emit the MIPS code for reading an integer
+        emit("li $v0, 5"); // syscall for reading an integer
+        emit("syscall");
+        emit("sw $v0, " + varName); // Store the result in the variable
+
+        return null;
     }
 
     @Override
     public void write(String code) {
-
+        emit(code); // Use the emit method to write code to the output file
     }
-
 }

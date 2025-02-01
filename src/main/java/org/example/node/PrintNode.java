@@ -2,7 +2,7 @@ package org.example.node;
 
 import org.example.generator.ASTVisitor;
 
-public class PrintNode extends ASTNode {
+public class PrintNode implements ASTNode {
     private ASTNode expression;
 
     public PrintNode(ASTNode expression) {

@@ -2,7 +2,7 @@ package org.example.node;
 
 import org.example.generator.ASTVisitor;
 
-public class ArrayDeclNode extends ASTNode {
+public class ArrayDeclNode implements ASTNode {
     private ASTNode type;  // Nombre del arreglo
     private ASTNode name;     // Tamaño del arreglo
     private ASTNode opt;  // Tipo del arreglo (ENTERO, FLOTANTE, etc.)

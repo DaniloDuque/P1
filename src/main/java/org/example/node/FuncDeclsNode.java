@@ -4,7 +4,7 @@ import org.example.generator.ASTVisitor;
 
 import java.util.concurrent.atomic.AtomicStampedReference;
 
-public class FuncDeclsNode extends ASTNode {
+public class FuncDeclsNode implements ASTNode {
     private ASTNode funcDecl; // Current function declaration
     private ASTNode nextFuncDecls; // Next list of function declarations
 

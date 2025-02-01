@@ -2,7 +2,7 @@ package org.example.node;
 
 import org.example.generator.ASTVisitor;
 
-public class IfNode extends ASTNode {
+public class IfNode implements ASTNode {
     private ASTNode condition;  // La condición que se evalúa
     private ASTNode thenBlock;  // El bloque 'then' (si la condición es verdadera)
     private ASTNode elseBlock;  // El bloque 'else' (si la condición es falsa)

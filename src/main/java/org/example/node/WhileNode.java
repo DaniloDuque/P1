@@ -2,7 +2,7 @@ package org.example.node;
 
 import org.example.generator.ASTVisitor;
 
-public class WhileNode extends ASTNode {
+public class WhileNode implements ASTNode {
     private ASTNode condition;  // La condición booleana del while
     private ASTNode body;  // El cuerpo del bucle (nodo que contiene las instrucciones a ejecutar)
 

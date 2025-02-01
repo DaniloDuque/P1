@@ -2,7 +2,7 @@ package org.example.node;
 
 import org.example.generator.ASTVisitor;
 
-public class FuncDeclNode extends ASTNode {
+public class FuncDeclNode implements ASTNode {
     private ASTNode returnType; // Tipo de retorno de la función (ej: "int", "float")
     private ASTNode functionName; // Nombre de la función
     private ASTNode parameters; // Lista de parámetros (ParamListNode)

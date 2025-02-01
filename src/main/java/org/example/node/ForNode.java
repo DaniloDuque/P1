@@ -2,7 +2,7 @@ package org.example.node;
 
 import org.example.generator.ASTVisitor;
 
-public class ForNode extends ASTNode {
+public class ForNode implements ASTNode {
 
     private ASTNode initialization;   // Inicialización del bucle
     private ASTNode condition;        // Condición del bucle

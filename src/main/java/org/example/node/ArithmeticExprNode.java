@@ -2,7 +2,7 @@ package org.example.node;
 
 import org.example.generator.ASTVisitor;
 
-public class ArithmeticExprNode extends ASTNode {
+public class ArithmeticExprNode implements ASTNode {
 
     public ASTNode left;
     public String operator;
@@ -30,4 +30,5 @@ public class ArithmeticExprNode extends ASTNode {
     public String accept(ASTVisitor visitor) {
         return visitor.visit(this);
     }
+
 }

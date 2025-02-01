@@ -4,7 +4,7 @@ import org.example.generator.ASTVisitor;
 
 import java.util.List;
 
-public class FuncCallNode extends ASTNode {
+public class FuncCallNode implements ASTNode {
     private ASTNode functionName;
     private ASTNode arguments;
 

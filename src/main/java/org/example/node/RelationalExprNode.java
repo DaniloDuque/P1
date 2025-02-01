@@ -2,7 +2,7 @@ package org.example.node;
 
 import org.example.generator.ASTVisitor;
 
-public class RelationalExprNode extends ASTNode {
+public class RelationalExprNode implements ASTNode {
     private ASTNode left;      // Operando izquierdo
     private ASTNode right;     // Operando derecho
     private String operator;   // Operador relacional (==, !=, <, <=, >, >=)

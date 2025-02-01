@@ -2,7 +2,7 @@ package org.example.node;
 
 import org.example.generator.ASTVisitor;
 
-public class ReturnNode extends ASTNode {
+public class ReturnNode implements ASTNode {
     private ASTNode returnValue;  // El valor que se retorna
 
     public ReturnNode(ASTNode returnValue) {

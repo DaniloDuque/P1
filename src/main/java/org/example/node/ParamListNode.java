@@ -4,7 +4,7 @@ import org.example.generator.ASTVisitor;
 import java.util.List;
 import java.util.ArrayList;
 
-public class ParamListNode extends ASTNode {
+public class ParamListNode implements ASTNode {
     private List<ASTNode> params; // List of parameter nodes
 
     public ParamListNode(List<ASTNode> params) {
