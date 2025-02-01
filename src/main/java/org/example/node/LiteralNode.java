@@ -14,7 +14,7 @@ public class LiteralNode extends ASTNode {
         return value;
     }
 
-    private String getType(){ return type;}
+    public String getType(){ return type;}
 
     @Override
     public String accept(ASTVisitor visitor) {
