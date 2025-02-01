@@ -1375,7 +1375,10 @@ class CUP$Parser$actions {
           case 55: // literal ::= LIT_ENTERO 
             {
               ASTNode RESULT =null;
-		 RESULT = new LiteralNode("int", (String) $1.value); 
+		int litleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int litright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object lit = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RESULT = new LiteralNode("int", (String)lit); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literal",31, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1384,7 +1387,10 @@ class CUP$Parser$actions {
           case 56: // literal ::= LIT_FLOTANTE 
             {
               ASTNode RESULT =null;
-		 RESULT = new LiteralNode("float", (String) $1.value); 
+		int litleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int litright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object lit = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RESULT = new LiteralNode("float", (String)lit); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literal",31, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1393,7 +1399,10 @@ class CUP$Parser$actions {
           case 57: // literal ::= LIT_CADENA 
             {
               ASTNode RESULT =null;
-		 RESULT = new LiteralNode("string", (String) $1.value); 
+		int litleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int litright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object lit = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RESULT = new LiteralNode("string", (String)lit); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literal",31, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1402,7 +1411,10 @@ class CUP$Parser$actions {
           case 58: // literal ::= LIT_CHAR 
             {
               ASTNode RESULT =null;
-		 RESULT = new LiteralNode("char", (String) $1.value); 
+		int litleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int litright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object lit = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RESULT = new LiteralNode("char", (String)lit); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literal",31, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1411,7 +1423,10 @@ class CUP$Parser$actions {
           case 59: // literal ::= LIT_BOOL 
             {
               ASTNode RESULT =null;
-		 RESULT = new LiteralNode("bool", (String) $1.value); 
+		int litleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int litright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object lit = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RESULT = new LiteralNode("bool", (String)lit); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literal",31, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

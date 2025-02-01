@@ -1,4 +1,4 @@
-package org.example;
+package org.example.lexer;
 
 import java_cup.runtime.*;
 import org.example.cup.sym;import org.example.table.SymbolTable;
@@ -21,7 +21,7 @@ import org.example.cup.sym;import org.example.table.SymbolTable;
             return symbolTable;
         }
 
-    %}
+%}
 
 // Definiciones regulares
 _verano_             = _verano_
@@ -280,12 +280,12 @@ booleano        = (true|false)
 /* --- Sección de literales y valores --- */
 {entero}                 {
     symbolTable.addSymbol(yytext(), "LIT_ENTERO", yyline, yycolumn);
-    return new Symbol(sym.LIT_ENTERO, yyline, yycolumn, Integer.valueOf(yytext()));
+    return new Symbol(sym.LIT_ENTERO, yyline, yycolumn, yytext());
 }
 
 {flotante}               {
     symbolTable.addSymbol(yytext(), "LIT_FLOTANTE", yyline, yycolumn);
-    return new Symbol(sym.LIT_FLOTANTE, yyline, yycolumn, Float.valueOf(yytext()));
+    return new Symbol(sym.LIT_FLOTANTE, yyline, yycolumn, yytext());
 }
 
 {cadena}                 {
@@ -295,13 +295,15 @@ booleano        = (true|false)
 
 {caracter}               {
    symbolTable.addSymbol(yytext(), "LITERAL_CHAR", yyline, yycolumn);
-   return new Symbol(sym.LIT_CHAR, yyline, yycolumn);
+   return new Symbol(sym.LIT_CHAR, yyline, yycolumn, yytext());
 }
 
 {booleano}               {
     symbolTable.addSymbol(yytext(), "LIT_BOOL", yyline, yycolumn);
-    return new Symbol(sym.LIT_BOOL, yyline, yycolumn);
+    return new Symbol(sym.LIT_BOOL, yyline, yycolumn, yytext());
 }
+
+// ---------------------------------------------------------------------
 
 {abrecuento}             {
     symbolTable.addSymbol(yytext(), "LLAVE_ABRE", yyline, yycolumn);

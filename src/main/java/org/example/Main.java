@@ -1,7 +1,7 @@
 package org.example;
 
 import org.example.cup.Parser;
-import org.example.lexer.Lexer;
+import org.example.lexer.*;
 import org.example.table.SymbolInfo;
 
 import java.beans.JavaBean;

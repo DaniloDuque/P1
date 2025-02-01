@@ -240,16 +240,16 @@ array_access ::= IDENTIFICADOR:i CORCHETE_ABRE expression:e CORCHETE_CIERRA
                {: RESULT = new ArrayAccessNode(new IdentifierNode(i.toString()), e); :}
                ;
 
-literal ::= LIT_ENTERO
-          {: RESULT = new LiteralNode("int", yytext()); :}
-          | LIT_FLOTANTE
-          {: RESULT = new LiteralNode("float", yytext()); :}
-          | LIT_CADENA
-          {: RESULT = new LiteralNode("string", yytext()); :}
-          | LIT_CHAR
-          {: RESULT = new LiteralNode("char", yytext()); :}
-          | LIT_BOOL
-          {: RESULT = new LiteralNode("bool", yytext()); :}
+literal ::= LIT_ENTERO:lit
+          {: RESULT = new LiteralNode("int", (String)lit); :}
+          | LIT_FLOTANTE:lit
+          {: RESULT = new LiteralNode("float", (String)lit); :}
+          | LIT_CADENA:lit
+          {: RESULT = new LiteralNode("string", (String)lit); :}
+          | LIT_CHAR:lit
+          {: RESULT = new LiteralNode("char", (String)lit); :}
+          | LIT_BOOL:lit
+          {: RESULT = new LiteralNode("bool", (String)lit); :}
           ;
 
 arithmetic_expr ::= expression:e1 SUMA expression:e2
