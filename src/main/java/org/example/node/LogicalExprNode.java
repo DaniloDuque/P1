@@ -7,7 +7,7 @@ public class LogicalExprNode extends ASTNode {
     private ASTNode right;     // Operando derecho (en el caso de operaciones binarias)
     private String operator;   // Operador lógico (&&, ||, !)
 
-    public LogicalExprNode(ASTNode left, ASTNode right, String operator) {
+    public LogicalExprNode(ASTNode left, String operator, ASTNode right) {
         this.left = left;
         this.right = right;
         this.operator = operator;

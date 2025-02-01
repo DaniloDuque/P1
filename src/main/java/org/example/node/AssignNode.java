@@ -3,8 +3,8 @@ package org.example.node;
 import org.example.generator.ASTVisitor;
 
 public class AssignNode extends ASTNode {
-    private ASTNode left;  // Nodo a la izquierda del "=" (variable o acceso a arreglo)
-    private ASTNode right; // Nodo a la derecha del "=" (expresión a evaluar)
+    private ASTNode left;
+    private ASTNode right;
 
     public AssignNode(ASTNode left, ASTNode right) {
         this.left = left;

@@ -3,26 +3,24 @@ package org.example.node;
 import org.example.generator.ASTVisitor;
 
 public class ArrayDeclNode extends ASTNode {
-    private String arrayName;  // Nombre del arreglo
-    private int arraySize;     // Tamaño del arreglo
-    private String arrayType;  // Tipo del arreglo (ENTERO, FLOTANTE, etc.)
+    private ASTNode type;  // Nombre del arreglo
+    private ASTNode name;     // Tamaño del arreglo
+    private ASTNode opt;  // Tipo del arreglo (ENTERO, FLOTANTE, etc.)
+    private Boolean el;
 
-    public ArrayDeclNode(String arrayName, int arraySize, String arrayType) {
-        this.arrayName = arrayName;
-        this.arraySize = arraySize;
-        this.arrayType = arrayType;
+    public ArrayDeclNode(ASTNode type, ASTNode name, Boolean el, ASTNode opt) {
+        this.type = type;
+        this.name = name;
+        this.opt = opt;
+        this.el = el;
     }
 
-    public String getArrayName() {
-        return arrayName;
+    public ASTNode getArrayName() {
+        return name;
     }
 
-    public int getArraySize() {
-        return arraySize;
-    }
-
-    public String getArrayType() {
-        return arrayType;
+    public ASTNode getArrayType() {
+        return type;
     }
 
     @Override

@@ -3,20 +3,20 @@ package org.example.node;
 import org.example.generator.ASTVisitor;
 
 public class ParamNode extends ASTNode {
-    private String paramName; // Nombre del parámetro
-    private String paramType; // Tipo del parámetro (ej: "int", "float")
+    private ASTNode paramName; // Nombre del parámetro
+    private ASTNode paramType; // Tipo del parámetro (ej: "int", "float")
 
-    public ParamNode(String paramType, String paramName) {
+    public ParamNode(ASTNode paramType, ASTNode paramName) {
         this.paramType = paramType;
         this.paramName = paramName;
     }
 
     // Getters
-    public String getParamName() {
+    public ASTNode getParamName() {
         return paramName;
     }
 
-    public String getParamType() {
+    public ASTNode getParamType() {
         return paramType;
     }
 

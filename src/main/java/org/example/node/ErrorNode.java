@@ -4,13 +4,13 @@ import org.example.generator.ASTVisitor;
 import org.example.node.ASTNode;
 
 public class ErrorNode extends ASTNode {
-    private String errorMessage;
+    private ASTNode errorMessage;
 
-    public ErrorNode(String errorMessage) {
-        this.errorMessage = errorMessage;
+    public ErrorNode() {
+
     }
 
-    public String getErrorMessage() {
+    public ASTNode getErrorMessage() {
         return errorMessage;
     }
 

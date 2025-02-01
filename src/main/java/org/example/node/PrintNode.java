@@ -3,8 +3,19 @@ package org.example.node;
 import org.example.generator.ASTVisitor;
 
 public class PrintNode extends ASTNode {
+    private ASTNode expression;
+
+    public PrintNode(ASTNode expression) {
+        this.expression = expression;
+    }
+
+    public ASTNode getExpression() {
+        return expression;
+    }
+
     @Override
     public String accept(ASTVisitor visitor) {
-        return "";
+        return visitor.visit(this);
     }
 }
+

@@ -3,6 +3,7 @@ package org.example.node;
 import org.example.generator.ASTVisitor;
 
 public class ForNode extends ASTNode {
+
     private ASTNode initialization;   // Inicialización del bucle
     private ASTNode condition;        // Condición del bucle
     private ASTNode update;           // Actualización de la variable de control

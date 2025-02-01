@@ -7,7 +7,7 @@ public class RelationalExprNode extends ASTNode {
     private ASTNode right;     // Operando derecho
     private String operator;   // Operador relacional (==, !=, <, <=, >, >=)
 
-    public RelationalExprNode(ASTNode left, ASTNode right, String operator) {
+    public RelationalExprNode(ASTNode right, String operator, ASTNode left) {
         this.left = left;
         this.right = right;
         this.operator = operator;

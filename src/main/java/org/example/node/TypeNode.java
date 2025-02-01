@@ -20,6 +20,6 @@ public class TypeNode extends ASTNode {
 
     @Override
     public String accept(ASTVisitor visitor) {
-        return "";
+        return visitor.visit(this);
     }
 }
