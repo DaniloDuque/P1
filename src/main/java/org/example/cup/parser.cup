@@ -93,17 +93,17 @@ program ::= func_declarations:f MAIN LLAVE_ABRE statements:s LLAVE_CIERRA
           ;
 
 func_declarations ::= func_declaration:f func_declarations:fs
-                   {: RESULT = new FuncDeclNode(f, fs); :}
+                   {: RESULT = new FuncDeclsNode(f, fs); :}
                    | func_declaration:f
-                   {: RESULT = new FuncDeclNode(f, null); :}
+                   {: RESULT = new FuncDeclsNode(f, null); :}
                    ;
 
 func_declaration ::= type:t IDENTIFICADOR:i PARENTESIS_ABRE params_opt:p PARENTESIS_CIERRA LLAVE_ABRE {:
-    scopeStack.push(scopeStack.peek() + 1);  // Nuevo scope para la función
-:} statements:s LLAVE_CIERRA {:
-    scopeStack.pop();  // Regresar al scope anterior
-    RESULT = new FuncDeclNode(t, i.toString(), p, s);
-:}
+        scopeStack.push(scopeStack.peek() + 1);
+    :} statements:s LLAVE_CIERRA {:
+        scopeStack.pop();
+        RESULT = new FuncDeclNode(t, new IdentifierNode(i.toString()), p, s);
+    :}
 ;
 
 type ::= ENTERO
@@ -131,15 +131,15 @@ param_list ::= param:p COMA param_list:pl
              ;
 
 param ::= type:t IDENTIFICADOR:i {:
-        symbolTable.addSymbol(i.toString(), t.getType(), scopeStack.peek(), ileft, iright);
-        RESULT = new ParamNode(t, i.toString());
+        // symbolTable.addSymbol(i.toString(), t.getType(), scopeStack.peek(), ileft, iright);
+        RESULT = new ParamNode(t, new IdentifierNode(i.toString()));
 :}
         ;
 
 var_declaration ::= type:t IDENTIFICADOR:i opt_equals_value:ov
                     {:
-                        symbolTable.addSymbol(i.toString(), t.getType(), scopeStack.peek(), ileft, iright);
-                        RESULT = new VarDeclNode(t, i.toString(), ov);
+                        //symbolTable.addSymbol(i.toString(), t.getType(), scopeStack.peek(), ileft, iright);
+                        RESULT = new VarDeclNode(t, new IdentifierNode(i.toString()), ov);
                     :}
                     ;
 
@@ -176,7 +176,7 @@ statement ::= var_declaration:v FIN_EXPRESION
             ;
 
 function_call ::= IDENTIFICADOR:i PARENTESIS_ABRE arg_list:args PARENTESIS_CIERRA
-                {: RESULT = new FunctionCallNode(i.toString(), args); :}
+                {: RESULT = new FuncCallNode(new IdentifierNode(i.toString()), args); :}
                 ;
 
 arg_list ::= /* empty */
@@ -188,9 +188,9 @@ arg_list ::= /* empty */
            ;
 
 array_declaration ::= type:t IDENTIFICADOR:i CORCHETE_ABRE CORCHETE_CIERRA ASIGNACION LLAVE_ABRE element_list:el LLAVE_CIERRA
-                    {: RESULT = new ArrayDeclNode(t.toString(), i.toString(), el); :}
+                    {: RESULT = new ArrayDeclNode(t, new IdentifierNode(i.toString()), true, el); :}
                     | type:t IDENTIFICADOR:i CORCHETE_ABRE expression:e CORCHETE_CIERRA
-                    {: RESULT = new ArrayDeclNode(t.toString(), i.toString(), e); :}
+                    {: RESULT = new ArrayDeclNode(t, new IdentifierNode(i.toString()), false, e); :}
                     ;
 
 element_list ::= expression:e COMA element_list:el
@@ -207,7 +207,7 @@ opt_equals_value ::= ASIGNACION expression:e
 
 
 assignment ::= IDENTIFICADOR:i ASIGNACION expression:e
-               {: RESULT = new AssignNode(i.toString(), e); :}
+               {: RESULT = new AssignNode(new IdentifierNode(i.toString()), e); :}
                ;
 
 opt_expression ::= /* empty */
@@ -237,65 +237,65 @@ expression ::= arithmetic_expr:a
              ;
 
 array_access ::= IDENTIFICADOR:i CORCHETE_ABRE expression:e CORCHETE_CIERRA
-               {: RESULT = new ArrayAccessNode(i.toString(), e); :}
+               {: RESULT = new ArrayAccessNode(new IdentifierNode(i.toString()), e); :}
                ;
 
 literal ::= LIT_ENTERO
-          {: RESULT = new LiteralNode(Integer.parseInt(yytext())); :}
+          {: RESULT = new LiteralNode("int", yytext()); :}
           | LIT_FLOTANTE
-          {: RESULT = new LiteralNode(Float.parseFloat(yytext())); :}
+          {: RESULT = new LiteralNode("float", yytext()); :}
           | LIT_CADENA
-          {: RESULT = new LiteralNode(yytext()); :}
+          {: RESULT = new LiteralNode("string", yytext()); :}
           | LIT_CHAR
-          {: RESULT = new LiteralNode(yytext().charAt(0)); :}
+          {: RESULT = new LiteralNode("char", yytext()); :}
           | LIT_BOOL
-          {: RESULT = new LiteralNode(Boolean.parseBoolean(yytext())); :}
+          {: RESULT = new LiteralNode("bool", yytext()); :}
           ;
 
 arithmetic_expr ::= expression:e1 SUMA expression:e2
-                 {: RESULT = new ArithmeticExprNode("+", e1, e2); :}
+                 {: RESULT = new ArithmeticExprNode(e1, "+", e2); :}
                  | expression:e1 RESTA expression:e2
-                 {: RESULT = new ArithmeticExprNode("-", e1, e2); :}
+                 {: RESULT = new ArithmeticExprNode(e1, "-", e2); :}
                  | expression:e1 MULTIPLICACION expression:e2
-                 {: RESULT = new ArithmeticExprNode("*", e1, e2); :}
+                 {: RESULT = new ArithmeticExprNode(e1, "*", e2); :}
                  | expression:e1 DIVISION expression:e2
-                 {: RESULT = new ArithmeticExprNode("/", e1, e2); :}
+                 {: RESULT = new ArithmeticExprNode(e1, "/", e2); :}
                  | expression:e1 MODULO expression:e2
-                 {: RESULT = new ArithmeticExprNode("%", e1, e2); :}
+                 {: RESULT = new ArithmeticExprNode(e1, "%", e2); :}
                  | expression:e1 POTENCIA expression:e2
-                 {: RESULT = new ArithmeticExprNode("^", e1, e2); :}
+                 {: RESULT = new ArithmeticExprNode(e1, "^", e2); :}
                  | RESTA expression:e
-                 {: RESULT = new ArithmeticExprNode("-", new LiteralNode(0), e); :}
+                 {: RESULT = new ArithmeticExprNode(new LiteralNode("int", "0"), "-", e); :}
                  | expression:e INCREMENTO
-                 {: RESULT = new ArithmeticExprNode("++", e, null); :}
+                 {: RESULT = new ArithmeticExprNode(e, "++", null); :}
                  | expression:e DECREMENTO
-                 {: RESULT = new ArithmeticExprNode("--", e, null); :}
+                 {: RESULT = new ArithmeticExprNode(e, "--", null); :}
                  | DECREMENTO expression:e
-                 {: RESULT = new ArithmeticExprNode("--", e, null); :}
+                 {: RESULT = new ArithmeticExprNode(null, "--", e); :}
                  | INCREMENTO expression:e
-                 {: RESULT = new ArithmeticExprNode("++", e, null); :}
+                 {: RESULT = new ArithmeticExprNode(null, "++", e); :}
                  ;
 
 relational_expr ::= expression:e1 MENOR expression:e2
-                 {: RESULT = new RelationalExprNode("<", e1, e2); :}
+                 {: RESULT = new RelationalExprNode(e1, "<", e2); :}
                  | expression:e1 MENOR_IGUAL expression:e2
-                 {: RESULT = new RelationalExprNode("<=", e1, e2); :}
+                 {: RESULT = new RelationalExprNode(e1, "<=", e2); :}
                  | expression:e1 MAYOR expression:e2
-                 {: RESULT = new RelationalExprNode(">", e1, e2); :}
+                 {: RESULT = new RelationalExprNode(e1, ">", e2); :}
                  | expression:e1 MAYOR_IGUAL expression:e2
-                 {: RESULT = new RelationalExprNode(">=", e1, e2); :}
+                 {: RESULT = new RelationalExprNode(e1, ">=", e2); :}
                  | expression:e1 IGUAL expression:e2
-                 {: RESULT = new RelationalExprNode("==", e1, e2); :}
+                 {: RESULT = new RelationalExprNode(e1, "==", e2); :}
                  | expression:e1 DIFERENTE expression:e2
-                 {: RESULT = new RelationalExprNode("!=", e1, e2); :}
+                 {: RESULT = new RelationalExprNode(e1, "!=", e2); :}
                  ;
 
 logical_expr ::= expression:e1 AND expression:e2
-               {: RESULT = new LogicalExprNode("&&", e1, e2); :}
+               {: RESULT = new LogicalExprNode(e1, "&&", e2); :}
                | expression:e1 OR expression:e2
-               {: RESULT = new LogicalExprNode("||", e1, e2); :}
+               {: RESULT = new LogicalExprNode(e1, "||", e2); :}
                | NOT expression:e
-               {: RESULT = new LogicalExprNode("!", e, null); :}
+               {: RESULT = new LogicalExprNode(e, "!", null); :}
                ;
 
 if_statement ::= IF PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE_ABRE {:
@@ -344,29 +344,29 @@ for_update ::= assignment:a
              {: RESULT = null; :}
              ;
 
-switch_statement ::= SWITCH PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE_ABRE {:
-    scopeStack.push(scopeStack.peek() + 1);  // Nuevo scope para el bloque switch
-:} cases:c default_opt:dfo LLAVE_CIERRA {:
-    scopeStack.pop();  // Regresar al scope anterior
-    RESULT = new SwitchNode(e, c, dfo);
-:}
-                     ;
+//switch_statement ::= SWITCH PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE_ABRE {:
+//    scopeStack.push(scopeStack.peek() + 1);  // Nuevo scope para el bloque switch
+//:} cases:c default_opt:dfo LLAVE_CIERRA {:
+//    scopeStack.pop();  // Regresar al scope anterior
+//    RESULT = new SwitchNode(e, c, dfo);
+//:}
+//                     ;
+//
+//cases ::= case_statement:c cases:cs
+//        {: RESULT = new SwitchCasesNode(c, cs); :}
+//        | /* empty */
+//        {: RESULT = null; :}
+//        ;
 
-cases ::= case_statement:c cases:cs
-        {: RESULT = new SwitchCasesNode(c, cs); :}
-        | /* empty */
-        {: RESULT = null; :}
-        ;
-
-case_statement ::= CASE literal:l DOS_PUNTOS statements:s
-                 {: RESULT = new SwtichCaseNode(l, s); :}
-                 ;
-
-default_opt ::= DEFAULT DOS_PUNTOS statements:s
-              {: RESULT = s; :}
-              | /* empty */
-              {: RESULT = null; :}
-              ;
+//case_statement ::= CASE literal:l DOS_PUNTOS statements:s
+//                 {: RESULT = new SwtichCaseNode(l, s); :}
+//                 ;
+//
+//default_opt ::= DEFAULT DOS_PUNTOS statements:s
+//              {: RESULT = s; :}
+//              | /* empty */
+//              {: RESULT = null; :}
+//              ;
 
 io_statement ::= PRINT PARENTESIS_ABRE expression:e PARENTESIS_CIERRA
                {: RESULT = new PrintNode(e); :}
