@@ -30,18 +30,8 @@ public class Main {
             Symbol parseResult = parser.parse(); // Parse returns a Symbol object
             ProgramNode astRoot = (ProgramNode) parseResult.value; // Extract the ProgramNode from the Symbol
 
-            // Write tokens to Tokens.txt
-            FileWriter writer = new FileWriter("Tokens.txt");
-            writer.write("Tokens encontrados\n");
-            for (Map.Entry<String, List<SymbolInfo>> entry : lexer.getSymbolTable().getSymbols().entrySet()) {
-                for (SymbolInfo symbolInfo : entry.getValue()) {
-                    writer.write("Lexema: " + symbolInfo.getLexema() + "\n");
-                }
-            }
-            writer.close();
-
             // Write the symbol table to SymbolTable.txt
-            writer = new FileWriter("SymbolTable.txt");
+            FileWriter writer = new FileWriter("SymbolTable.txt");
             writer.write("Tabla de símbolos\n");
             for (Map.Entry<String, List<SymbolInfo>> entry : lexer.getSymbolTable().getSymbols().entrySet()) {
                 for (SymbolInfo symbolInfo : entry.getValue()) {

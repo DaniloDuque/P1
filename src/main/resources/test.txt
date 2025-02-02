@@ -3,6 +3,6 @@ rodolfo _suma_ abreregalo rodolfo _a_, rodolfo _b_ cierraregalo abrecuento
 cierracuento
 
 _verano_ abrecuento
-    rodolfo _numero_ entrega 5 finregalo
-    envia _x_ navidad _suma_ abreregalo _suma_ abreregalo 4 cierraregalo , 5 cierraregalo finregalo
+    rodolfo _numero_ entrega 1 finregalo
+    envia _suma_ abreregalo _suma_ abreregalo 4 cierraregalo , 5 cierraregalo finregalo
 cierracuento

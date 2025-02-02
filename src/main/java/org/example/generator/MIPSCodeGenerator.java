@@ -524,7 +524,7 @@ public class MIPSCodeGenerator implements ASTVisitor {
     @Override
     public String visit(StatementsNode node) {
         for (ASTNode stmt : node.getStatements()) {
-            stmt.accept(this);
+            if(stmt!=null) stmt.accept(this);
         }
         return null;
     }

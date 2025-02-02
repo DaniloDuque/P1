@@ -39,6 +39,7 @@ public class MIPSRegisterAllocator implements RegisterAllocator {
 
     // Free a general-purpose register
     public void freeRegister(String register) {
+        if(register==null) return;
         if (register.startsWith("$t") || register.startsWith("$s")) {
             availableRegisters.push(register);
         } else {

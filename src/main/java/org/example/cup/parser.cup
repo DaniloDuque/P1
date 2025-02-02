@@ -26,6 +26,10 @@ parser code {:
         }
     }
 
+    private void handleError(String message, Object sym) {
+        System.out.println("Error: " + message);
+    }
+
     public void report_error(String message, Object info) {
         Symbol sym = (Symbol) info;
         handleError(message, sym);
@@ -43,6 +47,11 @@ parser code {:
         } catch (Exception e) {
             handleError("Error de sincronización", null);
         }
+    }
+
+    // Helper method to check if a type is numeric
+    private boolean isNumeric(String type) {
+        return type.equals("int") || type.equals("float");
     }
 
 :}
@@ -99,9 +108,9 @@ func_declarations ::= func_declaration:f func_declarations:fs
                    ;
 
 func_declaration ::= type:t IDENTIFICADOR:i PARENTESIS_ABRE params_opt:p PARENTESIS_CIERRA LLAVE_ABRE {:
-        scopeStack.push(scopeStack.peek() + 1);
+        scopeStack.push(scopeStack.peek() + 1); // Enter a new scope
     :} statements:s LLAVE_CIERRA {:
-        scopeStack.pop();
+        scopeStack.pop(); // Exit the scope
         RESULT = new FuncDeclNode(t, new IdentifierNode(i.toString()), p, s);
     :}
 ;
@@ -131,15 +140,29 @@ param_list ::= param:p COMA param_list:pl
              ;
 
 param ::= type:t IDENTIFICADOR:i {:
-        // symbolTable.addSymbol(i.toString(), t.getType(), scopeStack.peek(), ileft, iright);
-        RESULT = new ParamNode(t, new IdentifierNode(i.toString()));
+        // Check if the parameter is already declared
+        if (symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
+            handleError("Parameter '" + i.toString() + "' already declared", i);
+        } else {
+            // Add the parameter to the symbol table
+            TypeNode nt = (TypeNode) t;
+            symbolTable.addSymbol(i.toString(), nt.getType(), scopeStack.peek(), ileft, iright);
+            RESULT = new ParamNode(t, new IdentifierNode(i.toString()));
+        }
 :}
         ;
 
 var_declaration ::= type:t IDENTIFICADOR:i opt_equals_value:ov
                     {:
-                        //symbolTable.addSymbol(i.toString(), t.getType(), scopeStack.peek(), ileft, iright);
-                        RESULT = new VarDeclNode(t, new IdentifierNode(i.toString()), ov);
+                        // Check if the variable is already declared in the current scope
+                        if (symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
+                            handleError("Variable '" + i.toString() + "' already declared in this scope", i);
+                        } else {
+                            // Add the variable to the symbol table
+                            TypeNode nt = (TypeNode) t;
+                            symbolTable.addSymbol(i.toString(), nt.getType(), scopeStack.peek(), ileft, iright);
+                            RESULT = new VarDeclNode(t, new IdentifierNode(i.toString()), ov);
+                        }
                     :}
                     ;
 
@@ -176,7 +199,13 @@ statement ::= var_declaration:v FIN_EXPRESION
             ;
 
 function_call ::= IDENTIFICADOR:i PARENTESIS_ABRE arg_list:args PARENTESIS_CIERRA
-                {: RESULT = new FuncCallNode(new IdentifierNode(i.toString()), args); :}
+                {:
+                    // Check if the function is declared
+                    if (!symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
+                        handleError("Undeclared function '" + i.toString() + "'", i);
+                    }
+                    RESULT = new FuncCallNode(new IdentifierNode(i.toString()), args);
+                :}
                 ;
 
 arg_list ::= /* empty */
@@ -205,9 +234,20 @@ opt_equals_value ::= ASIGNACION expression:e
                    {: RESULT = null; :}
                    ;
 
-
 assignment ::= IDENTIFICADOR:i ASIGNACION expression:e
-               {: RESULT = new AssignNode(new IdentifierNode(i.toString()), e); :}
+               {:
+                   // Check if the variable is declared
+                   if (!symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
+                       handleError("Undeclared variable '" + i.toString() + "'", i);
+                   }
+                   // Check if the types match
+                   String varType = symbolTable.getType(i.toString(), scopeStack.peek());
+                   String exprType = symbolTable.getType(e.toString(), scopeStack.peek());
+                   if (!varType.equals(exprType)) {
+                       handleError("Type mismatch in assignment", i);
+                   }
+                   RESULT = new AssignNode(new IdentifierNode(i.toString()), e);
+               :}
                ;
 
 opt_expression ::= /* empty */
@@ -225,7 +265,13 @@ expression ::= arithmetic_expr:a
              | literal:l
              {: RESULT = l; :}
              | IDENTIFICADOR:i
-             {: RESULT = new IdentifierNode(i.toString()); :}
+             {:
+                 // Check if the variable is declared
+                 if (!symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
+                     handleError("Undeclared variable '" + i.toString() + "'", i);
+                 }
+                 RESULT = new IdentifierNode(i.toString());
+             :}
              | PARENTESIS_ABRE expression:e PARENTESIS_CIERRA
              {: RESULT = e; :}
              | CORCHETE_ABRE expression:e CORCHETE_CIERRA
@@ -237,7 +283,13 @@ expression ::= arithmetic_expr:a
              ;
 
 array_access ::= IDENTIFICADOR:i CORCHETE_ABRE expression:e CORCHETE_CIERRA
-               {: RESULT = new ArrayAccessNode(new IdentifierNode(i.toString()), e); :}
+               {:
+                   // Check if the array is declared
+                   if (!symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
+                       handleError("Undeclared array '" + i.toString() + "'", i);
+                   }
+                   RESULT = new ArrayAccessNode(new IdentifierNode(i.toString()), e);
+               :}
                ;
 
 literal ::= LIT_ENTERO:lit
@@ -253,122 +305,244 @@ literal ::= LIT_ENTERO:lit
           ;
 
 arithmetic_expr ::= expression:e1 SUMA expression:e2
-                 {: RESULT = new ArithmeticExprNode(e1, "+", e2); :}
+                 {:
+                     // Check if both operands are of numeric type
+                     String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                     String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                     if (!isNumeric(type1) || !isNumeric(type2)) {
+                         handleError("Invalid operands for arithmetic operation", e1);
+                     }
+                     RESULT = new ArithmeticExprNode(e1, "+", e2);
+                 :}
                  | expression:e1 RESTA expression:e2
-                 {: RESULT = new ArithmeticExprNode(e1, "-", e2); :}
+                 {:
+                     // Check if both operands are of numeric type
+                     String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                     String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                     if (!isNumeric(type1) || !isNumeric(type2)) {
+                         handleError("Invalid operands for arithmetic operation", e1);
+                     }
+                     RESULT = new ArithmeticExprNode(e1, "-", e2);
+                 :}
                  | expression:e1 MULTIPLICACION expression:e2
-                 {: RESULT = new ArithmeticExprNode(e1, "*", e2); :}
-                 | expression:e1 DIVISION expression:e2
-                 {: RESULT = new ArithmeticExprNode(e1, "/", e2); :}
-                 | expression:e1 MODULO expression:e2
-                 {: RESULT = new ArithmeticExprNode(e1, "%", e2); :}
-                 | expression:e1 POTENCIA expression:e2
-                 {: RESULT = new ArithmeticExprNode(e1, "^", e2); :}
-                 | RESTA expression:e
-                 {: RESULT = new ArithmeticExprNode(new LiteralNode("int", "0"), "-", e); :}
-                 | expression:e INCREMENTO
-                 {: RESULT = new ArithmeticExprNode(e, "++", null); :}
-                 | expression:e DECREMENTO
-                 {: RESULT = new ArithmeticExprNode(e, "--", null); :}
-                 ;
+                 {:
+                     // Check if both operands are of numeric type
+                     String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                  String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                  if (!isNumeric(type1) || !isNumeric(type2)) {
+                      handleError("Invalid operands for arithmetic operation", e1);
+                  }
+                  RESULT = new ArithmeticExprNode(e1, "*", e2);
+              :}
+              | expression:e1 DIVISION expression:e2
+              {:
+                  // Check if both operands are of numeric type
+                  String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                  String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                  if (!isNumeric(type1) || !isNumeric(type2)) {
+                      handleError("Invalid operands for arithmetic operation", e1);
+                  }
+                  RESULT = new ArithmeticExprNode(e1, "/", e2);
+              :}
+              | expression:e1 MODULO expression:e2
+              {:
+                  // Check if both operands are of numeric type
+                  String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                  String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                  if (!isNumeric(type1) || !isNumeric(type2)) {
+                      handleError("Invalid operands for arithmetic operation", e1);
+                  }
+                  RESULT = new ArithmeticExprNode(e1, "%", e2);
+              :}
+              | expression:e1 POTENCIA expression:e2
+              {:
+                  // Check if both operands are of numeric type
+                  String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                  String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                  if (!isNumeric(type1) || !isNumeric(type2)) {
+                      handleError("Invalid operands for arithmetic operation", e1);
+                  }
+                  RESULT = new ArithmeticExprNode(e1, "^", e2);
+              :}
+              | RESTA expression:e
+              {:
+                  // Check if the operand is of numeric type
+                  String type = symbolTable.getType(e.toString(), scopeStack.peek());
+                  if (!isNumeric(type)) {
+                      handleError("Invalid operand for unary minus", e);
+                  }
+                  RESULT = new ArithmeticExprNode(new LiteralNode("int", "0"), "-", e);
+              :}
+              | expression:e INCREMENTO
+              {:
+                  // Check if the operand is of numeric type
+                  String type = symbolTable.getType(e.toString(), scopeStack.peek());
+                  if (!isNumeric(type)) {
+                      handleError("Invalid operand for increment", e);
+                  }
+                  RESULT = new ArithmeticExprNode(e, "++", null);
+              :}
+              | expression:e DECREMENTO
+              {:
+                  // Check if the operand is of numeric type
+                  String type = symbolTable.getType(e.toString(), scopeStack.peek());
+                  if (!isNumeric(type)) {
+                      handleError("Invalid operand for decrement", e);
+                  }
+                  RESULT = new ArithmeticExprNode(e, "--", null);
+              :}
+              ;
 
 relational_expr ::= expression:e1 MENOR expression:e2
-                 {: RESULT = new RelationalExprNode(e1, "<", e2); :}
-                 | expression:e1 MENOR_IGUAL expression:e2
-                 {: RESULT = new RelationalExprNode(e1, "<=", e2); :}
-                 | expression:e1 MAYOR expression:e2
-                 {: RESULT = new RelationalExprNode(e1, ">", e2); :}
-                 | expression:e1 MAYOR_IGUAL expression:e2
-                 {: RESULT = new RelationalExprNode(e1, ">=", e2); :}
-                 | expression:e1 IGUAL expression:e2
-                 {: RESULT = new RelationalExprNode(e1, "==", e2); :}
-                 | expression:e1 DIFERENTE expression:e2
-                 {: RESULT = new RelationalExprNode(e1, "!=", e2); :}
-                 ;
+              {:
+                  // Check if both operands are of compatible types
+                  String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                  String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                  if (!type1.equals(type2)) {
+                      handleError("Type mismatch in relational operation", e1);
+                  }
+                  RESULT = new RelationalExprNode(e1, "<", e2);
+              :}
+              | expression:e1 MENOR_IGUAL expression:e2
+              {:
+                  // Check if both operands are of compatible types
+                  String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                  String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                  if (!type1.equals(type2)) {
+                      handleError("Type mismatch in relational operation", e1);
+                  }
+                  RESULT = new RelationalExprNode(e1, "<=", e2);
+              :}
+              | expression:e1 MAYOR expression:e2
+              {:
+                  // Check if both operands are of compatible types
+                  String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                  String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                  if (!type1.equals(type2)) {
+                      handleError("Type mismatch in relational operation", e1);
+                  }
+                  RESULT = new RelationalExprNode(e1, ">", e2);
+              :}
+              | expression:e1 MAYOR_IGUAL expression:e2
+              {:
+                  // Check if both operands are of compatible types
+                  String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                  String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                  if (!type1.equals(type2)) {
+                      handleError("Type mismatch in relational operation", e1);
+                  }
+                  RESULT = new RelationalExprNode(e1, ">=", e2);
+              :}
+              | expression:e1 IGUAL expression:e2
+              {:
+                  // Check if both operands are of compatible types
+                  String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                  String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                  if (!type1.equals(type2)) {
+                      handleError("Type mismatch in equality operation", e1);
+                  }
+                  RESULT = new RelationalExprNode(e1, "==", e2);
+              :}
+              | expression:e1 DIFERENTE expression:e2
+              {:
+                  // Check if both operands are of compatible types
+                  String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                  String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                  if (!type1.equals(type2)) {
+                      handleError("Type mismatch in equality operation", e1);
+                  }
+                  RESULT = new RelationalExprNode(e1, "!=", e2);
+              :}
+              ;
 
 logical_expr ::= expression:e1 AND expression:e2
-               {: RESULT = new LogicalExprNode(e1, "&&", e2); :}
-               | expression:e1 OR expression:e2
-               {: RESULT = new LogicalExprNode(e1, "||", e2); :}
-               | NOT expression:e
-               {: RESULT = new LogicalExprNode(e, "!", null); :}
-               ;
+            {:
+                // Check if both operands are of boolean type
+                String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                if (!type1.equals("boolean") || !type2.equals("boolean")) {
+                    handleError("Invalid operands for logical operation", e1);
+                }
+                RESULT = new LogicalExprNode(e1, "&&", e2);
+            :}
+            | expression:e1 OR expression:e2
+            {:
+                // Check if both operands are of boolean type
+                String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                if (!type1.equals("boolean") || !type2.equals("boolean")) {
+                    handleError("Invalid operands for logical operation", e1);
+                }
+                RESULT = new LogicalExprNode(e1, "||", e2);
+            :}
+            | NOT expression:e
+            {:
+                // Check if the operand is of boolean type
+                String type = symbolTable.getType(e.toString(), scopeStack.peek());
+                if (!type.equals("boolean")) {
+                    handleError("Invalid operand for logical NOT", e);
+                }
+                RESULT = new LogicalExprNode(e, "!", null);
+            :}
+            ;
 
 if_statement ::= IF PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE_ABRE {:
-    scopeStack.push(scopeStack.peek() + 1);  // Nuevo scope para el bloque if
+ scopeStack.push(scopeStack.peek() + 1);  // Enter a new scope
 :} statements:s LLAVE_CIERRA else_opt:eo {:
-    scopeStack.pop();  // Regresar al scope anterior
-    RESULT = new IfNode(e, s, eo);
+ scopeStack.pop();  // Exit the scope
+ RESULT = new IfNode(e, s, eo);
 :}
-               ;
+            ;
 
 else_opt ::= ELSE LLAVE_ABRE {:
-    scopeStack.push(scopeStack.peek() + 1);  // Nuevo scope para el bloque else
+ scopeStack.push(scopeStack.peek() + 1);  // Enter a new scope
 :} statements:s LLAVE_CIERRA {:
-    scopeStack.pop();  // Regresar al scope anterior
-    RESULT = s;
+ scopeStack.pop();  // Exit the scope
+ RESULT = s;
 :}
-           | /* empty */
-           {: RESULT = null; :}
-           ;
+        | /* empty */
+        {: RESULT = null; :}
+        ;
 
 while_statement ::= WHILE PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE_ABRE {:
-    scopeStack.push(scopeStack.peek() + 1);  // Nuevo scope para el bloque while
+ scopeStack.push(scopeStack.peek() + 1);  // Enter a new scope
 :} statements:s LLAVE_CIERRA {:
-    scopeStack.pop();  // Regresar al scope anterior
-    RESULT = new WhileNode(e, s);
+ scopeStack.pop();  // Exit the scope
+ RESULT = new WhileNode(e, s);
 :}
-                 ;
+              ;
 
 for_statement ::= FOR PARENTESIS_ABRE for_initialization:fi FIN_EXPRESION opt_expression:c FIN_EXPRESION for_update:fu PARENTESIS_CIERRA LLAVE_ABRE statements:bloque LLAVE_CIERRA
-                {: RESULT = new ForNode(fi, c, fu, bloque); :}
-                ;
-
-for_initialization ::= assignment:a
-                     {: RESULT = a; :}
-                     | var_declaration:v
-                     {: RESULT = v; :}
-                     | /* empty */
-                     {: RESULT = null; :}
-                     ;
-
-for_update ::= assignment:a
-             {: RESULT = a; :}
-             | arithmetic_expr:e
-             {: RESULT = e; :}
-             | /* empty */
-             {: RESULT = null; :}
+             {: RESULT = new ForNode(fi, c, fu, bloque); :}
              ;
 
-//switch_statement ::= SWITCH PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE_ABRE {:
-//    scopeStack.push(scopeStack.peek() + 1);  // Nuevo scope para el bloque switch
-//:} cases:c default_opt:dfo LLAVE_CIERRA {:
-//    scopeStack.pop();  // Regresar al scope anterior
-//    RESULT = new SwitchNode(e, c, dfo);
-//:}
-//                     ;
-//
-//cases ::= case_statement:c cases:cs
-//        {: RESULT = new SwitchCasesNode(c, cs); :}
-//        | /* empty */
-//        {: RESULT = null; :}
-//        ;
+for_initialization ::= assignment:a
+                  {: RESULT = a; :}
+                  | var_declaration:v
+                  {: RESULT = v; :}
+                  | /* empty */
+                  {: RESULT = null; :}
+                  ;
 
-//case_statement ::= CASE literal:l DOS_PUNTOS statements:s
-//                 {: RESULT = new SwtichCaseNode(l, s); :}
-//                 ;
-//
-//default_opt ::= DEFAULT DOS_PUNTOS statements:s
-//              {: RESULT = s; :}
-//              | /* empty */
-//              {: RESULT = null; :}
-//              ;
+for_update ::= assignment:a
+          {: RESULT = a; :}
+          | arithmetic_expr:e
+          {: RESULT = e; :}
+          | /* empty */
+          {: RESULT = null; :}
+          ;
 
 io_statement ::= PRINT PARENTESIS_ABRE expression:e PARENTESIS_CIERRA
-               {: RESULT = new PrintNode(e); :}
-               | READ PARENTESIS_ABRE IDENTIFICADOR:i PARENTESIS_CIERRA
-               {: RESULT = new ReadNode(i.toString()); :}
-               ;
+            {: RESULT = new PrintNode(e); :}
+            | READ PARENTESIS_ABRE IDENTIFICADOR:i PARENTESIS_CIERRA
+            {:
+                // Check if the variable is declared
+                if (!symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
+                    handleError("Undeclared variable '" + i.toString() + "'", i);
+                }
+                RESULT = new ReadNode(i.toString());
+            :}
+            ;
 
 error_nterm ::= ERROR {: handleError("Error encontrado", null); RESULT = new ErrorNode(); :}
-          ;
+       ;

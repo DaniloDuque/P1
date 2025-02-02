@@ -34,7 +34,7 @@ public class DataSegment {
     @Override
     public String toString() {
         if (dataSegment.isEmpty()) {
-            return "Data segment is empty.";
+            return "";
         }
 
         StringBuilder builder = new StringBuilder();

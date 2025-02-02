@@ -1,25 +1,45 @@
 package org.example.table;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
 
 public class SymbolTable {
-    private Map<String, List<SymbolInfo>> table = new HashMap<>();
+    private final Map<String, List<SymbolInfo>> symbols = new HashMap<>();
 
+    // Add a symbol to the table
     public void addSymbol(String lexema, String tipo, int scope, int linea, int columna) {
-        SymbolInfo symbolInfo = new SymbolInfo(lexema, tipo, scope, linea, columna);
-        table.computeIfAbsent(lexema, k -> new ArrayList<>()).add(symbolInfo);
+        SymbolInfo info = new SymbolInfo(lexema, tipo, scope, linea, columna);
+        symbols.computeIfAbsent(lexema, k -> new ArrayList<>()).add(info);
     }
 
-    public void addSymbol(String lexema, String tipo, int linea, int columna) {
-        SymbolInfo symbolInfo = new SymbolInfo(lexema, tipo, linea, columna);
-        table.computeIfAbsent(lexema, k -> new ArrayList<>()).add(symbolInfo);
+    // Check if a symbol is declared in the current or outer scopes
+    public boolean isDeclared(String lexema, int currentScope) {
+        List<SymbolInfo> infos = symbols.get(lexema);
+        if (infos == null) return false;
+        for (SymbolInfo info : infos) {
+            if (info.getScope() <= currentScope) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public List<SymbolInfo> lookup(String lexema) {
-        return table.getOrDefault(lexema, Collections.emptyList());
+    // Get the type of a symbol in the current or outer scopes
+    public String getType(String lexema, int currentScope) {
+        List<SymbolInfo> infos = symbols.get(lexema);
+        if (infos == null) return null;
+        for (SymbolInfo info : infos) {
+            if (info.getScope() <= currentScope) {
+                return info.getTipo();
+            }
+        }
+        return null;
     }
 
+    // Get all symbols in the table
     public Map<String, List<SymbolInfo>> getSymbols() {
-        return table;
+        return symbols;
     }
 }

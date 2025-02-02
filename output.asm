@@ -1,15 +1,8 @@
 .data
 newline: .asciiz "\n"
-_suma_: .word 42
-_x_: .word 42
-_a_: .word 42
-_b_: .word 42
-_numero_: .word 42
 
 .text
-
 .globl main
-
 _suma_:
 addiu $sp, $sp, -40
 sw $ra, 36($sp)
@@ -43,8 +36,9 @@ lw $ra, 36($sp)
 addiu $sp, $sp, 40
 jr $ra
 main:
-la $t0, _x_
-lw $s2, 0($t0)
+.data
+int: .space 4
+.text
 addiu $sp, $sp, -40
 sw $t0, 0($sp)
 sw $t1, 4($sp)
@@ -67,8 +61,8 @@ sw $t6, 24($sp)
 sw $t7, 28($sp)
 sw $t8, 32($sp)
 sw $t9, 36($sp)
-li $s1, 4
-move $a0, $s1
+li $s2, 4
+move $a0, $s2
 jal _suma_
 lw $t0, 0($sp)
 lw $t1, 4($sp)
@@ -81,8 +75,8 @@ lw $t7, 28($sp)
 lw $t8, 32($sp)
 lw $t9, 36($sp)
 addiu $sp, $sp, 40
-li $s1, 5
-move $a1, $s1
+li $s2, 5
+move $a1, $s2
 jal _suma_
 lw $t0, 0($sp)
 lw $t1, 4($sp)
@@ -95,8 +89,7 @@ lw $t7, 28($sp)
 lw $t8, 32($sp)
 lw $t9, 36($sp)
 addiu $sp, $sp, 40
-add $s1, $s2, null
-move $v0, $s1
+move $v0, null
 j function_epilogue_1
 li $v0, 10
 syscall
