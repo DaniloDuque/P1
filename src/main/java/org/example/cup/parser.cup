@@ -26,6 +26,11 @@ parser code {:
         }
     }
 
+    private void handleError(String message, Object sym) {
+        System.out.println("Error: " + message + " " + sym);
+
+    }
+
     public void report_error(String message, Object info) {
         Symbol sym = (Symbol) info;
         handleError(message, sym);
@@ -92,16 +97,18 @@ precedence right INCREMENTO, DECREMENTO;
 /* Grammar rules */
 
 program ::= func_declarations:f MAIN LLAVE_ABRE statements:s LLAVE_CIERRA
-          {: RESULT = new ProgramNode(f, s); :}
+          {: RESULT = new ProgramNode(f, s);
+                //System.out.println(f.toString());
+          :}
           ;
 
-func_declarations ::= func_declaration:f func_declarations:fs
+func_declarations ::= func_declaration:f func_declarations:fs {:System.out.println((f!=null)? f.toString() : ""); :}
                    {: RESULT = new FuncDeclsNode(f, fs); :}
-                   | func_declaration:f
+                   | func_declaration:f {:System.out.println((f!=null)? f.toString() : ""); :}
                    {: RESULT = new FuncDeclsNode(f, null); :}
                    ;
 
-func_declaration ::= type:t IDENTIFICADOR:i PARENTESIS_ABRE params_opt:p PARENTESIS_CIERRA LLAVE_ABRE {:
+func_declaration ::= type:t IDENTIFICADOR:i PARENTESIS_ABRE {: scopeStack.push(scopeStack.peek() + 1); :} params_opt:p PARENTESIS_CIERRA LLAVE_ABRE {:
         // Check if the function is already declared in the current scope
         if (symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
             handleError("Function '" + i.toString() + "' already declared in this scope", i);
@@ -110,7 +117,7 @@ func_declaration ::= type:t IDENTIFICADOR:i PARENTESIS_ABRE params_opt:p PARENTE
             TypeNode nt = (TypeNode) t;
             symbolTable.addSymbol(i.toString(), nt.getType(), scopeStack.peek(), ileft, iright);
         }
-        scopeStack.push(scopeStack.peek() + 1); // Enter a new scope
+        //scopeStack.push(scopeStack.peek() + 1); // Enter a new scope
     :} statements:s LLAVE_CIERRA {:
         scopeStack.pop(); // Exit the scope
         RESULT = new FuncDeclNode(t, new IdentifierNode(i.toString()), p, s);
@@ -190,7 +197,7 @@ statement ::= var_declaration:v FIN_EXPRESION
             {: RESULT = sw; :}
             | io_statement:io FIN_EXPRESION
             {: RESULT = io; :}
-            | function_call:fc
+            | function_call:fc FIN_EXPRESION
             {: RESULT = fc; :}
             | RETURN opt_expression:e FIN_EXPRESION
             {: RESULT = new ReturnNode(e); :}
@@ -245,12 +252,40 @@ assignment ::= IDENTIFICADOR:i ASIGNACION expression:e
                    // Check if the types match
                    String varType = symbolTable.getType(i.toString(), scopeStack.peek());
                    String exprType = symbolTable.getType(e.toString(), scopeStack.peek());
-                   if (!varType.equals(exprType)) {
-                       handleError("Type mismatch in assignment", i);
+                   if (exprType != null && varType != null && !varType.equals(exprType)) {
+                       handleError("Type mismatch in assignment between ", i);
                    }
                    RESULT = new AssignNode(new IdentifierNode(i.toString()), e);
                :}
-               ;
+           | IDENTIFICADOR:i INCREMENTO
+               {:
+                   // Check if the variable is declared
+                   if (!symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
+                       handleError("Undeclared variable '" + i.toString() + "'", i);
+                   }
+                   // Create an expression that represents i + 1
+                   ASTNode incrementExpr = new ArithmeticExprNode(
+                       new IdentifierNode(i.toString()),
+                       "+",
+                       new LiteralNode("int", "1")
+                   );
+                   RESULT = new AssignNode(new IdentifierNode(i.toString()), incrementExpr);
+               :}
+           | IDENTIFICADOR:i DECREMENTO
+               {:
+                   // Check if the variable is declared
+                   if (!symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
+                       handleError("Undeclared variable '" + i.toString() + "'", i);
+                   }
+                   // Create an expression that represents i - 1
+                   ASTNode decrementExpr = new ArithmeticExprNode(
+                       new IdentifierNode(i.toString()),
+                       "-",
+                       new LiteralNode("int", "1")
+                   );
+                   RESULT = new AssignNode(new IdentifierNode(i.toString()), decrementExpr);
+               :}
+           ;
 
 opt_expression ::= /* empty */
                  {: RESULT = null; :}
@@ -514,14 +549,18 @@ while_statement ::= WHILE PARENTESIS_ABRE expression:e PARENTESIS_CIERRA LLAVE_A
 :}
               ;
 
-for_statement ::= FOR PARENTESIS_ABRE for_initialization:fi FIN_EXPRESION opt_expression:c FIN_EXPRESION for_update:fu PARENTESIS_CIERRA LLAVE_ABRE statements:bloque LLAVE_CIERRA
-             {: RESULT = new ForNode(fi, c, fu, bloque); :}
+for_statement ::= FOR PARENTESIS_ABRE {: scopeStack.push(scopeStack.peek() + 1); :} for_initialization  :fi FIN_EXPRESION opt_expression:c FIN_EXPRESION for_update:fu PARENTESIS_CIERRA LLAVE_ABRE statements:bloque LLAVE_CIERRA
+             {: RESULT = new ForNode(fi, c, fu, bloque);
+                scopeStack.pop();
+             :}
+
              ;
 
-for_initialization ::= assignment:a
-                  {: RESULT = a; :}
-                  | var_declaration:v
+for_initialization ::=
+                  var_declaration:v
                   {: RESULT = v; :}
+                  | assignment:a
+                  {: RESULT = a; :}
                   | /* empty */
                   {: RESULT = null; :}
                   ;

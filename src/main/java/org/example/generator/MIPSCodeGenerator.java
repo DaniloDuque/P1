@@ -112,7 +112,11 @@ public class MIPSCodeGenerator implements ASTVisitor {
 
         // Visit the next function declarations (if any)
         if (node.getNextFuncDecls() != null) {
-            visit((FuncDeclsNode) node.getNextFuncDecls());
+            try {
+                visit((FuncDeclsNode) node.getNextFuncDecls());
+            } catch (Exception e) {
+                visit((FuncDeclNode) node.getNextFuncDecls());
+            }
         }
 
         return null;
@@ -469,7 +473,11 @@ public class MIPSCodeGenerator implements ASTVisitor {
 
         // Handle initialization if provided
         if (node.getInitialization() != null) {
-            visit((AssignNode) node.getInitialization());
+            try{
+                visit((AssignNode) node.getInitialization());
+            } catch (Exception e){
+                visit((VarDeclNode) node.getInitialization());
+            }
         }
 
         emit(startLabel + ":");
@@ -486,7 +494,11 @@ public class MIPSCodeGenerator implements ASTVisitor {
 
         // Handle update expression if provided
         if (node.getUpdate() != null) {
-            visit((ArithmeticExprNode) node.getUpdate()); // Assumes the update is always an ArithmeticExprNode
+            try {
+                visit((ArithmeticExprNode) node.getUpdate());
+            } catch (Exception e) {
+                visit((AssignNode) node.getUpdate());
+            }
         }
 
         emit("j " + startLabel);  // Jump to start of the loop

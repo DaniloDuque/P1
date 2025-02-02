@@ -1,6 +1,11 @@
 Tabla de símbolos
-SymbolInfo{lexema='_numero_', tipo='int', scope='0', linea=5, columna=12}
-SymbolInfo{lexema='_char_', tipo='char', scope='0', linea=6, columna=11}
-SymbolInfo{lexema='_a_', tipo='int', scope='0', linea=0, columna=34}
-SymbolInfo{lexema='_suma_', tipo='int', scope='0', linea=0, columna=8}
-SymbolInfo{lexema='_b_', tipo='int', scope='0', linea=0, columna=47}
+SymbolInfo{lexema='_i_', tipo='int', scope='2', linea=6, columna=30}
+SymbolInfo{lexema='_j_', tipo='int', scope='2', linea=7, columna=16}
+SymbolInfo{lexema='_init_', tipo='int', scope='1', linea=4, columna=33}
+SymbolInfo{lexema='_cotaMax_', tipo='int', scope='1', linea=4, columna=50}
+SymbolInfo{lexema='_c_', tipo='int', scope='1', linea=5, columna=12}
+SymbolInfo{lexema='_inc_', tipo='int', scope='1', linea=4, columna=70}
+SymbolInfo{lexema='_a_', tipo='int', scope='1', linea=0, columna=34}
+SymbolInfo{lexema='_suma_', tipo='int', scope='1', linea=0, columna=8}
+SymbolInfo{lexema='_b_', tipo='int', scope='1', linea=0, columna=47}
+SymbolInfo{lexema='_for_', tipo='int', scope='1', linea=4, columna=8}
