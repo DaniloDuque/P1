@@ -1,4 +1,5 @@
 Tabla de símbolos
 SymbolInfo{lexema='_numero_', tipo='int', scope='0', linea=5, columna=12}
 SymbolInfo{lexema='_a_', tipo='int', scope='0', linea=0, columna=34}
+SymbolInfo{lexema='_suma_', tipo='int', scope='0', linea=0, columna=8}
 SymbolInfo{lexema='_b_', tipo='int', scope='0', linea=0, columna=47}

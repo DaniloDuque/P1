@@ -732,6 +732,14 @@ class CUP$Parser$actions {
 		int pright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		ASTNode p = (ASTNode)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 
+        // Check if the function is already declared in the current scope
+        if (symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
+            handleError("Function '" + i.toString() + "' already declared in this scope", i);
+        } else {
+            // Add the function to the symbol table
+            TypeNode nt = (TypeNode) t;
+            symbolTable.addSymbol(i.toString(), nt.getType(), scopeStack.peek(), ileft, iright);
+        }
         scopeStack.push(scopeStack.peek() + 1); // Enter a new scope
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("NT$0",35, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);

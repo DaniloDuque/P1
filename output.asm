@@ -63,6 +63,8 @@ sw $t8, 32($sp)
 sw $t9, 36($sp)
 li $s2, 4
 move $a0, $s2
+li $s2, 2
+move $a1, $s2
 jal _suma_
 lw $t0, 0($sp)
 lw $t1, 4($sp)
