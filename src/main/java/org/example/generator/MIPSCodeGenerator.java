@@ -37,7 +37,6 @@ public class MIPSCodeGenerator implements ASTVisitor {
 
     @Override
     public String visit(ProgramNode node) {
-        // Initialize the output file
         try {
             writer = new BufferedWriter(new FileWriter("output.asm"));
         } catch (IOException e) {
@@ -46,31 +45,32 @@ public class MIPSCodeGenerator implements ASTVisitor {
             return null;
         }
 
-        // Emit the .data section
         emit(".data");
         emit("newline: .asciiz \"\\n\"");
-        emit(dataSegment.toString());
-        // For printing newlines
 
-        // Emit the .text section
+        if (dataSegment != null) {
+            emit(dataSegment.toString());
+        }
+
         emit(".text");
         emit(".globl main");
 
-        // Visit function declarations
         if (node.getGlobalDeclarations() != null) {
             visit((FuncDeclsNode) node.getGlobalDeclarations());
         }
 
-        // Visit the main function
         emit("main:");
-        visit((StatementsNode) node.getMainFunction());
 
-        // Exit the program
-        emit("li $v0, 10"); // syscall for exit
+        if (node.getMainFunction() != null) {
+            visit((StatementsNode) node.getMainFunction());
+        }
+
+        // Exit program
+        emit("li $v0, 10");
         emit("syscall");
 
-        // Close the writer
         try {
+            writer.flush();  // Ensure all data is written before closing
             writer.close();
         } catch (IOException e) {
             System.err.println("Error: Could not close output file.");
@@ -80,31 +80,25 @@ public class MIPSCodeGenerator implements ASTVisitor {
         return null;
     }
 
+
     @Override
     public String visit(FuncDeclNode node) {
         String functionName = node.getFunctionName().toString();
         emit(functionName + ":");
 
-        // Prologue: Save $ra, $fp, and callee-saved registers
-        emit("addiu $sp, $sp, -40"); // Adjust stack pointer for $ra, $fp, and $s0-$s7
-        emit("sw $ra, 36($sp)");
-        emit("sw $fp, 32($sp)");
-        for (int i = 0; i < 8; i++) {
-            emit("sw $s" + i + ", " + (i * 4) + "($sp)");
-        }
-        emit("move $fp, $sp");
+        // Function prologue: Save $ra, $fp, and adjust stack for alignment (if necessary)
+        emit("addi $sp, $sp, -8");  // Make space for $ra and $fp
+        emit("sw $ra, 4($sp)");      // Save return address
+        emit("sw $fp, 0($sp)");      // Save frame pointer
+        emit("move $fp, $sp");       // Set frame pointer to current stack pointer
 
-        // Visit the function body
-        visit((StatementsNode) node.getBody());
+        visit((StatementsNode) node.getBody());  // Visit the body of the function
 
-        // Epilogue: Restore $ra, $fp, and callee-saved registers
-        for (int i = 0; i < 8; i++) {
-            emit("lw $s" + i + ", " + (i * 4) + "($sp)");
-        }
-        emit("lw $fp, 32($sp)");
-        emit("lw $ra, 36($sp)");
-        emit("addiu $sp, $sp, 40"); // Restore stack pointer
-        emit("jr $ra");
+        // Function epilogue: Restore registers and return
+        emit("lw $fp, 0($sp)");      // Restore frame pointer
+        emit("lw $ra, 4($sp)");      // Restore return address
+        emit("addi $sp, $sp, 8");    // Adjust stack pointer (clean up space for $ra and $fp)
+        emit("jr $ra");              // Jump to return address
 
         return null;
     }
@@ -127,44 +121,30 @@ public class MIPSCodeGenerator implements ASTVisitor {
     @Override
     public String visit(FuncCallNode node) {
         String functionName = node.getFunctionName().toString();
+        List<ASTNode> args = ((ArgListNode) node.getArguments()).getArguments();
 
-        // Save caller-saved registers
-        emit("addiu $sp, $sp, -40");
-        for (int i = 0; i < 10; i++) {
-            emit("sw $t" + i + ", " + (i * 4) + "($sp)");
-        }
+        // Pass arguments into $a0-$a3 or stack
+        for (int i = 0; i < args.size(); i++) {
+            String argRegister = args.get(i).accept(this);
 
-        // Pass arguments
-        if (node.getArguments() != null) {
-            List<ASTNode> args = ((ArgListNode) node.getArguments()).getArguments();
-            for (int i = 0; i < args.size(); i++) {
-                String argRegister = args.get(i).accept(this);
-                if (argRegister == null) continue;
-
-                if (i < 4) {
-                    if (argRegister.startsWith("$f")) { // Floating-point argument
-                        emit("mov.s $f" + (12 + i) + ", " + argRegister);
-                    } else { // Integer argument
-                        emit("move $a" + i + ", " + argRegister);
-                    }
-                } else {
-                    emit("sw " + argRegister + ", " + ((i - 4) * 4) + "($sp)");
-                }
-                registerAllocator.freeRegister(argRegister);
+            if (i < 4) {
+                // Move the argument into $a0-$a3
+                emit("move $a" + i + ", " + argRegister);
+            } else {
+                // Store the argument on the stack
+                emit("sw " + argRegister + ", " + ((i - 4) * 4) + "($sp)");
             }
+
+            // Free register after usage
+            registerAllocator.freeRegister(argRegister);
         }
 
-        // Call the function
+        // Make the function call
         emit("jal " + functionName);
-
-        // Restore caller-saved registers
-        for (int i = 0; i < 10; i++) {
-            emit("lw $t" + i + ", " + (i * 4) + "($sp)");
-        }
-        emit("addiu $sp, $sp, 40");
 
         return null;
     }
+
 
     @Override
     public String visit(LiteralNode node) {
@@ -175,19 +155,28 @@ public class MIPSCodeGenerator implements ASTVisitor {
         switch (type) {
             case "int":
             case "bool":
-                emit("li " + resultReg + ", " + value);
+                emit("li " + resultReg + ", " + value);  // Load integer or boolean
                 break;
             case "float":
                 String floatLabel = generateLabel("float_literal");
-                // emit(floatLabel + ": .float " + value);
+                // Emit the float literal in the data section
+                emit(".data");
+                emit(floatLabel + ": .float " + value);
+                emit(".text");
+                // Load the floating-point value from memory into a floating-point register
                 emit("lwc1 $f0, " + floatLabel);
+                // If necessary, move it to a general-purpose register
                 emit("mfc1 " + resultReg + ", $f0");
                 break;
             case "char":
-                emit("li " + resultReg + ", " + (int) value.charAt(0));
+                emit("li " + resultReg + ", " + (int) value.charAt(0));  // Load char as int (ASCII value)
                 break;
             case "string":
                 String stringLabel = generateLabel("string_literal");
+                emit(".data");
+                emit(stringLabel + ": .asciiz \"" + value + "\"");
+                emit(".text");
+                // Load the address of the string literal
                 emit("la " + resultReg + ", " + stringLabel);
                 break;
             default:
@@ -199,17 +188,50 @@ public class MIPSCodeGenerator implements ASTVisitor {
 
     @Override
     public String visit(ParamListNode node) {
+        int paramIndex = 0;
+
         for (ASTNode n : node.getParams()) {
-            visit((ParamNode) n);
+            ParamNode paramNode = (ParamNode) n;
+
+            // Handle parameter-specific actions (e.g., allocating registers, managing stack)
+            String paramReg = visit(paramNode);
+
+            if (paramIndex < 4) {
+                // If there are 4 or fewer parameters, pass them via $a0-$a3 registers
+                emit("move $a" + paramIndex + ", " + paramReg);
+            } else {
+                // If there are more than 4 parameters, pass them on the stack
+                emit("sw " + paramReg + ", " + ((paramIndex - 4) * 4) + "($sp)");
+            }
+
+            registerAllocator.freeRegister(paramReg); // Free the register after use
+            paramIndex++;
         }
+
         return null;
     }
 
     @Override
     public String visit(ParamNode node) {
-        emit("# Parameter: " + node.getParamName() + " (" + node.getParamType() + ")");
-        return null;
+        String paramName = " ";
+        String paramType = "node.getParamType()";
+
+        // Emit a comment with the parameter name and type
+        emit("# Parameter: " + paramName + " (" + paramType + ")");
+
+        // Allocate a register for the parameter if needed
+        String paramReg = registerAllocator.allocateRegister();
+
+        // For simplicity, you could use $a0-$a3 for the first 4 parameters
+        // The handling of this could be done in ParamListNode, but you can add logic here if needed
+        emit("move " + paramReg + ", $a0");  // Example: move the value to the allocated register (if it's within the first 4 parameters)
+
+        // You could handle stack-based allocation here if necessary for more than 4 parameters
+
+        // Return the allocated register
+        return paramReg;
     }
+
 
     @Override
     public String visit(TypeNode node) {
@@ -220,15 +242,23 @@ public class MIPSCodeGenerator implements ASTVisitor {
     public String visit(IdentifierNode node) {
         String identifierName = node.getName();
         String resultReg = registerAllocator.allocateRegister();
-        emit("la $t0, " + identifierName);
-        emit("lw " + resultReg + ", 0($t0)");
+
+        // If it's a global variable, we can use the address directly
+        emit("la $t0, " + identifierName);  // Load the address of the identifier into $t0
+        emit("lw " + resultReg + ", 0($t0)");  // Load the value from the address into resultReg
+
+        // If the identifier is a local variable, you may want to adjust this with $fp (stack frame pointer)
+        // For example, if the identifier is on the stack, you would do something like:
+        // emit("lw " + resultReg + ", " + offset + "($fp)");
+
         return resultReg;
     }
 
+
     @Override
     public String visit(ArithmeticExprNode node) {
-        String leftRegister = node.getLeft() != null ? node.getLeft().accept(this) : null;
-        String rightRegister = node.getRight() != null ? node.getRight().accept(this) : null;
+        String leftRegister = node.getLeft().accept(this);
+        String rightRegister = node.getRight().accept(this);
         String resultRegister = registerAllocator.allocateRegister();
 
         switch (node.getOperator()) {
@@ -236,51 +266,32 @@ public class MIPSCodeGenerator implements ASTVisitor {
                 emit("add " + resultRegister + ", " + leftRegister + ", " + rightRegister);
                 break;
             case "-":
-                if (node.getLeft() == null) {
-                    emit("sub " + resultRegister + ", $zero, " + rightRegister);
-                } else {
-                    emit("sub " + resultRegister + ", " + leftRegister + ", " + rightRegister);
-                }
+                emit("sub " + resultRegister + ", " + leftRegister + ", " + rightRegister);
                 break;
             case "*":
-                emit("mult " + leftRegister + ", " + rightRegister);
-                emit("mflo " + resultRegister);
+                emit("mul " + resultRegister + ", " + leftRegister + ", " + rightRegister);
                 break;
             case "/":
+                // Check for division by zero
+                emit("beq " + rightRegister + ", $zero, division_by_zero_error");
                 emit("div " + leftRegister + ", " + rightRegister);
                 emit("mflo " + resultRegister);
+                emit("j end_of_division");
+                emit("division_by_zero_error:");
+                emit("li $v0, 4");  // Print error message
+                emit("la $a0, division_by_zero_msg");
+                emit("syscall");
+                emit("li $v0, 10");  // Exit program
+                emit("syscall");
+                emit("end_of_division:");
                 break;
-            case "++":
-                if (node.getLeft() != null) {
-                    emit("addi " + leftRegister + ", " + leftRegister + ", 1");
-                    emit("move " + resultRegister + ", " + leftRegister);
-                } else if (node.getRight() != null) {
-                    emit("addi " + rightRegister + ", " + rightRegister + ", 1");
-                    emit("move " + resultRegister + ", " + rightRegister);
-                } else {
-                    throw new IllegalArgumentException("Invalid increment operator usage");
-                }
-                break;
-            case "--":
-                if (node.getLeft() != null) {
-                    emit("addi " + leftRegister + ", " + leftRegister + ", -1");
-                    emit("move " + resultRegister + ", " + leftRegister);
-                } else if (node.getRight() != null) {
-                    emit("addi " + rightRegister + ", " + rightRegister + ", -1");
-                    emit("move " + resultRegister + ", " + rightRegister);
-                } else {
-                    throw new IllegalArgumentException("Invalid decrement operator usage");
-                }
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported operator: " + node.getOperator());
         }
 
-        if (leftRegister != null) registerAllocator.freeRegister(leftRegister);
-        if (rightRegister != null) registerAllocator.freeRegister(rightRegister);
-
+        registerAllocator.freeRegister(leftRegister);
+        registerAllocator.freeRegister(rightRegister);
         return resultRegister;
     }
+
 
     @Override
     public String visit(LogicalExprNode node) {
@@ -290,11 +301,23 @@ public class MIPSCodeGenerator implements ASTVisitor {
 
         switch (node.getOperator()) {
             case "&&":
-                emit("and " + resultRegister + ", " + leftRegister + ", " + rightRegister);
+                // Short-circuit: if left is false (zero), result is false (zero)
+                emit("beq " + leftRegister + ", $zero, left_is_false");
+                emit("move " + resultRegister + ", $zero"); // Set result to false
+                emit("b end_of_logical_op");
+                emit("left_is_false:");
+                emit("move " + resultRegister + ", $zero"); // Set result to false
                 break;
+
             case "||":
-                emit("or " + resultRegister + ", " + leftRegister + ", " + rightRegister);
+                // Short-circuit: if left is true (non-zero), result is true (non-zero)
+                emit("bnez " + leftRegister + ", left_is_true");
+                emit("move " + resultRegister + ", $zero"); // Set result to false
+                emit("b end_of_logical_op");
+                emit("left_is_true:");
+                emit("move " + resultRegister + ", $zero"); // Set result to true
                 break;
+
             default:
                 throw new IllegalArgumentException("Unsupported logical operator: " + node.getOperator());
         }
@@ -302,8 +325,11 @@ public class MIPSCodeGenerator implements ASTVisitor {
         registerAllocator.freeRegister(leftRegister);
         registerAllocator.freeRegister(rightRegister);
 
+        emit("end_of_logical_op:"); // End label for logical operations
+
         return resultRegister;
     }
+
 
     @Override
     public String visit(RelationalExprNode node) {
@@ -311,29 +337,31 @@ public class MIPSCodeGenerator implements ASTVisitor {
         String rightRegister = node.getRight().accept(this);
         String resultRegister = registerAllocator.allocateRegister();
 
+        // Handle relational operator
         switch (node.getOperator()) {
             case "==":
-                emit("seq " + resultRegister + ", " + leftRegister + ", " + rightRegister);
+                emit("seq " + resultRegister + ", " + leftRegister + ", " + rightRegister);  // equal
                 break;
             case "!=":
-                emit("sne " + resultRegister + ", " + leftRegister + ", " + rightRegister);
+                emit("sne " + resultRegister + ", " + leftRegister + ", " + rightRegister);  // not equal
                 break;
             case "<":
-                emit("slt " + resultRegister + ", " + leftRegister + ", " + rightRegister);
+                emit("slt " + resultRegister + ", " + leftRegister + ", " + rightRegister);  // less than
                 break;
             case "<=":
-                emit("sle " + resultRegister + ", " + leftRegister + ", " + rightRegister);
+                emit("sle " + resultRegister + ", " + leftRegister + ", " + rightRegister);  // less than or equal
                 break;
             case ">":
-                emit("sgt " + resultRegister + ", " + leftRegister + ", " + rightRegister);
+                emit("sgt " + resultRegister + ", " + leftRegister + ", " + rightRegister);  // greater than
                 break;
             case ">=":
-                emit("sge " + resultRegister + ", " + leftRegister + ", " + rightRegister);
+                emit("sge " + resultRegister + ", " + leftRegister + ", " + rightRegister);  // greater than or equal
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported relational operator: " + node.getOperator());
         }
 
+        // Free the registers used for comparison
         registerAllocator.freeRegister(leftRegister);
         registerAllocator.freeRegister(rightRegister);
 
@@ -346,136 +374,199 @@ public class MIPSCodeGenerator implements ASTVisitor {
         String indexRegister = node.getIndex().accept(this);
         String resultRegister = registerAllocator.allocateRegister();
 
+        // Multiply the index by 4 (for int) to calculate the byte offset
         emit("sll $t0, " + indexRegister + ", 2");
+
+        // Load the base address of the array
         emit("la $t1, " + arrayName);
+
+        // Compute the address of the element
         emit("add $t0, $t1, $t0");
+
+        // Load the value of the element into the result register
         emit("lw " + resultRegister + ", 0($t0)");
 
+        // Free the register used for the index
         registerAllocator.freeRegister(indexRegister);
+
         return resultRegister;
     }
 
     @Override
     public String visit(ArrayDeclNode node) {
         String arrayName = node.getArrayName().toString();
-        int size = 100; // Default size for simplicity
+        int size = 100; // Default size for simplicity, could be dynamic depending on the node
+
+        // Declare the array in the .data section with space for 'size' elements
+        emit(arrayName + ": .space " + (size * 4));  // Each element is 4 bytes (assuming int array)
 
         return null;
     }
+
 
     @Override
     public String visit(AssignNode node) {
         String lhs = node.getLeft().accept(this);
         String rhs = node.getRight().accept(this);
 
+        // Ensure LHS is the address where we want to store the RHS value
         emit("sw " + rhs + ", 0(" + lhs + ")");
+
+        // Free the registers after use
         registerAllocator.freeRegister(lhs);
         registerAllocator.freeRegister(rhs);
 
         return null;
     }
 
+
     @Override
     public String visit(BreakNode node) {
+        // Generate a unique label for breaking out of the loop
         String endLabel = generateLabel("end_loop");
+
+        // Emit the jump instruction to the end label, which will exit the loop
         emit("j " + endLabel);
+
         return null;
     }
 
+
     @Override
     public String visit(ElementListNode node) {
+        // Visit each element in the list and generate MIPS code for it
         for (ASTNode element : node.getElements()) {
             element.accept(this);
         }
         return null;
     }
 
+
     @Override
     public String visit(ErrorNode node) {
+        // Emit the error message in the data section
         emit(".data");
         emit("error_msg: .asciiz \"" + node.getErrorMessage() + "\"");
+
+        // Emit the MIPS code to print the error message
         emit(".text");
-        emit("li $v0, 4");
-        emit("la $a0, error_msg");
-        emit("syscall");
-        emit("li $v0, 10");
-        emit("syscall");
+        emit("li $v0, 4");            // Load syscall code for printing string
+        emit("la $a0, error_msg");    // Load address of error message into $a0
+        emit("syscall");              // Print the error message
+
+        // Exit the program
+        emit("li $v0, 10");           // Load syscall code for program exit
+        emit("syscall");              // Exit the program
+
         return null;
     }
+
 
     @Override
     public String visit(ForNode node) {
         String startLabel = generateLabel("start_loop");
         String endLabel = generateLabel("end_loop");
 
+        // Handle initialization if provided
         if (node.getInitialization() != null) {
             visit((AssignNode) node.getInitialization());
         }
 
         emit(startLabel + ":");
 
+        // Handle condition if provided
         if (node.getCondition() != null) {
             String conditionRegister = node.getCondition().accept(this);
             emit("beqz " + conditionRegister + ", " + endLabel);
             registerAllocator.freeRegister(conditionRegister);
         }
 
+        // Visit the body of the loop
         visit((StatementsNode) node.getBody());
 
+        // Handle update expression if provided
         if (node.getUpdate() != null) {
-            visit((ArithmeticExprNode) node.getUpdate());
+            visit((ArithmeticExprNode) node.getUpdate()); // Assumes the update is always an ArithmeticExprNode
         }
 
-        emit("j " + startLabel);
-        emit(endLabel + ":");
+        emit("j " + startLabel);  // Jump to start of the loop
+        emit(endLabel + ":");     // End of the loop
 
         return null;
     }
+
 
     @Override
     public String visit(IfNode node) {
+        // Generate unique labels for the else and end sections
         String elseLabel = generateLabel("else");
         String endLabel = generateLabel("end_if");
 
+        // Evaluate the condition
         String conditionRegister = node.getCondition().accept(this);
-        emit("beqz " + conditionRegister + ", " + elseLabel);
-        registerAllocator.freeRegister(conditionRegister);
+        emit("beqz " + conditionRegister + ", " + elseLabel);  // Branch to else if condition is false
+        registerAllocator.freeRegister(conditionRegister);  // Free register after use
 
+        // Visit the then block (if condition is true)
         visit((StatementsNode) node.getThenBlock());
-        emit("j " + endLabel);
+        emit("j " + endLabel);  // Jump to the end to skip else block if condition was true
 
+        // Else block label and body
         emit(elseLabel + ":");
         if (node.getElseBlock() != null) {
-            visit((StatementsNode) node.getElseBlock());
+            visit((StatementsNode) node.getElseBlock());  // Visit the else block if it exists
         }
 
+        // End label for the if-else statement
         emit(endLabel + ":");
         return null;
     }
+
 
     @Override
     public String visit(ReturnNode node) {
         if (node.getReturnValue() != null) {
+            // Evaluate the return value and move it to $v0
             String resultRegister = node.getReturnValue().accept(this);
             emit("move $v0, " + resultRegister);
-            registerAllocator.freeRegister(resultRegister);
+            registerAllocator.freeRegister(resultRegister);  // Free the register used for the return value
+        } else {
+            // If there's no return value, make sure $v0 is zeroed out (standard for no return)
+            emit("move $v0, $zero");
         }
 
+        // Jump to the function epilogue
         emit("j " + generateLabel("function_epilogue"));
         return null;
     }
 
     @Override
     public String visit(VarDeclNode node) {
-        String varName = node.getVarName().toString();
-        String varType = node.getVarType().toString();
+        String varName = node.getVarType().toString();
+        String varType = node.getVarName().toString();
 
         emit(".data");
-        emit(varName + ": .space 4");
-        emit(".text");
 
+        // Handle different types
+        switch (varType) {
+            case "int":
+            case "bool":
+                emit(varName + ": .space 4");  // 4 bytes for integers and booleans
+                break;
+            case "float":
+                emit(varName + ": .float 0.0");  // Initializing float to 0.0
+                break;
+            case "char":
+                emit(varName + ": .byte 0");  // 1 byte for characters
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported variable type: " + varType);
+        }
+
+        emit(".text");
         return null;
     }
+
 
     @Override
     public String visit(WhileNode node) {
@@ -484,47 +575,90 @@ public class MIPSCodeGenerator implements ASTVisitor {
 
         emit(startLabel + ":");
         String conditionRegister = node.getCondition().accept(this);
+
+        // Branch to end if condition is false
         emit("beqz " + conditionRegister + ", " + endLabel);
         registerAllocator.freeRegister(conditionRegister);
 
+        // Visit the body of the loop
         visit((StatementsNode) node.getBody());
+
+        // Jump back to the start of the loop
         emit("j " + startLabel);
 
         emit(endLabel + ":");
         return null;
     }
 
+
     @Override
     public String visit(ArgListNode node) {
-        for (ASTNode arg : node.getArguments()) {
-            arg.accept(this);
+        List<ASTNode> args = node.getArguments();
+        int argCount = 0;
+
+        for (ASTNode arg : args) {
+            String argRegister = arg.accept(this);
+
+            // Handle up to four arguments in registers $a0 to $a3
+            if (argCount < 4) {
+                emit("move $a" + argCount + ", " + argRegister);
+            } else {
+                // For more than four arguments, push them onto the stack
+                emit("sw " + argRegister + ", " + ((argCount - 4) * 4) + "($sp)");
+            }
+
+            registerAllocator.freeRegister(argRegister);
+            argCount++;
         }
+
         return null;
     }
+
 
     @Override
     public String visit(PrintNode node) {
+        // Evaluate the expression and get the result in a register
         String resultRegister = node.getExpression().accept(this);
-        emit("li $v0, 1");
-        emit("move $a0, " + resultRegister);
+
+        // Set up for the print integer syscall (system call 1)
+        emit("li $v0, 1");              // Load the system call code for print integer
+        emit("move $a0, " + resultRegister); // Move the result into $a0 (argument register)
+
+        // Perform the syscall to print the integer
         emit("syscall");
+
+        // Free the register after use
         registerAllocator.freeRegister(resultRegister);
+
         return null;
     }
 
+
     @Override
     public String visit(ReadNode node) {
+        // Get the variable name where the input will be stored
         String varName = node.getIdentifier().toString();
-        emit("li $v0, 5");
+
+        // Prepare for the read integer system call (syscall 5)
+        emit("li $v0, 5");    // Load the system call code for reading an integer
+
+        // Perform the syscall to read the integer from the user input
         emit("syscall");
-        emit("sw $v0, " + varName);
+
+        // Store the result (in $v0) into the variable
+        emit("sw $v0, " + varName);  // Store the input value into the variable's address
+
         return null;
     }
 
     @Override
     public String visit(StatementsNode node) {
+        // Iterate over the list of statements and process each one
         for (ASTNode stmt : node.getStatements()) {
-            if(stmt!=null) stmt.accept(this);
+            if (stmt != null) {
+                // Visit the statement to generate the corresponding MIPS code
+                stmt.accept(this);
+            }
         }
         return null;
     }
