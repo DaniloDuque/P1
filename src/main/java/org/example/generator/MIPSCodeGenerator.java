@@ -1,6 +1,8 @@
+
 package org.example.generator;
 
-import org.example.lexer.DataSegment;
+import org.example.datasegment.*;
+import org.example.generator.ASTVisitor;
 import org.example.node.*;
 import org.example.register.MIPSRegisterAllocator;
 import org.example.register.RegisterAllocator;
@@ -540,8 +542,10 @@ public class MIPSCodeGenerator implements ASTVisitor {
         if (node.getReturnValue() != null) {
             // Evaluate the return value and move it to $v0
             String resultRegister = node.getReturnValue().accept(this);
-            emit("move $v0, " + resultRegister);
-            registerAllocator.freeRegister(resultRegister);  // Free the register used for the return value
+            if(resultRegister!=null) {
+                emit("move $v0, " + resultRegister);
+                registerAllocator.freeRegister(resultRegister);  // Free the register used for the return value
+            }
         } else {
             // If there's no return value, make sure $v0 is zeroed out (standard for no return)
             emit("move $v0, $zero");
@@ -564,13 +568,13 @@ public class MIPSCodeGenerator implements ASTVisitor {
         switch (varType) {
             case "int":
             case "bool":
-                emit(varName + ": .space 4");  // 4 bytes for integers and booleans
+                //emit(varName + ": .space 4");  // 4 bytes for integers and booleans
                 break;
             case "float":
-                emit(varName + ": .float 0.0");  // Initializing float to 0.0
+                //emit(varName + ": .float 0.0");  // Initializing float to 0.0
                 break;
             case "char":
-                emit(varName + ": .byte 0");  // 1 byte for characters
+                //emit(varName + ": .byte 0");  // 1 byte for characters
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported variable type: " + varType);

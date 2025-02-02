@@ -6,15 +6,18 @@ import java.util.Stack;
 import org.example.node.*;
 import org.example.table.*;
 import org.example.generator.*;
+import org.example.datasegment.*;
 
 parser code {:
 
     public static Stack<Integer> scopeStack = new Stack<>();
     public static SymbolTable symbolTable;
+    public static DataSegment dataSegment;
 
     public Parser(Scanner scn, SymbolTable sym) {
         super(scn);
         symbolTable = sym;
+        dataSegment = new DataSegment();
         scopeStack.push(0);  // Global scope
     }
 
@@ -29,6 +32,10 @@ parser code {:
     private void handleError(String message, Object sym) {
         System.out.println("Error: " + message + " " + sym);
 
+    }
+
+    private void handleWarning(String message) {
+        System.out.println(message);
     }
 
     public void report_error(String message, Object info) {
@@ -154,6 +161,7 @@ param ::= type:t IDENTIFICADOR:i {:
             TypeNode nt = (TypeNode) t;
             symbolTable.addSymbol(i.toString(), nt.getType(), scopeStack.peek(), ileft, iright);
             RESULT = new ParamNode(t, new IdentifierNode(i.toString()));
+            dataSegment.addData(nt.getType(), i.toString(), scopeStack.peek());
         }
 :}
         ;
@@ -168,6 +176,7 @@ var_declaration ::= type:t IDENTIFICADOR:i opt_equals_value:ov
                             TypeNode nt = (TypeNode) t;
                             symbolTable.addSymbol(i.toString(), nt.getType(), scopeStack.peek(), ileft, iright);
                             RESULT = new VarDeclNode(t, new IdentifierNode(i.toString()), ov);
+                            dataSegment.addData(nt.getType(), i.toString(), scopeStack.peek());
                         }
                     :}
                     ;
@@ -208,7 +217,7 @@ function_call ::= IDENTIFICADOR:i PARENTESIS_ABRE arg_list:args PARENTESIS_CIERR
                 {:
                     // Check if the function is declared
                     if (!symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
-                        handleError("Undeclared function '" + i.toString() + "'", i);
+                        handleWarning("Warning: Undeclared function '" + i.toString() + "' " + i);
                     }
                     RESULT = new FuncCallNode(new IdentifierNode(i.toString()), args);
                 :}

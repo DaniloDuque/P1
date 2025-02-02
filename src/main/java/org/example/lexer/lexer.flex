@@ -15,15 +15,10 @@ import org.example.cup.sym;import org.example.table.SymbolTable;
 %{
     // Tabla de símbolos
         SymbolTable symbolTable = new SymbolTable();
-        DataSegment dataSegment = new DataSegment();
 
         // Método para obtener la tabla de símbolos
         public SymbolTable getSymbolTable() {
             return symbolTable;
-        }
-
-        public DataSegment getDataSegment() {
-            return dataSegment;
         }
 
 %}

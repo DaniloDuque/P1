@@ -1,5 +1,13 @@
 .data
 newline: .asciiz "\n"
+_i_: .word 0
+_cotaMax_: .word 0
+_j_: .word 0
+_inc_: .word 0
+_a_: .word 0
+_c_: .word 0
+_b_: .word 0
+_init_: .word 0
 
 .text
 .globl main
@@ -9,10 +17,8 @@ sw $ra, 4($sp)
 sw $fp, 0($sp)
 move $fp, $sp
 .data
-_c_: .space 4
 .text
 .data
-_i_: .space 4
 .text
 start_loop_0:
 la $t0, _cotaMax_
@@ -22,7 +28,6 @@ lw $s1, 0($t0)
 slt $s2, $s0, $s1
 beqz $s2, end_loop_1
 .data
-_j_: .space 4
 .text
 start_loop_2:
 la $t0, _cotaMax_
@@ -87,7 +92,6 @@ move $a0, $s2
 li $s2, 5
 move $a1, $s2
 jal _suma_
-move $v0, null
 j function_epilogue_6
 li $s2, 0
 move $a0, $s2
@@ -96,7 +100,6 @@ move $a1, $s2
 li $s2, 1
 move $a2, $s2
 jal _for_
-move $v0, null
 j function_epilogue_7
 li $v0, 10
 syscall

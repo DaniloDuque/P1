@@ -42,7 +42,7 @@ public class Main {
             writer.close();
 
             // Generate MIPS code from the AST
-            MIPSCodeGenerator codeGenerator = new MIPSCodeGenerator(lexer.getDataSegment()); // Initialize the code generator
+            MIPSCodeGenerator codeGenerator = new MIPSCodeGenerator(parser.dataSegment); // Initialize the code generator
             astRoot.accept(codeGenerator); // Traverse the AST and generate MIPS code
             System.out.println("MIPS code generated successfully!");
 

@@ -10,6 +10,7 @@ import java.util.Stack;
 import org.example.node.*;
 import org.example.table.*;
 import org.example.generator.*;
+import org.example.datasegment.*;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -579,10 +580,12 @@ public class Parser extends java_cup.runtime.lr_parser {
 
     public static Stack<Integer> scopeStack = new Stack<>();
     public static SymbolTable symbolTable;
+    public static DataSegment dataSegment;
 
     public Parser(Scanner scn, SymbolTable sym) {
         super(scn);
         symbolTable = sym;
+        dataSegment = new DataSegment();
         scopeStack.push(0);  // Global scope
     }
 
@@ -597,6 +600,10 @@ public class Parser extends java_cup.runtime.lr_parser {
     private void handleError(String message, Object sym) {
         System.out.println("Error: " + message + " " + sym);
 
+    }
+
+    private void handleWarning(String message) {
+        System.out.println(message);
     }
 
     public void report_error(String message, Object info) {
@@ -885,6 +892,7 @@ class CUP$Parser$actions {
             TypeNode nt = (TypeNode) t;
             symbolTable.addSymbol(i.toString(), nt.getType(), scopeStack.peek(), ileft, iright);
             RESULT = new ParamNode(t, new IdentifierNode(i.toString()));
+            dataSegment.addData(nt.getType(), i.toString(), scopeStack.peek());
         }
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("param",5, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -913,6 +921,7 @@ class CUP$Parser$actions {
                             TypeNode nt = (TypeNode) t;
                             symbolTable.addSymbol(i.toString(), nt.getType(), scopeStack.peek(), ileft, iright);
                             RESULT = new VarDeclNode(t, new IdentifierNode(i.toString()), ov);
+                            dataSegment.addData(nt.getType(), i.toString(), scopeStack.peek());
                         }
                     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("var_declaration",9, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -1097,7 +1106,7 @@ class CUP$Parser$actions {
 		
                     // Check if the function is declared
                     if (!symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
-                        handleError("Undeclared function '" + i.toString() + "'", i);
+                        handleWarning("Warning: Undeclared function '" + i.toString() + "' " + i);
                     }
                     RESULT = new FuncCallNode(new IdentifierNode(i.toString()), args);
                 
