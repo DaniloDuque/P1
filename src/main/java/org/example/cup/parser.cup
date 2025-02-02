@@ -270,10 +270,6 @@ arithmetic_expr ::= expression:e1 SUMA expression:e2
                  {: RESULT = new ArithmeticExprNode(e, "++", null); :}
                  | expression:e DECREMENTO
                  {: RESULT = new ArithmeticExprNode(e, "--", null); :}
-                 | DECREMENTO expression:e
-                 {: RESULT = new ArithmeticExprNode(null, "--", e); :}
-                 | INCREMENTO expression:e
-                 {: RESULT = new ArithmeticExprNode(null, "++", e); :}
                  ;
 
 relational_expr ::= expression:e1 MENOR expression:e2

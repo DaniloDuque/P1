@@ -15,10 +15,15 @@ import org.example.cup.sym;import org.example.table.SymbolTable;
 %{
     // Tabla de símbolos
         SymbolTable symbolTable = new SymbolTable();
+        DataSegment dataSegment = new DataSegment();
 
         // Método para obtener la tabla de símbolos
         public SymbolTable getSymbolTable() {
             return symbolTable;
+        }
+
+        public DataSegment getDataSegment() {
+            return dataSegment;
         }
 
 %}
@@ -332,6 +337,7 @@ booleano        = (true|false)
 
 /* --- Sección de identificadores --- */
 {identificador}          {
+    dataSegment.addData(yytext(), ".word 42");
     return new Symbol(sym.IDENTIFICADOR, yyline, yycolumn, yytext());
 }
 

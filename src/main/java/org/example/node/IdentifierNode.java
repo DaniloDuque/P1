@@ -15,7 +15,7 @@ public class IdentifierNode implements ASTNode {
 
     @Override
     public String toString() {
-        return "IdentifierNode(" + name + ")";
+        return (name != null) ? name : "";
     }
 
     @Override
