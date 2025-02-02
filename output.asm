@@ -23,16 +23,26 @@ main:
 .data
 _numero_: .space 4
 .text
-li $s2, 4
-move $a0, $s2
-li $s2, 2
-move $a1, $s2
+.data
+_char_: .byte 0
+.text
+la $t0, _numero_
+lw $s2, 0($t0)
+la $t0, _char_
+lw $s1, 0($t0)
+add $s0, $s2, $s1
+move $v0, $s0
+j function_epilogue_1
+li $s0, 4
+move $a0, $s0
+li $s0, 2
+move $a1, $s0
 jal _suma_
 move $a0, null
-li $s2, 5
-move $a1, $s2
+li $s0, 5
+move $a1, $s0
 jal _suma_
 move $v0, null
-j function_epilogue_1
+j function_epilogue_2
 li $v0, 10
 syscall

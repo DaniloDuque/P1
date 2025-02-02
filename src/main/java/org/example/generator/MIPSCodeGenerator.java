@@ -540,6 +540,7 @@ public class MIPSCodeGenerator implements ASTVisitor {
         return null;
     }
 
+    //TODO: add string case
     @Override
     public String visit(VarDeclNode node) {
         String varName = node.getVarType().toString();

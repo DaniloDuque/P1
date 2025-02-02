@@ -26,10 +26,6 @@ parser code {:
         }
     }
 
-    private void handleError(String message, Object sym) {
-        System.out.println("Error: " + message);
-    }
-
     public void report_error(String message, Object info) {
         Symbol sym = (Symbol) info;
         handleError(message, sym);
@@ -97,8 +93,6 @@ precedence right INCREMENTO, DECREMENTO;
 
 program ::= func_declarations:f MAIN LLAVE_ABRE statements:s LLAVE_CIERRA
           {: RESULT = new ProgramNode(f, s); :}
-          | MAIN LLAVE_ABRE statements:s LLAVE_CIERRA
-          {: RESULT = new ProgramNode(null, s); :}
           ;
 
 func_declarations ::= func_declaration:f func_declarations:fs
@@ -336,70 +330,70 @@ arithmetic_expr ::= expression:e1 SUMA expression:e2
                  {:
                      // Check if both operands are of numeric type
                      String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
-                  String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
-                  if (!isNumeric(type1) || !isNumeric(type2)) {
-                      handleError("Invalid operands for arithmetic operation", e1);
-                  }
-                  RESULT = new ArithmeticExprNode(e1, "*", e2);
-              :}
-              | expression:e1 DIVISION expression:e2
-              {:
-                  // Check if both operands are of numeric type
-                  String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
-                  String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
-                  if (!isNumeric(type1) || !isNumeric(type2)) {
-                      handleError("Invalid operands for arithmetic operation", e1);
-                  }
-                  RESULT = new ArithmeticExprNode(e1, "/", e2);
-              :}
-              | expression:e1 MODULO expression:e2
-              {:
-                  // Check if both operands are of numeric type
-                  String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
-                  String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
-                  if (!isNumeric(type1) || !isNumeric(type2)) {
-                      handleError("Invalid operands for arithmetic operation", e1);
-                  }
-                  RESULT = new ArithmeticExprNode(e1, "%", e2);
-              :}
-              | expression:e1 POTENCIA expression:e2
-              {:
-                  // Check if both operands are of numeric type
-                  String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
-                  String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
-                  if (!isNumeric(type1) || !isNumeric(type2)) {
-                      handleError("Invalid operands for arithmetic operation", e1);
-                  }
-                  RESULT = new ArithmeticExprNode(e1, "^", e2);
-              :}
-              | RESTA expression:e
-              {:
-                  // Check if the operand is of numeric type
-                  String type = symbolTable.getType(e.toString(), scopeStack.peek());
-                  if (!isNumeric(type)) {
-                      handleError("Invalid operand for unary minus", e);
-                  }
-                  RESULT = new ArithmeticExprNode(new LiteralNode("int", "0"), "-", e);
-              :}
-              | expression:e INCREMENTO
-              {:
-                  // Check if the operand is of numeric type
-                  String type = symbolTable.getType(e.toString(), scopeStack.peek());
-                  if (!isNumeric(type)) {
-                      handleError("Invalid operand for increment", e);
-                  }
-                  RESULT = new ArithmeticExprNode(e, "++", null);
-              :}
-              | expression:e DECREMENTO
-              {:
-                  // Check if the operand is of numeric type
-                  String type = symbolTable.getType(e.toString(), scopeStack.peek());
-                  if (!isNumeric(type)) {
-                      handleError("Invalid operand for decrement", e);
-                  }
-                  RESULT = new ArithmeticExprNode(e, "--", null);
-              :}
-              ;
+                     String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                     if (!isNumeric(type1) || !isNumeric(type2)) {
+                         handleError("Invalid operands for arithmetic operation", e1);
+                     }
+                     RESULT = new ArithmeticExprNode(e1, "*", e2);
+                 :}
+                 | expression:e1 DIVISION expression:e2
+                 {:
+                     // Check if both operands are of numeric type
+                     String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                     String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                     if (!isNumeric(type1) || !isNumeric(type2)) {
+                         handleError("Invalid operands for arithmetic operation", e1);
+                     }
+                     RESULT = new ArithmeticExprNode(e1, "/", e2);
+                 :}
+                 | expression:e1 MODULO expression:e2
+                 {:
+                     // Check if both operands are of numeric type
+                     String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                     String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                     if (!isNumeric(type1) || !isNumeric(type2)) {
+                         handleError("Invalid operands for arithmetic operation", e1);
+                     }
+                     RESULT = new ArithmeticExprNode(e1, "%", e2);
+                 :}
+                 | expression:e1 POTENCIA expression:e2
+                 {:
+                     // Check if both operands are of numeric type
+                     String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
+                     String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
+                     if (!isNumeric(type1) || !isNumeric(type2)) {
+                         handleError("Invalid operands for arithmetic operation", e1);
+                     }
+                     RESULT = new ArithmeticExprNode(e1, "^", e2);
+                 :}
+                 | RESTA expression:e
+                 {:
+                     // Check if the operand is of numeric type
+                     String type = symbolTable.getType(e.toString(), scopeStack.peek());
+                     if (!isNumeric(type)) {
+                         handleError("Invalid operand for unary minus", e);
+                     }
+                     RESULT = new ArithmeticExprNode(new LiteralNode("int", "0"), "-", e);
+                 :}
+                 | expression:e INCREMENTO
+                 {:
+                     // Check if the operand is of numeric type
+                     String type = symbolTable.getType(e.toString(), scopeStack.peek());
+                     if (!isNumeric(type)) {
+                         handleError("Invalid operand for increment", e);
+                     }
+                     RESULT = new ArithmeticExprNode(e, "++", null);
+                 :}
+                 | expression:e DECREMENTO
+                 {:
+                     // Check if the operand is of numeric type
+                     String type = symbolTable.getType(e.toString(), scopeStack.peek());
+                     if (!isNumeric(type)) {
+                         handleError("Invalid operand for decrement", e);
+                     }
+                     RESULT = new ArithmeticExprNode(e, "--", null);
+                 :}
+                 ;
 
 relational_expr ::= expression:e1 MENOR expression:e2
               {:
