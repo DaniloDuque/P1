@@ -659,9 +659,7 @@ class CUP$Parser$actions {
 		int sleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
 		int sright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
 		ASTNode s = (ASTNode)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
-		 RESULT = new ProgramNode(f, s);
-                //System.out.println(f.toString());
-          
+		 RESULT = new ProgramNode(f, s); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("program",0, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -684,13 +682,13 @@ class CUP$Parser$actions {
           case 2: // func_declarations ::= func_declaration func_declarations 
             {
               ASTNode RESULT =null;
-		int fleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
-		int fright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
-		ASTNode f = (ASTNode)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
-		int fsleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
-		int fsright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
-		ASTNode fs = (ASTNode)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
-		System.out.println((f!=null)? f.toString() : "");  RESULT = new FuncDeclsNode(f, fs); 
+		int fleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
+		int fright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
+		ASTNode f = (ASTNode)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
+		int fsleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int fsright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		ASTNode fs = (ASTNode)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RESULT = new FuncDeclsNode(f, fs); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("func_declarations",1, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -699,10 +697,10 @@ class CUP$Parser$actions {
           case 3: // func_declarations ::= func_declaration 
             {
               ASTNode RESULT =null;
-		int fleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
-		int fright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
-		ASTNode f = (ASTNode)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
-		System.out.println((f!=null)? f.toString() : "");  RESULT = new FuncDeclsNode(f, null); 
+		int fleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int fright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		ASTNode f = (ASTNode)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RESULT = new FuncDeclsNode(f, null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("func_declarations",1, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -744,7 +742,6 @@ class CUP$Parser$actions {
             TypeNode nt = (TypeNode) t;
             symbolTable.addSymbol(i.toString(), nt.getType(), scopeStack.peek(), ileft, iright);
         }
-        //scopeStack.push(scopeStack.peek() + 1); // Enter a new scope
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("NT$1",36, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }

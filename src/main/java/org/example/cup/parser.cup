@@ -97,14 +97,12 @@ precedence right INCREMENTO, DECREMENTO;
 /* Grammar rules */
 
 program ::= func_declarations:f MAIN LLAVE_ABRE statements:s LLAVE_CIERRA
-          {: RESULT = new ProgramNode(f, s);
-                //System.out.println(f.toString());
-          :}
+          {: RESULT = new ProgramNode(f, s); :}
           ;
 
-func_declarations ::= func_declaration:f func_declarations:fs {:System.out.println((f!=null)? f.toString() : ""); :}
+func_declarations ::= func_declaration:f func_declarations:fs
                    {: RESULT = new FuncDeclsNode(f, fs); :}
-                   | func_declaration:f {:System.out.println((f!=null)? f.toString() : ""); :}
+                   | func_declaration:f
                    {: RESULT = new FuncDeclsNode(f, null); :}
                    ;
 
@@ -117,7 +115,6 @@ func_declaration ::= type:t IDENTIFICADOR:i PARENTESIS_ABRE {: scopeStack.push(s
             TypeNode nt = (TypeNode) t;
             symbolTable.addSymbol(i.toString(), nt.getType(), scopeStack.peek(), ileft, iright);
         }
-        //scopeStack.push(scopeStack.peek() + 1); // Enter a new scope
     :} statements:s LLAVE_CIERRA {:
         scopeStack.pop(); // Exit the scope
         RESULT = new FuncDeclNode(t, new IdentifierNode(i.toString()), p, s);

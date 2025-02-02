@@ -1,7 +1,3 @@
-rodolfo _suma_ abreregalo rodolfo _a_, rodolfo _b_ cierraregalo abrecuento
-    envia _a_ navidad _b_ finregalo
-cierracuento
-
 rodolfo _for_ abreregalo rodolfo _init_ , rodolfo _cotaMax_ , rodolfo _inc_ cierraregalo abrecuento
     rodolfo _c_ entrega 0 finregalo
     duende abreregalo rodolfo _i_ entrega _init_ finregalo _i_ snowball _cotaMax_ finregalo _i_ entrega _i_ navidad _inc_ cierraregalo abrecuento
@@ -12,6 +8,10 @@ rodolfo _for_ abreregalo rodolfo _init_ , rodolfo _cotaMax_ , rodolfo _inc_ cier
         cierracuento
     cierracuento
     envia _c_ finregalo
+cierracuento
+
+rodolfo _suma_ abreregalo rodolfo _a_, rodolfo _b_ cierraregalo abrecuento
+    envia _a_ navidad _b_ finregalo
 cierracuento
 
 _verano_ abrecuento
