@@ -31,7 +31,6 @@ parser code {:
 
     private void handleError(String message, Object sym) {
         System.out.println("Error: " + message + " " + sym);
-
     }
 
     private void handleWarning(String message) {
@@ -59,11 +58,19 @@ parser code {:
 
     // Helper method to check if a type is numeric
     private boolean isNumeric(String type) {
+        if (type == null) return false;
         return type.equals("int") || type.equals("float");
+    }
+
+    // Helper method to check if a type is an array
+    private boolean isArray(String type) {
+        if (type == null) return false;
+        return type.endsWith("[]");
     }
 
 :}
 
+// Terminal declarations
 terminal Integer ENTERO;
 terminal Float FLOTANTE;
 terminal Character CARACTER;
@@ -77,7 +84,7 @@ terminal MAIN, READ, LIT_ENTERO, LIT_FLOTANTE, LIT_CADENA, LIT_CHAR, LIT_BOOL;
 terminal LLAVE_ABRE, LLAVE_CIERRA, PARENTESIS_ABRE, PARENTESIS_CIERRA, FIN_EXPRESION;
 terminal IDENTIFICADOR, ERROR;
 
-// Non-terminals
+// Non-terminal declarations
 non terminal ASTNode program;
 non terminal ASTNode func_declarations, func_declaration, params_opt, param_list;
 non terminal ASTNode param, type, statement, statements;
@@ -232,9 +239,36 @@ arg_list ::= /* empty */
            ;
 
 array_declaration ::= type:t IDENTIFICADOR:i CORCHETE_ABRE CORCHETE_CIERRA ASIGNACION LLAVE_ABRE element_list:el LLAVE_CIERRA
-                    {: RESULT = new ArrayDeclNode(t, new IdentifierNode(i.toString()), true, el); :}
+                    {:
+                        // Check if the array is already declared
+                        if (symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
+                            handleError("Array '" + i.toString() + "' already declared in this scope", i);
+                        } else {
+                            // Add the array to the symbol table
+                            TypeNode nt = (TypeNode) t;
+                            symbolTable.addSymbol(i.toString(), nt.getType() + "[]", scopeStack.peek(), ileft, iright);
+                            RESULT = new ArrayDeclNode(t, new IdentifierNode(i.toString()), true, el);
+                            dataSegment.addData(nt.getType() + "[]", i.toString(), scopeStack.peek());
+                        }
+                    :}
                     | type:t IDENTIFICADOR:i CORCHETE_ABRE expression:e CORCHETE_CIERRA
-                    {: RESULT = new ArrayDeclNode(t, new IdentifierNode(i.toString()), false, e); :}
+                    {:
+                        // Check if the array is already declared
+                        if (symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
+                            handleError("Array '" + i.toString() + "' already declared in this scope", i);
+                        } else {
+                            // Check if the size expression is of type int
+                            String sizeType = symbolTable.getType(e.toString(), scopeStack.peek());
+                            if (!sizeType.equals("int")) {
+                                handleError("Array size must be of type int", e);
+                            }
+                            // Add the array to the symbol table
+                            TypeNode nt = (TypeNode) t;
+                            symbolTable.addSymbol(i.toString(), nt.getType() + "[]", scopeStack.peek(), ileft, iright);
+                            RESULT = new ArrayDeclNode(t, new IdentifierNode(i.toString()), false, e);
+                            dataSegment.addData(nt.getType() + "[]", i.toString(), scopeStack.peek());
+                        }
+                    :}
                     ;
 
 element_list ::= expression:e COMA element_list:el
@@ -250,19 +284,35 @@ opt_equals_value ::= ASIGNACION expression:e
                    ;
 
 assignment ::= IDENTIFICADOR:i ASIGNACION expression:e
-               {:
-                   // Check if the variable is declared
-                   if (!symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
-                       handleError("Undeclared variable '" + i.toString() + "'", i);
-                   }
-                   // Check if the types match
-                   String varType = symbolTable.getType(i.toString(), scopeStack.peek());
-                   String exprType = symbolTable.getType(e.toString(), scopeStack.peek());
-                   if (exprType != null && varType != null && !varType.equals(exprType)) {
-                       handleError("Type mismatch in assignment between ", i);
-                   }
-                   RESULT = new AssignNode(new IdentifierNode(i.toString()), e);
-               :}
+                              {:
+                                  // Check if the variable is declared
+                                  if (!symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
+                                      handleError("Undeclared variable '" + i.toString() + "'", i);
+                                  }
+                                  // Check if the types match
+                                  String varType = symbolTable.getType(i.toString(), scopeStack.peek());
+                                  String exprType = symbolTable.getType(e.toString(), scopeStack.peek());
+                                  if (exprType != null && varType != null && !varType.equals(exprType)) {
+                                      handleError("Type mismatch in assignment between ", i);
+                                  }
+                                  RESULT = new AssignNode(new IdentifierNode(i.toString()), e);
+                              :}
+                          | array_access:aaa ASIGNACION expression:e
+                              {:
+                                   ArrayAccessNode aa = (ArrayAccessNode) aaa;
+                                   IdentifierNode name = (IdentifierNode) aa.getArray();
+                                  // Check if the array is declared
+                                  if (!symbolTable.isDeclared(name.getName(), scopeStack.peek())) {
+                                      handleError("Undeclared array '" + name.getName() + "'", aa);
+                                  }
+                                  // Check if the types match
+                                  String arrayType = symbolTable.getType(name.getName(), scopeStack.peek());
+                                  String exprType = symbolTable.getType(e.toString(), scopeStack.peek());
+                                  if (exprType != null && arrayType != null && !arrayType.equals(exprType)) {
+                                      handleError("Type mismatch in array assignment between ", aa);
+                                  }
+                                  RESULT = new AssignNode(aa, e);
+                              :}
            | IDENTIFICADOR:i INCREMENTO
                {:
                    // Check if the variable is declared
@@ -307,6 +357,8 @@ expression ::= arithmetic_expr:a
              {: RESULT = l; :}
              | literal:l
              {: RESULT = l; :}
+             | LLAVE_ABRE element_list:el LLAVE_CIERRA
+             {: RESULT = el; :}
              | IDENTIFICADOR:i
              {:
                  // Check if the variable is declared
@@ -330,6 +382,11 @@ array_access ::= IDENTIFICADOR:i CORCHETE_ABRE expression:e CORCHETE_CIERRA
                    // Check if the array is declared
                    if (!symbolTable.isDeclared(i.toString(), scopeStack.peek())) {
                        handleError("Undeclared array '" + i.toString() + "'", i);
+                   }
+                   // Check if the index is of type int
+                   String indexType = symbolTable.getType(e.toString(), scopeStack.peek());
+                   if (indexType == null || !indexType.equals("int")) {
+                       handleError("Array index must be of type int", e);
                    }
                    RESULT = new ArrayAccessNode(new IdentifierNode(i.toString()), e);
                :}
@@ -441,7 +498,7 @@ relational_expr ::= expression:e1 MENOR expression:e2
                   // Check if both operands are of compatible types
                   String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
                   String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
-                  if (!type1.equals(type2)) {
+                  if (type1==null || type2 == null || !type1.equals(type2)) {
                       handleError("Type mismatch in relational operation", e1);
                   }
                   RESULT = new RelationalExprNode(e1, "<", e2);
@@ -451,9 +508,9 @@ relational_expr ::= expression:e1 MENOR expression:e2
                   // Check if both operands are of compatible types
                   String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
                   String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
-                  if (!type1.equals(type2)) {
-                      handleError("Type mismatch in relational operation", e1);
-                  }
+                  if (type1==null || type2 == null || !type1.equals(type2)) {
+                    handleError("Type mismatch in relational operation", e1);
+                }
                   RESULT = new RelationalExprNode(e1, "<=", e2);
               :}
               | expression:e1 MAYOR expression:e2
@@ -461,9 +518,9 @@ relational_expr ::= expression:e1 MENOR expression:e2
                   // Check if both operands are of compatible types
                   String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
                   String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
-                  if (!type1.equals(type2)) {
-                      handleError("Type mismatch in relational operation", e1);
-                  }
+                  if (type1==null || type2 == null || !type1.equals(type2)) {
+                    handleError("Type mismatch in relational operation", e1);
+                }
                   RESULT = new RelationalExprNode(e1, ">", e2);
               :}
               | expression:e1 MAYOR_IGUAL expression:e2
@@ -471,9 +528,9 @@ relational_expr ::= expression:e1 MENOR expression:e2
                   // Check if both operands are of compatible types
                   String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
                   String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
-                  if (!type1.equals(type2)) {
-                      handleError("Type mismatch in relational operation", e1);
-                  }
+                  if (type1==null || type2 == null || !type1.equals(type2)) {
+                        handleError("Type mismatch in relational operation", e1);
+                    }
                   RESULT = new RelationalExprNode(e1, ">=", e2);
               :}
               | expression:e1 IGUAL expression:e2
@@ -481,9 +538,9 @@ relational_expr ::= expression:e1 MENOR expression:e2
                   // Check if both operands are of compatible types
                   String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
                   String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
-                  if (!type1.equals(type2)) {
-                      handleError("Type mismatch in equality operation", e1);
-                  }
+                  if (type1==null || type2 == null || !type1.equals(type2)) {
+                    handleError("Type mismatch in relational operation", e1);
+                }
                   RESULT = new RelationalExprNode(e1, "==", e2);
               :}
               | expression:e1 DIFERENTE expression:e2
@@ -491,9 +548,9 @@ relational_expr ::= expression:e1 MENOR expression:e2
                   // Check if both operands are of compatible types
                   String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
                   String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
-                  if (!type1.equals(type2)) {
-                      handleError("Type mismatch in equality operation", e1);
-                  }
+                  if (type1==null || type2 == null || !type1.equals(type2)) {
+                    handleError("Type mismatch in relational operation", e1);
+                }
                   RESULT = new RelationalExprNode(e1, "!=", e2);
               :}
               ;
@@ -503,7 +560,7 @@ logical_expr ::= expression:e1 AND expression:e2
                 // Check if both operands are of boolean type
                 String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
                 String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
-                if (!type1.equals("boolean") || !type2.equals("boolean")) {
+                if (type1==null || type2 == null || !type1.equals("boolean") || !type2.equals("boolean")) {
                     handleError("Invalid operands for logical operation", e1);
                 }
                 RESULT = new LogicalExprNode(e1, "&&", e2);
@@ -513,16 +570,16 @@ logical_expr ::= expression:e1 AND expression:e2
                 // Check if both operands are of boolean type
                 String type1 = symbolTable.getType(e1.toString(), scopeStack.peek());
                 String type2 = symbolTable.getType(e2.toString(), scopeStack.peek());
-                if (!type1.equals("boolean") || !type2.equals("boolean")) {
-                    handleError("Invalid operands for logical operation", e1);
-                }
+                if (type1==null || type2 == null || !type1.equals("boolean") || !type2.equals("boolean")) {
+                                    handleError("Invalid operands for logical operation", e1);
+                                }
                 RESULT = new LogicalExprNode(e1, "||", e2);
             :}
             | NOT expression:e
             {:
                 // Check if the operand is of boolean type
                 String type = symbolTable.getType(e.toString(), scopeStack.peek());
-                if (!type.equals("boolean")) {
+                if (type == null || !type.equals("boolean")) {
                     handleError("Invalid operand for logical NOT", e);
                 }
                 RESULT = new LogicalExprNode(e, "!", null);

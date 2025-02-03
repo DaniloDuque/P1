@@ -263,8 +263,16 @@ public class MIPSCodeGenerator implements ASTVisitor {
 
     @Override
     public String visit(ArithmeticExprNode node) {
-        String leftRegister = node.getLeft().accept(this);
-        String rightRegister = node.getRight().accept(this);
+        String leftRegister = null;
+        String rightRegister = null;
+
+        if (node.getLeft() != null) {
+            leftRegister = node.getLeft().accept(this);
+        }
+
+        if (node.getRight() != null) {
+            rightRegister = node.getRight().accept(this);
+        }
         String resultRegister = registerAllocator.allocateRegister();
 
         switch (node.getOperator()) {
@@ -570,11 +578,15 @@ public class MIPSCodeGenerator implements ASTVisitor {
             case "bool":
                 //emit(varName + ": .space 4");  // 4 bytes for integers and booleans
                 break;
+            case "boolean":
+                break;
             case "float":
                 //emit(varName + ": .float 0.0");  // Initializing float to 0.0
                 break;
             case "char":
                 //emit(varName + ": .byte 0");  // 1 byte for characters
+                break;
+            case "string":
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported variable type: " + varType);

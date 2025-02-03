@@ -1,20 +1,45 @@
-rodolfo _for_ abreregalo rodolfo _init_ , rodolfo _cotaMax_ , rodolfo _inc_ cierraregalo abrecuento
-    rodolfo _c_ entrega 0 finregalo
-    duende abreregalo rodolfo _i_ entrega _init_ finregalo _i_ snowball _cotaMax_ finregalo _i_ entrega _i_ navidad _inc_ cierraregalo abrecuento
-        rodolfo _j_ entrega _i_ finregalo
-        envuelve abreregalo _j_ snowball _cotaMax_ cierraregalo abrecuento
-            _j_ quien finregalo
-            _c_ quien finregalo
-        cierracuento
-    cierracuento
-    envia _c_ finregalo
+bromista _func1_ abreregalo cupido _x22_ , cupido _x23_ cierraregalo  abrecuento
+   cupido _miChar_ entrega '!' finregalo
+   cometa _str1_ entrega "Hola $%&/gaspar$& cierraregalo  mundo" finregalo
+   bromista _fl1_ entrega 56.6 finregalo
+
+   cupido _arr_ abreempaque cierraempaque entrega abrecuento 'c' , 'd' cierracuento  finregalo
+
+   _arr_ abreempaque 1 cierraempaque entrega 'c' finregalo
+
+   trueno _mibool_  entrega  true finregalo
+
+    rodolfo _messi_ entrega 6 finregalo
+   _mibool_  entrega   abreregalo  3 nochebuena _messi_ quien  cierraregalo  snowball 56 navidad 8   finregalo
+
+   duende  abreregalo  rodolfo _i_  entrega  10 finregalo _i_ snowball 30 nochebuena 2 finregalo _i_ quien  cierraregalo  abrecuento
+      bromista _var2_ entrega 0.0 finregalo
+      envuelve abreregalo _var2_ minstix 12.2 gaspar  abreregalo 34 navidad 33 cierraregalo minstix 12 cierraregalo abrecuento
+        rodolfo _var_  entrega  6 intercambio 1 finregalo
+         envia 0.1 finregalo
+      cierracuento
+
+      elfo  abreregalo _var_ mary 0 cierraregalo  abrecuento
+         corta finregalo
+      cierracuento
+
+      hada abrecuento
+         envia 1.9 finregalo
+      cierracuento
+
+      rodolfo _id_ entrega 5 finregalo
+      cupido _ch_ entrega 'a' finregalo
+
+   cierracuento
+
+   envia 1.1 finregalo
 cierracuento
 
-rodolfo _suma_ abreregalo rodolfo _a_, rodolfo _b_ cierraregalo abrecuento
-    envia _a_ navidad _b_ finregalo
-cierracuento
-
-_verano_ abrecuento
-    envia _suma_ abreregalo 4 , 5 cierraregalo finregalo
-    envia _for_ abreregalo 0 , 10 , 1 cierraregalo finregalo
+_verano_  abrecuento
+   bromista _nep_ entrega _func1_ abreregalo 'a', 'b' cierraregalo finregalo
+   bromista _s1_ finregalo
+   rodolfo _b1_ finregalo
+   escucha  abreregalo  _s1_  cierraregalo   finregalo
+   narra abreregalo  _b1_  cierraregalo   finregalo
+   envia 35 finregalo
 cierracuento
